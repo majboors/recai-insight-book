@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ApiTokenDialog from "@/components/ApiTokenDialog";
-import { getInstance, renameCategory, getReports, getBudgets, getBaseUrl, getToken } from "@/lib/recai";
+import { getInstance, renameCategory, getReports, getBudgets, recaiRequest } from "@/lib/recai";
 
 export default function TestApiTroubleshoot() {
   const [result, setResult] = useState<any>(null);
@@ -41,13 +41,7 @@ export default function TestApiTroubleshoot() {
 
   const refreshCategories = () => run(async () => {
     if (!instanceId) throw new Error("Instance ID required");
-    // cache-busting
-    const inst: any = await fetch(`${getBaseUrl()}/v1/instances/${instanceId}?_t=${Date.now()}`, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    }).then(async (r) => {
-      if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
-      return r.json();
-    });
+    const inst: any = await getInstance(instanceId);
     return {
       categories: inst?.categories || inst?.data?.categories || inst?.instance?.categories || inst?.details?.categories || []
     };
@@ -69,16 +63,8 @@ export default function TestApiTroubleshoot() {
       date,
       type: "expense",
     };
-    const res = await fetch(`${getBaseUrl()}/v1/instances/${instanceId}/transactions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
-      },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
-    return await res.json();
+    const res = await recaiRequest("POST", `/v1/instances/${instanceId}/transactions`, body);
+    return res;
   });
 
   const fetchMonthlyReport = () => run(async () => {

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -6,11 +6,45 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { User, Globe, Bell, Shield, Trash2 } from 'lucide-react';
+import { User, Globe, Bell, Shield, Trash2, Link as LinkIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useRecaiAuth } from '@/hooks/useRecaiAuth';
+import { listInstances } from '@/lib/recai';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Settings() {
   const { user, signOut } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const { token: recaiToken, baseUrl, healthy, setToken, setBaseUrl } = useRecaiAuth();
+  const [tkn, setTkn] = useState(recaiToken || "");
+  const [base, setBase] = useState(baseUrl || "");
+  const [instances, setInstances] = useState<any[]>([]);
+  const [defaultInstance, setDefaultInstance] = useState<string>("");
+
+  useEffect(() => { setTkn(recaiToken || ""); setBase(baseUrl || ""); }, [recaiToken, baseUrl]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        if (recaiToken) {
+          const res = await listInstances();
+          setInstances(res?.instances || []);
+        } else {
+          setInstances([]);
+        }
+        const { data } = await supabase
+          .from('profiles')
+          .select('default_instance_id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        setDefaultInstance(data?.default_instance_id || "");
+      } catch (e) {
+        // ignore
+      }
+    })();
+  }, [user, recaiToken]);
 
   useEffect(() => {
     document.title = 'Settings | Receipt Zen';
@@ -64,6 +98,58 @@ export default function Settings() {
               <p className="text-sm text-muted-foreground mt-1 font-mono">
                 {user?.id?.slice(0, 8)}...
               </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* RecAI Connection */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <LinkIcon className="h-5 w-5" />
+            RecAI Connection
+          </CardTitle>
+          <CardDescription>
+            Connect your personal RecAI API token and set a default book (instance).
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>API Base URL</Label>
+              <Input value={base} onChange={(e) => setBase(e.target.value)} placeholder="https://recai.applytocollege.pk" />
+            </div>
+            <div className="grid gap-2">
+              <Label>Bearer Token</Label>
+              <Input value={tkn} onChange={(e) => setTkn(e.target.value)} placeholder="YOUR_TOKEN" />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={async () => { await setBaseUrl(base); await setToken(tkn); }}>
+              Save & Test
+            </Button>
+            {healthy === true && <span className="text-sm text-green-600">Connected</span>}
+            {healthy === false && <span className="text-sm text-destructive">Connection failed</span>}
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Default Instance (Book)</Label>
+            <Select value={defaultInstance} onValueChange={setDefaultInstance}>
+              <SelectTrigger>
+                <SelectValue placeholder={instances.length ? "Select a book" : (tkn ? "No books found" : "Connect API first") } />
+              </SelectTrigger>
+              <SelectContent>
+                {instances.map((b) => (
+                  <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div>
+              <Button variant="outline" className="mt-2" onClick={async () => {
+                if (!user) return; 
+                await supabase.from('profiles').update({ default_instance_id: defaultInstance || null }).eq('user_id', user.id);
+              }}>Save Default</Button>
             </div>
           </div>
         </CardContent>

@@ -1,29 +1,37 @@
 /* RecAI API client */
+import { supabase } from "@/integrations/supabase/client";
 export const API_BASE_DEFAULT = "https://recai.applytocollege.pk";
 
-const TOKEN_KEY = "recai_token";
-const BASE_KEY = "recai_base_url";
+let cachedConfig: { token: string; base: string } | null = null;
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY) || "test-user-123"; // Default token for testing
+export function clearRecaiConfigCache() {
+  cachedConfig = null;
 }
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-export function getBaseUrl() {
-  return localStorage.getItem(BASE_KEY) || API_BASE_DEFAULT;
-}
-export function setBaseUrl(url: string) {
-  localStorage.setItem(BASE_KEY, url);
+
+async function getRecaiConfig() {
+  if (cachedConfig) return cachedConfig;
+  const { data: { session } } = await supabase.auth.getSession();
+  const uid = session?.user?.id;
+  if (!uid) throw new Error("Not authenticated");
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("recai_api_token, recai_base_url")
+    .eq("user_id", uid)
+    .maybeSingle();
+  if (error) throw error;
+  const token = data?.recai_api_token || "";
+  const base = data?.recai_base_url || API_BASE_DEFAULT;
+  if (!token) throw new Error("RecAI API token not set. Go to Settings to connect.");
+  cachedConfig = { token, base };
+  return cachedConfig;
 }
 
 async function recaiFetch<T>(path: string, init: RequestInit = {}, asBlob = false): Promise<T> {
-  const token = getToken();
-  const base = getBaseUrl();
+  const { token, base } = await getRecaiConfig();
   const headers: HeadersInit = {
     ...(init.headers || {}),
     ...(init.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    Authorization: `Bearer ${token}`,
   };
 
   const res = await fetch(`${base}${path}`, { ...init, headers });

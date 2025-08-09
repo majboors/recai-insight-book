@@ -17,22 +17,31 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          default_instance_id: string | null
           display_name: string | null
           id: string
+          recai_api_token: string | null
+          recai_base_url: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          default_instance_id?: string | null
           display_name?: string | null
           id?: string
+          recai_api_token?: string | null
+          recai_base_url?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          default_instance_id?: string | null
           display_name?: string | null
           id?: string
+          recai_api_token?: string | null
+          recai_base_url?: string | null
           updated_at?: string
           user_id?: string
         }
