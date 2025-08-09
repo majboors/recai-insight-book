@@ -14,12 +14,15 @@ export default function Auth() {
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { signUp, signIn, user } = useAuth();
+  const { signUp, signIn, user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'Authentication | Receipt Zen';
+
+    // Wait for auth to settle before redirecting
+    if (authLoading) return;
     
     // Redirect if already authenticated
     if (user) {
@@ -34,12 +37,12 @@ export default function Auth() {
       }
 
       if (local || meta) {
-        navigate('/');
+        navigate('/', { replace: true });
       } else {
-        navigate('/onboarding');
+        navigate('/onboarding', { replace: true });
       }
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,9 +70,9 @@ export default function Auth() {
           const perKey = user ? `onboarding_complete:${user.id}` : null;
           const perLocal = perKey ? localStorage.getItem(perKey) === 'true' : false;
           if (perLocal || legacy) {
-            navigate('/');
+            navigate('/', { replace: true });
           } else {
-            navigate('/onboarding');
+            navigate('/onboarding', { replace: true });
           }
         }
       }

@@ -11,14 +11,16 @@ type OnboardingStep = 'welcome' | 'skill-level' | 'beginner' | 'advanced';
 
 export default function Onboarding() {
   const [step, setStep] = useState<OnboardingStep>('welcome');
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'Welcome | Receipt Zen';
-    
+
+    if (loading) return; // Wait for auth to settle before redirecting
+
     if (!user) {
-      navigate('/auth');
+      navigate('/auth', { replace: true });
       return;
     }
 
@@ -33,9 +35,9 @@ export default function Onboarding() {
     }
 
     if (local || meta) {
-      navigate('/');
+      navigate('/', { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   const handleWelcomeContinue = () => {
     setStep('skill-level');
