@@ -10,6 +10,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { listInstances, postChat, postAdvice, getInsights } from "@/lib/recai";
 import { MessageCircle, Send, Bot, User, Lightbulb, TrendingUp, Brain } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Link } from "react-router-dom";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -25,6 +27,7 @@ export default function AIChat() {
   const [adviceRequest, setAdviceRequest] = useState("");
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [chatDataStatus, setChatDataStatus] = useState<{ usingLiveData: boolean; totalTransactions?: number; message?: string } | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,6 +37,7 @@ export default function AIChat() {
 
   useEffect(() => {
     if (selectedBook) {
+      setChatDataStatus(null);
       loadInsights();
     }
   }, [selectedBook]);
@@ -83,6 +87,12 @@ export default function AIChat() {
         message: messageInput,
         context: "general_inquiry"
       });
+
+      // Update status indicator based on API response
+      const usingLive = Boolean((response as any)?.context_info?.using_live_data);
+      const totalTx = (response as any)?.data_status?.total_transactions;
+      const infoMsg = (response as any)?.context_info?.message as string | undefined;
+      setChatDataStatus({ usingLiveData: usingLive, totalTransactions: totalTx, message: infoMsg });
 
       const assistantMessage: ChatMessage = {
         role: "assistant",
@@ -179,11 +189,54 @@ export default function AIChat() {
             {/* Chat Window */}
             <Card className="card-minimal h-[500px] flex flex-col">
               <CardHeader className="pb-4">
-                <CardTitle className="heading-zen flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5" />
-                  Chat with AI
-                </CardTitle>
-                <CardDescription className="text-zen">Ask questions about your spending patterns</CardDescription>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <CardTitle className="heading-zen flex items-center gap-2">
+                      <MessageCircle className="h-5 w-5" />
+                      Chat with AI
+                    </CardTitle>
+                    <CardDescription className="text-zen">Ask questions about your spending patterns</CardDescription>
+                  </div>
+                  {chatDataStatus && (
+                    <div className="min-w-[220px] flex flex-col items-end gap-1">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`${chatDataStatus.usingLiveData ? "bg-success" : "bg-destructive"} h-2.5 w-2.5 rounded-full`}
+                          aria-hidden="true"
+                        />
+                        <span className="text-xs">
+                          {chatDataStatus.usingLiveData ? "AI has access to your spending data" : "AI in general advice mode"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant={chatDataStatus.usingLiveData ? "secondary" : "destructive"}
+                              className="text-[10px]"
+                            >
+                              {chatDataStatus.usingLiveData
+                                ? `Based on ${chatDataStatus.totalTransactions ?? 0} transactions`
+                                : "Add transactions for personalized insights"}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs text-xs">
+                              {chatDataStatus.message || (chatDataStatus.usingLiveData
+                                ? "Chatbot has access to your transaction data"
+                                : "Chatbot is in general advice mode (no transaction data available)")}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                        {!chatDataStatus.usingLiveData && (
+                          <Link to="/scanner">
+                            <Button variant="secondary" size="sm">Scan receipts</Button>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
                 <ScrollArea className="flex-1 pr-4">
