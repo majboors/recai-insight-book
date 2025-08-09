@@ -59,9 +59,9 @@ export const updateInstance = (id: string, body: { name?: string; description?: 
 export const deleteInstance = (id: string) => recaiFetch(`/v1/instances/${id}`, { method: "DELETE" });
 
 // Categories
-export const initializeCategories = (id: string, categories: Array<{ name: string; type: "income" | "expense" }>) =>
+export const initializeCategories = (id: string, categories: string) =>
   recaiFetch(`/v1/instances/${id}/initialize`, { method: "POST", body: JSON.stringify({ categories }) });
-export const addCategory = (id: string, body: { name: string; type: "income" | "expense"; color?: string }) =>
+export const addCategory = (id: string, body: any) =>
   recaiFetch(`/v1/instances/${id}/categories`, { method: "POST", body: JSON.stringify(body) });
 export const renameCategory = (catId: string, name: string) =>
   recaiFetch(`/v1/categories/${catId}`, { method: "PUT", body: JSON.stringify({ name }) });
@@ -83,8 +83,13 @@ export const listTransactions = (id: string, qs: Record<string, string | number 
   const query = new URLSearchParams(Object.entries(qs).filter(([, v]) => v !== undefined) as any).toString();
   return recaiFetch(`/v1/instances/${id}/transactions${query ? `?${query}` : ""}`);
 };
-export const upsertBudget = (id: string, body: { category_id: string; amount: number; period: string; start_date?: string }) =>
-  recaiFetch(`/v1/instances/${id}/budgets`, { method: "POST", body: JSON.stringify(body) });
+export const upsertBudget = (id: string, body: any) => {
+  const payload = "limit" in (body || {})
+    ? body
+    : ("amount" in (body || {}) ? { ...body, limit: body.amount } : body);
+  if (payload && "amount" in payload) delete payload.amount;
+  return recaiFetch(`/v1/instances/${id}/budgets`, { method: "POST", body: JSON.stringify(payload) });
+};
 export const getBudgets = (id: string, qs: Record<string, string> = {}) => {
   const query = new URLSearchParams(qs).toString();
   return recaiFetch(`/v1/instances/${id}/budgets${query ? `?${query}` : ""}`);
