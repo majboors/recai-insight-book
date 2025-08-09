@@ -97,6 +97,16 @@ export default function Analytics() {
     }
   };
 
+  const refreshCategories = async () => {
+    if (!selectedBook) return;
+    try {
+      const inst: any = await getInstance(selectedBook);
+      const cats = inst?.categories || inst?.data?.categories || inst?.instance?.categories || inst?.details?.categories || [];
+      setCategories(Array.isArray(cats) ? cats : []);
+    } catch (e) {
+      console.error("Failed to refresh categories", e);
+    }
+  };
   const handleSaveBudget = async () => {
     if (!selectedBook || !newBudgetCategoryId || !newBudgetLimit) {
       toast({ title: "Missing information", description: "Enter category ID and limit to create a budget." });
@@ -539,13 +549,18 @@ export default function Analytics() {
                     <Button onClick={async () => {
                       if (!newCategoryName.trim()) { toast({ title: 'Category name required', variant: 'destructive' }); return; }
                       try {
-                        await addCategory(selectedBook, { name: newCategoryName.trim() });
-                        const inst:any = await getInstance(selectedBook);
-                        setCategories(inst?.categories || []);
+                        await addCategory(selectedBook, { name: newCategoryName.trim(), type: 'expense' });
+                        await refreshCategories();
                         setNewCategoryName('');
                         toast({ title: 'Category added' });
                       } catch (e:any) {
-                        toast({ title: 'Failed to add category', description: e?.message || 'Unknown error', variant: 'destructive' });
+                        const msg = e?.message || '';
+                        if (msg.toLowerCase().includes('exist')) {
+                          await refreshCategories();
+                          toast({ title: 'Category exists', description: 'It was already in your list.' });
+                        } else {
+                          toast({ title: 'Failed to add category', description: msg || 'Unknown error', variant: 'destructive' });
+                        }
                       }
                     }}>Add</Button>
                   </div>
@@ -559,18 +574,17 @@ export default function Analytics() {
                           {renamingCatId === c.id ? (
                             <div className="flex-1 flex items-center gap-2">
                               <Input value={renameValue} onChange={(e)=> setRenameValue(e.target.value)} />
-                              <Button size="sm" onClick={async () => {
-                                try {
-                                  await renameCategory(String(c.id), renameValue.trim());
-                                  const inst:any = await getInstance(selectedBook);
-                                  setCategories(inst?.categories || []);
-                                  setRenamingCatId(null);
-                                  setRenameValue('');
-                                  toast({ title: 'Category renamed' });
-                                } catch (e:any) {
-                                  toast({ title: 'Rename failed', description: e?.message || 'Unknown error', variant: 'destructive' });
-                                }
-                              }}>Save</Button>
+                                <Button size="sm" onClick={async () => {
+                                  try {
+                                    await renameCategory(String(c.id), renameValue.trim());
+                                    await refreshCategories();
+                                    setRenamingCatId(null);
+                                    setRenameValue('');
+                                    toast({ title: 'Category renamed' });
+                                  } catch (e:any) {
+                                    toast({ title: 'Rename failed', description: e?.message || 'Unknown error', variant: 'destructive' });
+                                  }
+                                }}>Save</Button>
                               <Button size="sm" variant="outline" onClick={()=> { setRenamingCatId(null); setRenameValue(''); }}>Cancel</Button>
                             </div>
                           ) : (
@@ -584,8 +598,7 @@ export default function Analytics() {
                                 <Button size="sm" variant="destructive" onClick={async () => {
                                   try {
                                     await removeCategory(String(c.id));
-                                    const inst:any = await getInstance(selectedBook);
-                                    setCategories(inst?.categories || []);
+                                    await refreshCategories();
                                     toast({ title: 'Category deleted' });
                                   } catch (e:any) {
                                     toast({ title: 'Delete failed', description: e?.message || 'Unknown error', variant: 'destructive' });
