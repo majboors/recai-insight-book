@@ -23,7 +23,21 @@ export default function Auth() {
     
     // Redirect if already authenticated
     if (user) {
-      navigate('/');
+      const key = `onboarding_complete:${user.id}`;
+      const legacy = localStorage.getItem('onboarding_complete') === 'true';
+      const local = localStorage.getItem(key) === 'true' || legacy;
+      const meta = Boolean((user as any)?.user_metadata?.onboarding_complete);
+
+      // Migrate legacy flag if present
+      if (legacy && !localStorage.getItem(key)) {
+        localStorage.setItem(key, 'true');
+      }
+
+      if (local || meta) {
+        navigate('/');
+      } else {
+        navigate('/onboarding');
+      }
     }
   }, [user, navigate]);
 
@@ -49,9 +63,10 @@ export default function Auth() {
         error = result.error;
         
         if (!error) {
-          // Check if onboarding is complete
-          const onboardingComplete = localStorage.getItem('onboarding_complete');
-          if (onboardingComplete) {
+          const legacy = localStorage.getItem('onboarding_complete') === 'true';
+          const perKey = user ? `onboarding_complete:${user.id}` : null;
+          const perLocal = perKey ? localStorage.getItem(perKey) === 'true' : false;
+          if (perLocal || legacy) {
             navigate('/');
           } else {
             navigate('/onboarding');
