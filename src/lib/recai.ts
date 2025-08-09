@@ -70,13 +70,13 @@ export const removeCategory = (catId: string) => recaiFetch(`/v1/categories/${ca
 // Receipts
 export const uploadReceipt = (file: File, instanceId: string) => {
   const fd = new FormData();
-  fd.append("receipt", file);
+  fd.append("reciept", file);  // Note: backend expects "reciept" (misspelled)
   fd.append("instance_id", instanceId);
-  return recaiFetch(`/v1/receipts`, { method: "POST", body: fd });
+  return recaiFetch(`/v1/reciepts`, { method: "POST", body: fd });  // Note: "reciepts" (misspelled)
 };
-export const getReceipt = (receiptId: string) => recaiFetch(`/v1/receipts/${receiptId}`);
+export const getReceipt = (receiptId: string) => recaiFetch(`/v1/reciepts/${receiptId}`);
 export const patchReceipt = (receiptId: string, body: any) =>
-  recaiFetch(`/v1/receipts/${receiptId}`, { method: "PATCH", body: JSON.stringify(body) });
+  recaiFetch(`/v1/reciepts/${receiptId}`, { method: "PATCH", body: JSON.stringify(body) });
 
 // Transactions & Budgets
 export const listTransactions = (id: string, qs: Record<string, string | number | undefined> = {}) => {
