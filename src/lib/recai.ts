@@ -5,7 +5,7 @@ const TOKEN_KEY = "recai_token";
 const BASE_KEY = "recai_base_url";
 
 export function getToken() {
-  return localStorage.getItem(TOKEN_KEY) || "";
+  return localStorage.getItem(TOKEN_KEY) || "test-user-123"; // Default token for testing
 }
 export function setToken(token: string) {
   localStorage.setItem(TOKEN_KEY, token);

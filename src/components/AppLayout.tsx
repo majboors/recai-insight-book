@@ -78,7 +78,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>API Configuration</DialogTitle>
-                  <DialogDescription>Configure your API settings</DialogDescription>
+                  <DialogDescription>Configure your RecAI API settings. Default token is set for testing.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSaveSettings} className="space-y-4">
                   <div>
@@ -87,7 +87,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                   </div>
                   <div>
                     <Label htmlFor="token">Bearer Token</Label>
-                    <Input id="token" name="token" defaultValue={getToken()} />
+                    <Input id="token" name="token" defaultValue={getToken()} placeholder="test-user-123" />
+                    <p className="text-xs text-muted-foreground mt-1">Your API authentication token</p>
                   </div>
                   <Button type="submit">Save Settings</Button>
                 </form>
