@@ -31,28 +31,30 @@ export default function BookDashboard() {
         <aside>
           <AppSidebar />
         </aside>
-        <div className="flex-1 flex flex-col">
-          <header className="border-b">
-            <div className="container h-14 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger />
-                <h1 className="text-lg font-semibold">Book Dashboard</h1>
-              </div>
-              <div className="flex items-center gap-2">
-                <ReceiptScanner instanceId={id!} />
-                <InsightsBell instanceId={id!} />
-              </div>
+      <div className="flex-1 flex flex-col">
+        <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-30">
+          <div className="container-zen h-14 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <SidebarTrigger className="btn-minimal p-2" />
+              <h1 className="text-lg font-medium heading-zen">Book Dashboard</h1>
             </div>
-          </header>
-          <main className="container py-6 space-y-6">
+            <div className="flex items-center gap-2">
+              <ReceiptScanner instanceId={id!} />
+              <InsightsBell instanceId={id!} />
+            </div>
+          </div>
+        </header>
+        <main id="main-content" className="flex-1" role="main">
+          <div className="container-zen py-6 space-zen">
             {tab === "overview" && <OverviewTab instanceId={id!} />}
             {tab === "budgets" && <BudgetsTab instanceId={id!} />}
             {tab === "reports" && <ReportsTab instanceId={id!} />}
             {tab === "categories" && <CategoriesTab instanceId={id!} />}
             {tab === "receipts" && <ReceiptsTab instanceId={id!} />}
             {tab === "chat" && <ChatTab instanceId={id!} />}
-          </main>
-        </div>
+          </div>
+        </main>
+      </div>
       </div>
       <ChatWidget instanceId={id!} />
     </SidebarProvider>
