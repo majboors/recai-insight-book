@@ -143,15 +143,15 @@ export default function AIChat() {
   };
 
   return (
-    <div className="container py-8 space-y-8">
+    <div className="container-zen py-6 space-zen">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI Assistant</h1>
-          <p className="text-muted-foreground">Get personalized financial advice and insights</p>
+          <h1 className="heading-zen text-2xl sm:text-3xl">AI Assistant</h1>
+          <p className="text-zen text-sm">Get personalized financial advice and insights</p>
         </div>
         <Select value={selectedBook} onValueChange={setSelectedBook}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48 btn-minimal">
             <SelectValue placeholder="Select book" />
           </SelectTrigger>
           <SelectContent>
@@ -165,32 +165,32 @@ export default function AIChat() {
       </div>
 
       {!selectedBook ? (
-        <Card className="text-center py-12">
+        <Card className="card-zen text-center py-12">
           <CardContent>
             <Bot className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No book selected</h3>
-            <p className="text-muted-foreground">Select a book to start chatting with AI</p>
+            <h3 className="heading-zen text-lg mb-2">No book selected</h3>
+            <p className="text-zen">Select a book to start chatting with AI</p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid-zen grid-cols-1 lg:grid-cols-3">
           {/* Chat Section */}
           <div className="lg:col-span-2 space-y-6">
             {/* Chat Window */}
-            <Card className="h-[500px] flex flex-col">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+            <Card className="card-minimal h-[500px] flex flex-col">
+              <CardHeader className="pb-4">
+                <CardTitle className="heading-zen flex items-center gap-2">
                   <MessageCircle className="h-5 w-5" />
                   Chat with AI
                 </CardTitle>
-                <CardDescription>Ask questions about your spending patterns</CardDescription>
+                <CardDescription className="text-zen">Ask questions about your spending patterns</CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
                 <ScrollArea className="flex-1 pr-4">
                   {chatMessages.length === 0 ? (
                     <div className="text-center py-8">
                       <Bot className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">
+                      <p className="text-zen">
                         Start a conversation! Ask me about your spending, budgets, or financial goals.
                       </p>
                     </div>
@@ -201,20 +201,20 @@ export default function AIChat() {
                           key={index}
                           className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                         >
-                          <div className={`flex gap-3 max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          <div className={`flex gap-3 max-w-[85%] sm:max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                               message.role === "user" 
                                 ? "bg-primary text-primary-foreground" 
-                                : "bg-muted"
+                                : "bg-accent"
                             }`}>
                               {message.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                             </div>
                             <div className={`rounded-lg p-3 ${
                               message.role === "user" 
                                 ? "bg-primary text-primary-foreground" 
-                                : "bg-muted"
+                                : "bg-accent/50"
                             }`}>
-                              <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                              <div className="text-sm whitespace-pre-wrap break-words">{message.content}</div>
                               <div className="text-xs opacity-70 mt-1">
                                 {message.timestamp.toLocaleTimeString()}
                               </div>
@@ -224,10 +224,10 @@ export default function AIChat() {
                       ))}
                       {loading && (
                         <div className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
                             <Bot className="h-4 w-4" />
                           </div>
-                          <div className="bg-muted rounded-lg p-3">
+                          <div className="bg-accent/50 rounded-lg p-3">
                             <div className="text-sm">Thinking...</div>
                           </div>
                         </div>
@@ -244,8 +244,9 @@ export default function AIChat() {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about your spending, budgets, or financial goals..."
                     disabled={loading}
+                    className="focus:ring-2 focus:ring-primary"
                   />
-                  <Button onClick={handleSendMessage} disabled={loading || !messageInput.trim()}>
+                  <Button onClick={handleSendMessage} disabled={loading || !messageInput.trim()} size="icon">
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
@@ -253,22 +254,22 @@ export default function AIChat() {
             </Card>
 
             {/* Quick Advice */}
-            <Card>
+            <Card className="card-minimal">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="heading-zen flex items-center gap-2">
                   <Lightbulb className="h-5 w-5" />
                   Get Financial Advice
                 </CardTitle>
-                <CardDescription>Request specific advice about your finances</CardDescription>
+                <CardDescription className="text-zen">Request specific advice about your finances</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Textarea
                   value={adviceRequest}
                   onChange={(e) => setAdviceRequest(e.target.value)}
                   placeholder="e.g., How can I reduce my food spending? What's my biggest expense category?"
-                  className="min-h-[100px]"
+                  className="min-h-[80px] focus:ring-2 focus:ring-primary"
                 />
-                <Button onClick={handleGetAdvice} disabled={loading || !adviceRequest.trim()}>
+                <Button onClick={handleGetAdvice} disabled={loading || !adviceRequest.trim()} className="w-full sm:w-auto">
                   <Lightbulb className="h-4 w-4 mr-2" />
                   Get Advice
                 </Button>
@@ -278,39 +279,39 @@ export default function AIChat() {
 
           {/* Insights Sidebar */}
           <div className="space-y-6">
-            <Card>
+            <Card className="card-minimal">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="heading-zen flex items-center gap-2">
                   <Brain className="h-5 w-5" />
                   Quick Insights
                 </CardTitle>
-                <CardDescription>AI-generated insights about your spending</CardDescription>
+                <CardDescription className="text-zen">AI-generated insights about your spending</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {insights ? (
                   <div className="space-y-3">
-                    <div className="text-sm">
+                    <div className="flex justify-between text-sm p-2 rounded bg-accent/20">
                       <span className="font-medium">Total Spent:</span>
-                      <span className="float-right">${insights.total_spent?.toFixed(2) || "0.00"}</span>
+                      <span className="font-medium">${insights.total_spent?.toFixed(2) || "0.00"}</span>
                     </div>
                     <Separator />
                     <div className="space-y-2">
                       <span className="text-sm font-medium">Top Categories:</span>
                       {insights.top_categories?.slice(0, 3).map((category: any, index: number) => (
-                        <div key={index} className="flex justify-between text-sm">
-                          <span>{category.category_name}</span>
-                          <Badge variant="secondary">${category.total.toFixed(2)}</Badge>
+                        <div key={index} className="flex justify-between text-sm p-2 rounded bg-accent/10">
+                          <span className="truncate">{category.category_name}</span>
+                          <Badge variant="secondary" className="ml-2">${category.total.toFixed(2)}</Badge>
                         </div>
                       ))}
                     </div>
                     <Separator />
-                    <div className="flex items-center gap-2 text-sm">
-                      <TrendingUp className="h-4 w-4 text-green-500" />
-                      <span>Spending Trend: {insights.spending_trend || "Stable"}</span>
+                    <div className="flex items-center gap-2 text-sm p-2 rounded bg-accent/20">
+                      <TrendingUp className="h-4 w-4 text-success" />
+                      <span>Trend: {insights.spending_trend || "Stable"}</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-zen">
                     No insights available yet. Add some expenses to get started!
                   </div>
                 )}
@@ -318,10 +319,10 @@ export default function AIChat() {
             </Card>
 
             {/* Quick Actions */}
-            <Card>
+            <Card className="card-minimal">
               <CardHeader>
-                <CardTitle>Suggested Questions</CardTitle>
-                <CardDescription>Try asking these questions</CardDescription>
+                <CardTitle className="heading-zen">Suggested Questions</CardTitle>
+                <CardDescription className="text-zen">Try asking these questions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 {[
@@ -335,10 +336,10 @@ export default function AIChat() {
                     key={index}
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-left h-auto p-2"
+                    className="w-full justify-start text-left h-auto p-3 hover:bg-accent/50 text-xs"
                     onClick={() => setMessageInput(question)}
                   >
-                    <span className="text-xs">{question}</span>
+                    <span>{question}</span>
                   </Button>
                 ))}
               </CardContent>
