@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, Menu, LogOut, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { getToken, setToken, getBaseUrl, setBaseUrl } from "@/lib/recai";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 interface AppLayoutProps {
@@ -19,7 +15,7 @@ export function AppLayout({
   children
 }: AppLayoutProps) {
   const location = useLocation();
-  const { toast } = useToast();
+  
   const { user, signOut } = useAuth();
   const [currentBook, setCurrentBook] = useState("personal-expenses");
   const navigation = [{
@@ -47,18 +43,6 @@ export function AppLayout({
     href: "/notifications",
     icon: Bell
   }];
-  const handleSaveSettings = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const token = formData.get("token") as string;
-    const baseUrl = formData.get("baseUrl") as string;
-    if (token) setToken(token);
-    if (baseUrl) setBaseUrl(baseUrl);
-    toast({
-      title: "Settings saved",
-      description: "API configuration updated successfully."
-    });
-  };
   return <div className="min-h-screen bg-gradient-soft">
       {/* Skip link for accessibility */}
       
@@ -90,27 +74,35 @@ export function AppLayout({
                   <Settings className="h-5 w-5" aria-hidden="true" />
                   <span>Settings</span>
                 </Link>
+
+                {/* Logout for Mobile */}
+                <button onClick={() => signOut()} className="w-full text-left flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 text-destructive hover:bg-destructive/10">
+                  <LogOut className="h-5 w-5" aria-hidden="true" />
+                  <span>Logout</span>
+                </button>
                 </nav>
               </SheetContent>
             </Sheet>
             
             <div className="flex items-center gap-4">
               <h1 className="text-xl font-medium heading-zen">ReceiptWala</h1>
-              <Select value={currentBook} onValueChange={setCurrentBook}>
-                <SelectTrigger className="w-40 sm:w-48 btn-minimal">
-                  <SelectValue placeholder="Select book" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="personal-expenses">Personal</SelectItem>
-                  <SelectItem value="business-travel">Business</SelectItem>
-                  <SelectItem value="home-renovation">Home</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="hidden sm:block">
+                <Select value={currentBook} onValueChange={setCurrentBook}>
+                  <SelectTrigger className="w-48 btn-minimal">
+                    <SelectValue placeholder="Select book" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="personal-expenses">Personal</SelectItem>
+                    <SelectItem value="business-travel">Business</SelectItem>
+                    <SelectItem value="home-renovation">Home</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative" aria-label="View notifications">
+            <Button variant="ghost" size="icon" className="relative hidden sm:inline-flex" aria-label="View notifications">
               <Bell className="h-4 w-4" />
               <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs">
                 3
@@ -118,31 +110,6 @@ export function AppLayout({
               </Badge>
             </Button>
             
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Open settings">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="card-zen">
-                <DialogHeader>
-                  <DialogTitle className="heading-zen">API Configuration</DialogTitle>
-                  <DialogDescription className="text-zen">Configure your RecAI API settings</DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSaveSettings} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="baseUrl" className="text-sm font-medium">API Base URL</Label>
-                    <Input id="baseUrl" name="baseUrl" defaultValue={getBaseUrl()} className="focus:ring-2 focus:ring-primary" aria-describedby="baseUrl-desc" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="token" className="text-sm font-medium">Bearer Token</Label>
-                    <Input id="token" name="token" defaultValue={getToken()} placeholder="test-user-123" className="focus:ring-2 focus:ring-primary" aria-describedby="token-desc" />
-                    <p id="token-desc" className="text-xs text-muted-foreground">Your API authentication token</p>
-                  </div>
-                  <Button type="submit" className="btn-zen w-full">Save Settings</Button>
-                </form>
-              </DialogContent>
-            </Dialog>
 
             {/* User Menu with Settings Link */}
             <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border/50">
@@ -157,7 +124,7 @@ export function AppLayout({
               </div>
               
               <Link to="/settings">
-                <Button variant="ghost" size="icon" aria-label="Settings">
+                <Button variant="ghost" size="icon" aria-label="Settings" className="hidden sm:inline-flex">
                   <Settings className="h-4 w-4" />
                 </Button>
               </Link>
@@ -167,7 +134,7 @@ export function AppLayout({
                 size="icon"
                 onClick={() => signOut()}
                 aria-label="Sign out"
-                className="hover:bg-destructive/10 hover:text-destructive"
+                className="hidden sm:inline-flex hover:bg-destructive/10 hover:text-destructive"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
