@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 export default function Dashboard() {
   const [books, setBooks] = useState<any[]>([]);
   const [budgetData, setBudgetData] = useState<any>(null);
+  const [reports, setReports] = useState<any>(null);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +27,7 @@ export default function Dashboard() {
       if (instancesResponse?.instances) {
         setBooks(instancesResponse.instances);
         
-        // Load budget data for first book
+        // Load budget data and reports for first book
         if (instancesResponse.instances.length > 0) {
           const firstBookId = instancesResponse.instances[0].id;
           try {
@@ -34,6 +35,17 @@ export default function Dashboard() {
             setBudgetData(budgets);
           } catch (e) {
             console.log("No budget data available");
+          }
+          try {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), now.getMonth(), 1);
+            const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const startStr = start.toISOString().split("T")[0];
+            const endStr = end.toISOString().split("T")[0];
+            const rep = await getReports(firstBookId, { report_type: "summary", start_date: startStr, end_date: endStr });
+            setReports(rep);
+          } catch (e) {
+            console.log("No reports available");
           }
         }
       }
@@ -64,6 +76,16 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  // Derived metrics for tiles
+  const monthSpent = Number(reports?.[0]?.total_spent || 0);
+  const txCount = Number(reports?.[0]?.top_items?.length || 0);
+  const avgTxn = txCount ? monthSpent / txCount : 0;
+  const budgetTotals = (budgetData?.details || []).reduce(
+    (acc: any, b: any) => ({ spent: acc.spent + (b.spent || 0), limit: acc.limit + (b.limit || 0) }),
+    { spent: 0, limit: 0 }
+  );
+  const budgetPercent = budgetTotals.limit ? Math.round((budgetTotals.spent / budgetTotals.limit) * 100) : 0;
 
   return (
     <div className="container py-8 space-y-8">
@@ -100,10 +122,10 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$1,250.75</div>
+            <div className="text-2xl font-bold">${monthSpent.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="inline h-3 w-3 mr-1" />
-              +12% from last month
+              This month
             </p>
           </CardContent>
         </Card>
@@ -114,21 +136,21 @@ export default function Dashboard() {
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">85%</div>
+            <div className="text-2xl font-bold">{budgetPercent}%</div>
             <p className="text-xs text-muted-foreground">Of monthly budget used</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Savings Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">Avg/Transaction</CardTitle>
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">23%</div>
+            <div className="text-2xl font-bold">${avgTxn.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="inline h-3 w-3 mr-1" />
-              +5% from last month
+              This month
             </p>
           </CardContent>
         </Card>
