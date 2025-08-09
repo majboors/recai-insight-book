@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -76,6 +76,41 @@ function OverviewTab({ instanceId }: { instanceId: string }) {
     return labels.map((l: string, i: number) => ({ name: l, value: vals[i] }));
   }, [graphs]);
 
+  const hasData = chartData.length > 0 && !graphs?.error;
+  const hasError = reports?.[0]?.error || graphs?.error;
+
+  if (hasError) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome to Your Book</CardTitle>
+            <CardDescription>Get started by setting up your categories and uploading receipts</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>No data found for this workspace yet. Here's how to get started:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Go to the <strong>Categories</strong> tab to set up expense categories</li>
+                <li>Use the <strong>scan icon</strong> in the header to upload receipts</li>
+                <li>Set up budgets in the <strong>Budgets</strong> tab</li>
+                <li>Start tracking your expenses!</li>
+              </ul>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => window.location.hash = "#categories"} variant="default">
+                Set Up Categories
+              </Button>
+              <Button onClick={() => (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()} variant="outline">
+                Upload First Receipt
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
@@ -83,16 +118,25 @@ function OverviewTab({ instanceId }: { instanceId: string }) {
           <CardTitle>Expense Breakdown</CardTitle>
         </CardHeader>
         <CardContent className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <RTooltip />
-              <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={110}>
-                {chartData.map((_, i) => (
-                  <Cell key={i} fill={colors[i % colors.length] || "hsl(var(--primary))"} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
+          {hasData ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <RTooltip />
+                <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={110}>
+                  {chartData.map((_, i) => (
+                    <Cell key={i} fill={colors[i % colors.length] || "hsl(var(--primary))"} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground">
+              <div className="text-center">
+                <p>No expense data yet</p>
+                <p className="text-sm">Upload receipts to see your spending breakdown</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
       <Card>
