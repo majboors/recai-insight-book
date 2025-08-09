@@ -29,7 +29,9 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: "Notifications", href: "/notifications", icon: Bell },
   ];
 
-  const handleSaveSettings = (formData: FormData) => {
+  const handleSaveSettings = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     const token = formData.get("token") as string;
     const baseUrl = formData.get("baseUrl") as string;
     
@@ -78,7 +80,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <DialogTitle>API Configuration</DialogTitle>
                   <DialogDescription>Configure your API settings</DialogDescription>
                 </DialogHeader>
-                <form action={handleSaveSettings} className="space-y-4">
+                <form onSubmit={handleSaveSettings} className="space-y-4">
                   <div>
                     <Label htmlFor="baseUrl">API Base URL</Label>
                     <Input id="baseUrl" name="baseUrl" defaultValue={getBaseUrl()} />

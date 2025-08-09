@@ -40,7 +40,9 @@ export default function BookManagement() {
     }
   };
 
-  const handleCreateBook = async (formData: FormData) => {
+  const handleCreateBook = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
 
@@ -61,7 +63,9 @@ export default function BookManagement() {
     }
   };
 
-  const handleEditBook = async (formData: FormData) => {
+  const handleEditBook = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
 
@@ -139,7 +143,7 @@ export default function BookManagement() {
               <DialogTitle>Create New Book</DialogTitle>
               <DialogDescription>Create a new expense tracking workspace</DialogDescription>
             </DialogHeader>
-            <form action={handleCreateBook} className="space-y-4">
+            <form onSubmit={handleCreateBook} className="space-y-4">
               <div>
                 <Label htmlFor="name">Book Name</Label>
                 <Input id="name" name="name" placeholder="e.g., Personal Expenses" required />
@@ -238,7 +242,7 @@ export default function BookManagement() {
             <DialogTitle>Edit Book</DialogTitle>
             <DialogDescription>Update your book details</DialogDescription>
           </DialogHeader>
-          <form action={handleEditBook} className="space-y-4">
+          <form onSubmit={handleEditBook} className="space-y-4">
             <div>
               <Label htmlFor="edit-name">Book Name</Label>
               <Input 
