@@ -9,6 +9,7 @@ import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, X } from 
 import { Link, useLocation } from "react-router-dom";
 import { getToken, setToken, getBaseUrl, setBaseUrl } from "@/lib/recai";
 import { useToast } from "@/hooks/use-toast";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
   const { toast } = useToast();
-  const [showChatWidget, setShowChatWidget] = useState(false);
+  
   const [currentBook, setCurrentBook] = useState("personal-expenses");
   
   const navigation = [
@@ -129,31 +130,8 @@ export function AppLayout({ children }: AppLayoutProps) {
         </main>
       </div>
 
-      {/* Floating Chat Widget */}
-      {showChatWidget && (
-        <div className="fixed bottom-4 right-4 w-80 h-96 bg-card border rounded-lg shadow-lg z-50">
-          <div className="flex items-center justify-between p-4 border-b">
-            <h3 className="font-semibold">AI Assistant</h3>
-            <Button variant="ghost" size="icon" onClick={() => setShowChatWidget(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="p-4 text-sm text-muted-foreground">
-            Chat interface coming soon...
-          </div>
-        </div>
-      )}
-
-      {/* Chat Toggle Button */}
-      {!showChatWidget && (
-        <Button
-          onClick={() => setShowChatWidget(true)}
-          className="fixed bottom-4 right-4 rounded-full h-12 w-12"
-          size="icon"
-        >
-          <MessageCircle className="h-5 w-5" />
-        </Button>
-      )}
+      {/* Global Chat Widget */}
+      <ChatWidget />
     </div>
   );
 }
