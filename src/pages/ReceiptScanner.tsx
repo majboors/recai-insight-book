@@ -20,6 +20,7 @@ export default function ReceiptScanner() {
   const [loading, setLoading] = useState(false);
   const [editingItem, setEditingItem] = useState<number | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Receipt Scanner | AI Receipt Analyzer";
@@ -112,6 +113,18 @@ export default function ReceiptScanner() {
     }
   };
 
+  const handleDeleteItem = (index: number) => {
+    if (!scanResult?.items) return;
+    if (!confirm("Remove this item from the extracted list?")) return;
+    const updated = scanResult.items.filter((_: any, i: number) => i !== index);
+    setScanResult({ ...scanResult, items: updated });
+    if (editingItem !== null) {
+      if (editingItem === index) setEditingItem(null);
+      else if (editingItem > index) setEditingItem(editingItem - 1);
+    }
+    toast({ title: "Item removed", description: "The item was removed from this scan." });
+  };
+
   const resetScanner = () => {
     setUploadedFile(null);
     setPreviewUrl(null);
@@ -128,10 +141,20 @@ export default function ReceiptScanner() {
           <p className="text-muted-foreground">Scan and process receipts with AI-powered recognition</p>
         </div>
         {scanResult && (
-          <Button onClick={resetScanner} variant="outline">
-            <Plus className="h-4 w-4 mr-2" />
-            Scan Another
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1); else navigate('/analytics');
+              }}
+            >
+              <Check className="h-4 w-4 mr-2" />
+              Done
+            </Button>
+            <Button onClick={resetScanner} variant="outline">
+              <Plus className="h-4 w-4 mr-2" />
+              Scan Another
+            </Button>
+          </div>
         )}
       </div>
 
@@ -267,13 +290,24 @@ export default function ReceiptScanner() {
                               ${item.price?.toFixed(2)} • Category: {item.category_id || "Unknown"}
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setEditingItem(index)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setEditingItem(index)}
+                              aria-label="Edit item"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteItem(index)}
+                              aria-label="Delete item"
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>
