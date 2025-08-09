@@ -6,10 +6,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, Menu } from "lucide-react";
+import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, Menu, LogOut, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { getToken, setToken, getBaseUrl, setBaseUrl } from "@/lib/recai";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -18,9 +19,8 @@ export function AppLayout({
   children
 }: AppLayoutProps) {
   const location = useLocation();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { user, signOut } = useAuth();
   const [currentBook, setCurrentBook] = useState("personal-expenses");
   const navigation = [{
     name: "Dashboard",
@@ -137,6 +137,28 @@ export function AppLayout({
                 </form>
               </DialogContent>
             </Dialog>
+
+            {/* User Menu */}
+            <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border/50">
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                  <User className="h-4 w-4 text-primary" />
+                </div>
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">{user?.email?.split('@')[0]}</p>
+                  <p className="text-xs text-muted-foreground">User Account</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => signOut()}
+                aria-label="Sign out"
+                className="hover:bg-destructive/10 hover:text-destructive"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
