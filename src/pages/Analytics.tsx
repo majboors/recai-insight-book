@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget } from "@/lib/recai";
+import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget, getInstance } from "@/lib/recai";
 import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +26,10 @@ export default function Analytics() {
   const [showBudgetForm, setShowBudgetForm] = useState(false);
   const [newBudgetCategoryId, setNewBudgetCategoryId] = useState("");
   const [newBudgetLimit, setNewBudgetLimit] = useState("");
+  // For editing budgets
+  const [categories, setCategories] = useState<any[]>([]);
+  const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null);
+  const [editLimit, setEditLimit] = useState<string>("");
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -80,6 +84,10 @@ export default function Analytics() {
       // Load budgets
       const budgetData = await getBudgets(selectedBook);
       setBudgets(budgetData);
+
+      // Load categories for budget editing
+      const instanceData: any = await getInstance(selectedBook);
+      setCategories(instanceData?.categories || []);
     } catch (error) {
       console.error("Failed to load analytics data:", error);
     }
@@ -122,6 +130,39 @@ export default function Analytics() {
     } catch (error) {
       console.error("Failed to export CSV:", error);
     }
+  };
+
+  // Budget editing helpers
+  const startEditBudget = (categoryName: string, currentLimit: number) => {
+    setEditingCategoryName(categoryName);
+    setEditLimit(typeof currentLimit === 'number' ? currentLimit.toString() : "");
+  };
+
+  const saveEditBudget = async (categoryName: string) => {
+    if (!selectedBook || !editLimit) {
+      toast({ title: "Missing information", description: "Enter a limit to update.", variant: "destructive" });
+      return;
+    }
+    const cat = categories.find((c: any) => (c.name || "").toLowerCase() === (categoryName || "").toLowerCase());
+    if (!cat?.id) {
+      toast({ title: "Category not found", description: "Could not resolve category id for update.", variant: "destructive" });
+      return;
+    }
+    try {
+      await upsertBudget(selectedBook, { category_id: cat.id, limit: parseFloat(editLimit) });
+      const budgetData = await getBudgets(selectedBook);
+      setBudgets(budgetData);
+      setEditingCategoryName(null);
+      setEditLimit("");
+      toast({ title: "Budget updated", description: `${categoryName} budget saved.` });
+    } catch (error: any) {
+      toast({ title: "Update failed", description: error?.message || "Unknown error", variant: "destructive" });
+    }
+  };
+
+  const cancelEditBudget = () => {
+    setEditingCategoryName(null);
+    setEditLimit("");
   };
 
   // Safely get valid transactions with amount checks
@@ -377,9 +418,16 @@ export default function Analytics() {
                         <div key={index} className="space-y-3">
                           <div className="flex justify-between items-center">
                             <h3 className="font-medium">{budget.category}</h3>
-                            <Badge variant={isOverBudget ? "destructive" : "secondary"}>
-                              {percentage.toFixed(0)}%
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge variant={isOverBudget ? "destructive" : "secondary"}>
+                                {percentage.toFixed(0)}%
+                              </Badge>
+                              {editingCategoryName !== budget.category && (
+                                <Button size="sm" variant="outline" onClick={() => startEditBudget(budget.category, budget.limit)}>
+                                  Edit
+                                </Button>
+                              )}
+                            </div>
                           </div>
                           <div className="space-y-2">
                             <div className="flex justify-between text-sm text-muted-foreground">
@@ -399,6 +447,20 @@ export default function Analytics() {
                               </span>
                             </div>
                           </div>
+                          {editingCategoryName === budget.category && (
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={editLimit}
+                                onChange={(e) => setEditLimit(e.target.value)}
+                                placeholder="Enter new limit"
+                                className="max-w-[200px]"
+                              />
+                              <Button size="sm" onClick={() => saveEditBudget(budget.category)}>Save</Button>
+                              <Button size="sm" variant="outline" onClick={cancelEditBudget}>Cancel</Button>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
