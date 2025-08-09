@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -13,36 +14,69 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
   
   const { signUp, signIn, user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    document.title = 'Authentication | Receipt Zen';
+useEffect(() => {
+  document.title = 'Authentication | Receipt Zen';
 
-    // Wait for auth to settle before redirecting
-    if (authLoading) return;
-    
-    // Redirect if already authenticated
-    if (user) {
-      const key = `onboarding_complete:${user.id}`;
-      const legacy = localStorage.getItem('onboarding_complete') === 'true';
-      const local = localStorage.getItem(key) === 'true' || legacy;
-      const meta = Boolean((user as any)?.user_metadata?.onboarding_complete);
+  // Wait for auth to settle before redirecting
+  if (authLoading) return;
+  
+  // Redirect if already authenticated
+  if (user) {
+    const key = `onboarding_complete:${user.id}`;
+    const legacy = localStorage.getItem('onboarding_complete') === 'true';
+    const local = localStorage.getItem(key) === 'true' || legacy;
+    const meta = Boolean((user as any)?.user_metadata?.onboarding_complete);
 
-      // Migrate legacy flag if present
-      if (legacy && !localStorage.getItem(key)) {
-        localStorage.setItem(key, 'true');
-      }
-
-      if (local || meta) {
-        navigate('/', { replace: true });
-      } else {
-        navigate('/onboarding', { replace: true });
-      }
+    // Migrate legacy flag if present
+    if (legacy && !localStorage.getItem(key)) {
+      localStorage.setItem(key, 'true');
     }
-  }, [user, authLoading, navigate]);
+
+    if (local || meta) {
+      navigate('/', { replace: true });
+    } else {
+      navigate('/onboarding', { replace: true });
+    }
+  }
+}, [user, authLoading, navigate]);
+
+// Handle token hashes after email confirmation / magic link
+useEffect(() => {
+  const hash = window.location.hash || '';
+  const search = window.location.search || '';
+  const hasTokens = hash.includes('access_token') || hash.includes('refresh_token') || hash.includes('type=signup') || search.includes('code=');
+  if (!hasTokens) return;
+
+  setFinalizing(true);
+  // Defer to allow Supabase to process URL fragments internally
+  setTimeout(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      // Clean URL hash
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      if (session?.user) {
+        const u = session.user;
+        const key = `onboarding_complete:${u.id}`;
+        const legacy = localStorage.getItem('onboarding_complete') === 'true';
+        const local = localStorage.getItem(key) === 'true' || legacy;
+        if (legacy && !localStorage.getItem(key)) {
+          localStorage.setItem(key, 'true');
+        }
+        navigate(local ? '/' : '/onboarding', { replace: true });
+      } else {
+        setFinalizing(false);
+      }
+    } catch {
+      setFinalizing(false);
+    }
+  }, 0);
+}, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,87 +140,98 @@ export default function Auth() {
     }
   };
 
+if (finalizing || authLoading) {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-muted">
-        <CardHeader className="space-y-3 text-center">
-          <CardTitle className="text-2xl font-light text-foreground">
-            {isSignUp ? 'Create Account' : 'Welcome Back'}
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            {isSignUp ? 'Sign up to get started with Receipt Zen' : 'Sign in to your account'}
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="displayName" className="text-sm font-medium">
-                  Display Name
-                </Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="border-muted focus:border-primary"
-                  placeholder="Your name"
-                />
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border-muted focus:border-primary"
-                placeholder="your@email.com"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border-muted focus:border-primary"
-                placeholder="••••••••"
-                required
-                minLength={6}
-              />
-            </div>
-            
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <Button
-              variant="ghost"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <p className="text-sm text-muted-foreground">Finishing sign-in...</p>
+      </div>
     </div>
   );
+}
+
+return (
+  <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <Card className="w-full max-w-md border-muted">
+      <CardHeader className="space-y-3 text-center">
+        <CardTitle className="text-2xl font-light text-foreground">
+          {isSignUp ? 'Create Account' : 'Welcome Back'}
+        </CardTitle>
+        <CardDescription className="text-muted-foreground">
+          {isSignUp ? 'Sign up to get started with Receipt Zen' : 'Sign in to your account'}
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {isSignUp && (
+            <div className="space-y-2">
+              <Label htmlFor="displayName" className="text-sm font-medium">
+                Display Name
+              </Label>
+              <Input
+                id="displayName"
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="border-muted focus:border-primary"
+                placeholder="Your name"
+              />
+            </div>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border-muted focus:border-primary"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm font-medium">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border-muted focus:border-primary"
+              placeholder="••••••••"
+              required
+              minLength={6}
+            />
+          </div>
+          
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loading}
+          >
+            {loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
+          </Button>
+        </form>
+        
+        <div className="mt-6 text-center">
+          <Button
+            variant="ghost"
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+);
 }

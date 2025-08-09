@@ -29,7 +29,15 @@ export function useAuth() {
   }, []);
 
   const signUp = async (email: string, password: string, displayName?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}/auth`;
+
+    // Clean up any existing auth state to avoid limbo
+    cleanupAuthState();
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (_) {
+      // ignore
+    }
     
     const { error } = await supabase.auth.signUp({
       email,
@@ -43,6 +51,13 @@ export function useAuth() {
   };
 
   const signIn = async (email: string, password: string) => {
+    // Clean up any existing auth state to avoid limbo
+    cleanupAuthState();
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (_) {
+      // ignore
+    }
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
