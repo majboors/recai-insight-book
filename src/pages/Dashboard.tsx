@@ -242,7 +242,7 @@ export default function Dashboard() {
               </Button>
             </Link>
             <Link to="/books">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex-col gap-2" data-tour-id="create-book-action">
                 <Plus className="h-6 w-6" />
                 Create Book
               </Button>

@@ -10,6 +10,25 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
   const [index, setIndex] = useState(0);
   useEffect(() => { if (!open) setIndex(0); }, [open]);
 
+  // Lock scroll only while tour is open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
+  // Ensure target is visible and reflow on step changes
+  useEffect(() => {
+    if (!open) return;
+    const sel = steps[index]?.selector;
+    if (!sel) return;
+    const el = document.querySelector(sel) as HTMLElement | null;
+    if (el) {
+      try { el.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }); } catch {}
+    }
+  }, [open, index, steps]);
+
   const targetRect = useMemo(() => {
     if (!open) return null;
     const sel = steps[index]?.selector;
