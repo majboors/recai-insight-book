@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { uploadReceipt, getReceipt, patchReceipt, listInstances } from "@/lib/recai";
 import { Camera, Upload, Check, Edit, Trash2, Plus, Image } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 export default function ReceiptScanner() {
   const [books, setBooks] = useState<any[]>([]);
