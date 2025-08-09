@@ -2,6 +2,12 @@
 import { supabase } from "@/integrations/supabase/client";
 export const API_BASE_DEFAULT = "https://recai.applytocollege.pk";
 
+// Backward-compat exports (no-ops or fallbacks) to avoid runtime import errors
+export const getBaseUrl = () => API_BASE_DEFAULT;
+export const getToken = () => "";
+export const setBaseUrl = (_: string) => {};
+export const setToken = (_: string) => {};
+
 let cachedConfig: { token: string; base: string } | null = null;
 
 export function clearRecaiConfigCache() {
