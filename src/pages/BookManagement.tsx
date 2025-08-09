@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, BookOpen, Settings, Trash2, BarChart3, Camera } from "lucide-react";
+import { Plus, BookOpen, Settings, Trash2, BarChart3, Camera, Copy } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -219,7 +219,15 @@ export default function BookManagement() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-xs text-muted-foreground font-mono">
+                <div 
+                  className="text-xs text-muted-foreground font-mono cursor-pointer hover:text-primary hover:bg-accent/20 rounded p-2 -m-2 transition-colors flex items-center gap-1"
+                  onClick={() => {
+                    navigator.clipboard.writeText(book.id);
+                    toast({ title: "Copied!", description: "Book ID copied to clipboard" });
+                  }}
+                  title="Click to copy full ID"
+                >
+                  <Copy className="h-3 w-3" />
                   <p>ID: {book.id.slice(0, 8)}...</p>
                 </div>
                 
