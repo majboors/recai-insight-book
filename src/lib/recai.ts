@@ -118,6 +118,25 @@ export const getBudgets = (id: string, qs: Record<string, string> = {}) => {
   return recaiFetch(`/v1/instances/${id}/budgets${query ? `?${query}` : ""}`);
 };
 
+// Manual Transaction Management
+export const getTransactionsDetailed = (id: string, params: { limit?: number; offset?: number } = {}) => {
+  const query = new URLSearchParams(
+    Object.entries({ limit: params.limit ?? 50, offset: params.offset ?? 0 }) as any
+  ).toString();
+  return recaiFetch(`/v1/instances/${id}/transactions/detailed?${query}`);
+};
+
+export const addManualTransaction = (
+  id: string,
+  body: { text: string; amount: number; category_id: number; date?: string; receipt_id?: string }
+) => recaiRequest("POST", `/v1/instances/${id}/transactions`, body);
+
+export const deleteTransactionByIndex = (id: string, index: number) =>
+  recaiRequest("DELETE", `/v1/instances/${id}/transactions/${index}`);
+
+export const deleteReceiptTransactions = (id: string, receiptId: string) =>
+  recaiRequest("DELETE", `/v1/instances/${id}/receipts/${receiptId}/transactions`);
+
 // Reports / Graphs / Export
 export const getReports = (id: string, qs: Record<string, string> = {}) => {
   const query = new URLSearchParams(qs).toString();
