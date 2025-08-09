@@ -7,17 +7,24 @@ import { Progress } from "@/components/ui/progress";
 import { listInstances, getBudgets, getReports } from "@/lib/recai";
 import { TrendingUp, TrendingDown, DollarSign, Receipt, AlertTriangle, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import { TourOverlay } from "@/components/guided/TourOverlay";
 export default function Dashboard() {
   const [books, setBooks] = useState<any[]>([]);
   const [budgetData, setBudgetData] = useState<any>(null);
   const [reports, setReports] = useState<any>(null);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showTour, setShowTour] = useState<boolean>(false);
+  const tourSteps = [
+    { selector: "[data-tour-id='scan-receipt']", title: "Scan Receipts", description: "Quickly scan receipts to extract transactions." },
+    { selector: "[data-tour-id='books-list']", title: "Your Books", description: "Workspaces where your receipts and budgets live." },
+    { selector: "[data-tour-id='create-book-action']", title: "Create a Book", description: "Start by creating a book to organize expenses." },
+  ];
 
   useEffect(() => {
     document.title = "Dashboard | AI Receipt Analyzer";
     loadDashboardData();
+    if (!localStorage.getItem("tour_seen_dashboard")) setShowTour(true);
   }, []);
 
   const loadDashboardData = async () => {
@@ -89,6 +96,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-zen">
+      <TourOverlay open={showTour} steps={tourSteps} onClose={() => { localStorage.setItem("tour_seen_dashboard","1"); setShowTour(false); }} />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-2">
@@ -96,7 +104,7 @@ export default function Dashboard() {
           <p className="text-zen">Overview of your expense tracking across all books</p>
         </div>
         <Link to="/scanner">
-          <Button className="btn-zen">
+          <Button className="btn-zen" data-tour-id="scan-receipt">
             <Plus className="h-4 w-4 mr-2" />
             Scan Receipt
           </Button>
@@ -158,7 +166,7 @@ export default function Dashboard() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Books Overview */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2" data-tour-id="books-list">
           <CardHeader>
             <CardTitle>Your Books</CardTitle>
             <CardDescription>Manage your expense tracking workspaces</CardDescription>
