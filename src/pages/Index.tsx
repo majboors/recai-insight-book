@@ -1,6 +1,6 @@
 // Update this page (the content is just a fallback if you fail to update the page)
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -26,12 +26,12 @@ const Index = () => {
     onError: (e: any) => toast({ title: "Failed", description: e.message, variant: "destructive" }),
   });
 
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+
   useEffect(() => {
     document.title = "Insight Books | RecAI";
   }, []);
-
-  let name = "";
-  let desc = "";
 
   return (
     <main className="min-h-screen bg-background">
@@ -62,11 +62,11 @@ const Index = () => {
               <div className="grid gap-4 py-2">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" onChange={(e) => (name = e.target.value)} />
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="desc">Description</Label>
-                  <Input id="desc" onChange={(e) => (desc = e.target.value)} />
+                  <Input id="desc" value={desc} onChange={(e) => setDesc(e.target.value)} />
                 </div>
               </div>
               <DialogFooter>
