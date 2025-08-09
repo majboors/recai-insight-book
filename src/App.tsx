@@ -9,6 +9,7 @@ import ReceiptScanner from "./pages/ReceiptScanner";
 import Analytics from "./pages/Analytics";
 import AIChat from "./pages/AIChat";
 import Notifications from "./pages/Notifications";
+import TestApiTroubleshoot from "./pages/tests/TestApiTroubleshoot";
 import NotFound from "./pages/NotFound";
 import { AppLayout } from "@/components/AppLayout";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/analytics" element={<AppLayout><Analytics /></AppLayout>} />
           <Route path="/chat" element={<AppLayout><AIChat /></AppLayout>} />
           <Route path="/notifications" element={<AppLayout><Notifications /></AppLayout>} />
+          <Route path="/test/api-troubleshoot" element={<AppLayout><TestApiTroubleshoot /></AppLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

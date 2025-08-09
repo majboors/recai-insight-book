@@ -12,7 +12,7 @@ import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudg
 import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -241,6 +241,9 @@ export default function Analytics() {
           <Button onClick={handleExportCSV} variant="outline">
             <Download className="h-4 w-4 mr-2" />
             Export CSV
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/test/api-troubleshoot">API Test</Link>
           </Button>
         </div>
       </div>
