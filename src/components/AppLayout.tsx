@@ -11,51 +11,57 @@ import { Link, useLocation } from "react-router-dom";
 import { getToken, setToken, getBaseUrl, setBaseUrl } from "@/lib/recai";
 import { useToast } from "@/hooks/use-toast";
 import { ChatWidget } from "@/components/chat/ChatWidget";
-
 interface AppLayoutProps {
   children: React.ReactNode;
 }
-
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({
+  children
+}: AppLayoutProps) {
   const location = useLocation();
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
   const [currentBook, setCurrentBook] = useState("personal-expenses");
-  
-  const navigation = [
-    { name: "Dashboard", href: "/", icon: Home },
-    { name: "Books", href: "/books", icon: Book },
-    { name: "Scanner", href: "/scanner", icon: Camera },
-    { name: "Analytics", href: "/analytics", icon: BarChart3 },
-    { name: "Chat", href: "/chat", icon: MessageCircle },
-    { name: "Notifications", href: "/notifications", icon: Bell },
-  ];
-
+  const navigation = [{
+    name: "Dashboard",
+    href: "/",
+    icon: Home
+  }, {
+    name: "Books",
+    href: "/books",
+    icon: Book
+  }, {
+    name: "Scanner",
+    href: "/scanner",
+    icon: Camera
+  }, {
+    name: "Analytics",
+    href: "/analytics",
+    icon: BarChart3
+  }, {
+    name: "Chat",
+    href: "/chat",
+    icon: MessageCircle
+  }, {
+    name: "Notifications",
+    href: "/notifications",
+    icon: Bell
+  }];
   const handleSaveSettings = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const token = formData.get("token") as string;
     const baseUrl = formData.get("baseUrl") as string;
-    
     if (token) setToken(token);
     if (baseUrl) setBaseUrl(baseUrl);
-    
     toast({
       title: "Settings saved",
-      description: "API configuration updated successfully.",
+      description: "API configuration updated successfully."
     });
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-soft">
+  return <div className="min-h-screen bg-gradient-soft">
       {/* Skip link for accessibility */}
-      <a 
-        href="#main-content" 
-        className="skip-link"
-        aria-label="Skip to main content"
-      >
-        Skip to main content
-      </a>
+      
 
       {/* Header */}
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-40">
@@ -70,25 +76,14 @@ export function AppLayout({ children }: AppLayoutProps) {
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0">
                 <nav className="p-4 space-y-2" role="navigation" aria-label="Mobile navigation">
-                  {navigation.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = location.pathname === item.href;
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
-                          isActive 
-                            ? "bg-primary text-primary-foreground shadow-soft" 
-                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        }`}
-                        aria-current={isActive ? 'page' : undefined}
-                      >
+                  {navigation.map(item => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.href;
+                  return <Link key={item.name} to={item.href} className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${isActive ? "bg-primary text-primary-foreground shadow-soft" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`} aria-current={isActive ? 'page' : undefined}>
                         <Icon className="h-5 w-5" aria-hidden="true" />
                         <span>{item.name}</span>
-                      </Link>
-                    );
-                  })}
+                      </Link>;
+                })}
                 </nav>
               </SheetContent>
             </Sheet>
@@ -131,24 +126,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <form onSubmit={handleSaveSettings} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="baseUrl" className="text-sm font-medium">API Base URL</Label>
-                    <Input 
-                      id="baseUrl" 
-                      name="baseUrl" 
-                      defaultValue={getBaseUrl()} 
-                      className="focus:ring-2 focus:ring-primary"
-                      aria-describedby="baseUrl-desc"
-                    />
+                    <Input id="baseUrl" name="baseUrl" defaultValue={getBaseUrl()} className="focus:ring-2 focus:ring-primary" aria-describedby="baseUrl-desc" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="token" className="text-sm font-medium">Bearer Token</Label>
-                    <Input 
-                      id="token" 
-                      name="token" 
-                      defaultValue={getToken()} 
-                      placeholder="test-user-123"
-                      className="focus:ring-2 focus:ring-primary"
-                      aria-describedby="token-desc"
-                    />
+                    <Input id="token" name="token" defaultValue={getToken()} placeholder="test-user-123" className="focus:ring-2 focus:ring-primary" aria-describedby="token-desc" />
                     <p id="token-desc" className="text-xs text-muted-foreground">Your API authentication token</p>
                   </div>
                   <Button type="submit" className="btn-zen w-full">Save Settings</Button>
@@ -163,25 +145,14 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-64 border-r border-border/50 bg-card/50 backdrop-blur-sm h-[calc(100vh-4rem)]">
           <nav className="p-4 space-y-2" role="navigation" aria-label="Main navigation">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                    isActive 
-                      ? "bg-primary text-primary-foreground shadow-soft transform scale-[1.02]" 
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:transform hover:scale-[1.01]"
-                  }`}
-                  aria-current={isActive ? 'page' : undefined}
-                >
+            {navigation.map(item => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.href;
+            return <Link key={item.name} to={item.href} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive ? "bg-primary text-primary-foreground shadow-soft transform scale-[1.02]" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:transform hover:scale-[1.01]"}`} aria-current={isActive ? 'page' : undefined}>
                   <Icon className="h-5 w-5" aria-hidden="true" />
                   <span className="font-medium">{item.name}</span>
-                </Link>
-              );
-            })}
+                </Link>;
+          })}
           </nav>
         </aside>
 
@@ -195,6 +166,5 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Global Chat Widget */}
       <ChatWidget />
-    </div>
-  );
+    </div>;
 }
