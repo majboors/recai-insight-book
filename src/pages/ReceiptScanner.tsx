@@ -322,6 +322,18 @@ export default function ReceiptScanner() {
                     ${scanResult.items?.reduce((sum: number, item: any) => sum + (item.price || 0), 0).toFixed(2)}
                   </span>
                 </div>
+
+                <Separator />
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => {
+                      if (window.history.length > 1) navigate(-1); else navigate('/analytics');
+                    }}
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Done
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
