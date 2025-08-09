@@ -5,7 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import BookDashboard from "./pages/BookDashboard";
+import TestHealth from "./pages/tests/TestHealth";
+import TestInstances from "./pages/tests/TestInstances";
+import TestCategories from "./pages/tests/TestCategories";
+import TestReceipts from "./pages/tests/TestReceipts";
+import TestTransBudgets from "./pages/tests/TestTransBudgets";
+import TestReports from "./pages/tests/TestReportsGraphsExport";
+import TestInsights from "./pages/tests/TestInsightsAdvice";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +23,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/books/:id" element={<BookDashboard />} />
+          <Route path="/test/health" element={<TestHealth />} />
+          <Route path="/test/instances" element={<TestInstances />} />
+          <Route path="/test/categories" element={<TestCategories />} />
+          <Route path="/test/receipts" element={<TestReceipts />} />
+          <Route path="/test/transactions-budgets" element={<TestTransBudgets />} />
+          <Route path="/test/reports-graphs-export" element={<TestReports />} />
+          <Route path="/test/insights-advice" element={<TestInsights />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,106 +1,52 @@
-// Update this page (the content is just a fallback if you fail to update the page)
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createInstance, listInstances } from "@/lib/recai";
 import { Link } from "react-router-dom";
 import ApiTokenDialog from "@/components/ApiTokenDialog";
-import { Activity } from "lucide-react";
 
-const Index = () => {
-  const { toast } = useToast();
-  const qc = useQueryClient();
-  const { data, isLoading } = useQuery({ queryKey: ["instances"], queryFn: listInstances });
-  const create = useMutation({
-    mutationFn: (payload: { name: string; description?: string }) => createInstance(payload),
-    onSuccess: () => {
-      toast({ title: "Book created" });
-      qc.invalidateQueries({ queryKey: ["instances"] });
-    },
-    onError: (e: any) => toast({ title: "Failed", description: e.message, variant: "destructive" }),
-  });
+const links = [
+  { to: "/test/health", title: "Health", desc: "GET /v1/health" },
+  { to: "/test/instances", title: "Instances", desc: "Workspace management CRUD" },
+  { to: "/test/categories", title: "Categories", desc: "Initialize, add, rename, delete" },
+  { to: "/test/receipts", title: "Receipts", desc: "Upload, get, patch" },
+  { to: "/test/transactions-budgets", title: "Transactions & Budgets", desc: "List transactions, budgets" },
+  { to: "/test/reports-graphs-export", title: "Reports / Graphs / Export", desc: "Numeric reports, charts, CSV" },
+  { to: "/test/insights-advice", title: "Insights / Advice / Chat", desc: "AI endpoints" },
+];
 
-  const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
-
-  useEffect(() => {
-    document.title = "Insight Books | RecAI";
-  }, []);
-
+export default function Index() {
+  useEffect(() => { document.title = "API Test Console | Receipt Spending Analyzer"; }, []);
   return (
     <main className="min-h-screen bg-background">
       <header className="border-b">
         <div className="container flex items-center justify-between h-16">
-          <h1 className="text-2xl font-semibold">Insight Books</h1>
-          <div className="flex items-center gap-2">
-            <ApiTokenDialog />
-          </div>
+          <h1 className="text-2xl font-semibold">Receipt Spending Analyzer – API Test Console</h1>
+          <ApiTokenDialog />
         </div>
       </header>
-
       <section className="container py-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-medium">Your Books</h2>
-            <p className="text-sm text-muted-foreground">Create a book (workspace) and start tracking.</p>
-          </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Create Book</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>New Book</DialogTitle>
-                <DialogDescription>Name and describe your book.</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-2">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="desc">Description</Label>
-                  <Input id="desc" value={desc} onChange={(e) => setDesc(e.target.value)} />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={() => create.mutate({ name, description: desc })} disabled={create.isPending}>
-                  {create.isPending ? "Creating..." : "Create"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {isLoading && (
-            <Card><CardHeader><CardTitle>Loading...</CardTitle></CardHeader></Card>
-          )}
-          {data?.instances?.map((inst: any) => (
-            <Card key={inst.id} className="transition hover:shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg">{inst.name}</CardTitle>
-                <CardDescription>{inst.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Status: {inst.status || "active"}</p>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button asChild variant="secondary"><Link to={`/books/${inst.id}`}>Open Dashboard</Link></Button>
-                <div className="flex items-center gap-1 text-muted-foreground"><Activity className="h-4 w-4" /> API</div>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Start</CardTitle>
+            <CardDescription>Set your API Base URL and Bearer token, then open a test page.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {links.map((l) => (
+                <Card key={l.to} className="border-muted-foreground/20">
+                  <CardHeader>
+                    <CardTitle className="text-base">{l.title}</CardTitle>
+                    <CardDescription>{l.desc}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild variant="secondary"><Link to={l.to}>Open</Link></Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </section>
     </main>
   );
-};
-
-export default Index;
+}

@@ -35,6 +35,17 @@ async function recaiFetch<T>(path: string, init: RequestInit = {}, asBlob = fals
   return asBlob ? (await res.blob()) : await res.json();
 }
 
+export function recaiRequest<T>(method: string, path: string, body?: any, options?: { asBlob?: boolean }) {
+  const asBlob = options?.asBlob ?? false;
+  const init: RequestInit = { method };
+  if (body instanceof FormData) {
+    init.body = body;
+  } else if (body !== undefined) {
+    init.body = JSON.stringify(body);
+  }
+  return recaiFetch<T>(path, init, asBlob);
+}
+
 // Health
 export const health = () => recaiFetch<{ status: string }>(`/v1/health`);
 
