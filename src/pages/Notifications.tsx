@@ -20,6 +20,12 @@ interface Notification {
   read: boolean;
 }
 
+// API response types
+type BudgetDetail = { category: string; limit: number; spent: number; remaining: number };
+type BudgetsResponse = { details?: BudgetDetail[] };
+type InsightsResponse = { trend?: string; predicted_spending?: number; confidence?: number };
+type ReportsResponse = { weekly_spend?: { week: string; total: number }[] };
+
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [books, setBooks] = useState<any[]>([]);
@@ -53,7 +59,7 @@ export default function Notifications() {
     for (const book of bookList) {
       try {
         // Generate budget alerts
-        const budgets = await getBudgets(book.id);
+        const budgets = (await getBudgets(book.id)) as BudgetsResponse;
         if (budgets?.details) {
           for (const budget of budgets.details) {
             const percentage = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;
@@ -75,7 +81,7 @@ export default function Notifications() {
         }
 
         // Generate spending insights
-        const insights = await getInsights(book.id, { insight_type: "spending_forecast" });
+        const insights = (await getInsights(book.id, { insight_type: "spending_forecast" })) as InsightsResponse;
         if (insights?.trend === "increasing" || (insights?.predicted_spending && insights?.confidence > 0.7)) {
           allNotifications.push({
             id: `insight-${book.id}`,
@@ -93,7 +99,7 @@ export default function Notifications() {
         }
 
         // Generate weekly summary
-        const reports = await getReports(book.id, { period: "weekly" });
+        const reports = (await getReports(book.id, { period: "weekly" })) as ReportsResponse;
         if (reports?.weekly_spend?.length > 0) {
           const latestWeek = reports.weekly_spend[reports.weekly_spend.length - 1];
           if (latestWeek?.total > 0) {
