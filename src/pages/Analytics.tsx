@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { listInstances, getReports, getGraphs, getBudgets, exportCSV } from "@/lib/recai";
+import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget } from "@/lib/recai";
 import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
+import { useToast } from "@/hooks/use-toast";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -18,6 +21,10 @@ export default function Analytics() {
   const [chartData, setChartData] = useState<any>(null);
   const [budgets, setBudgets] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showBudgetForm, setShowBudgetForm] = useState(false);
+  const [newBudgetCategoryId, setNewBudgetCategoryId] = useState("");
+  const [newBudgetLimit, setNewBudgetLimit] = useState("");
+  const { toast } = useToast();
 
   useEffect(() => {
     document.title = "Analytics | AI Receipt Analyzer";
@@ -70,6 +77,25 @@ export default function Analytics() {
       setBudgets(budgetData);
     } catch (error) {
       console.error("Failed to load analytics data:", error);
+    }
+  };
+
+  const handleSaveBudget = async () => {
+    if (!selectedBook || !newBudgetCategoryId || !newBudgetLimit) {
+      toast({ title: "Missing information", description: "Enter category ID and limit to create a budget." });
+      return;
+    }
+    try {
+      await upsertBudget(selectedBook, {
+        category_id: newBudgetCategoryId,
+        limit: parseFloat(newBudgetLimit)
+      });
+      const budgetData = await getBudgets(selectedBook);
+      setBudgets(budgetData);
+      setShowBudgetForm(false);
+      toast({ title: "Budget saved", description: "Your budget was created successfully." });
+    } catch (error: any) {
+      toast({ title: "Failed to save budget", description: error?.message || "Unknown error", variant: "destructive" });
     }
   };
 
@@ -354,7 +380,24 @@ export default function Analytics() {
                 ) : (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground mb-4">No budgets set</p>
-                    <Button>Set Your First Budget</Button>
+                    {!showBudgetForm ? (
+                      <Button onClick={() => setShowBudgetForm(true)}>Set Your First Budget</Button>
+                    ) : (
+                      <div className="mx-auto max-w-sm text-left space-y-3">
+                        <div className="grid gap-2">
+                          <Label htmlFor="catId">Category ID</Label>
+                          <Input id="catId" value={newBudgetCategoryId} onChange={(e) => setNewBudgetCategoryId(e.target.value)} placeholder="e.g., 1" />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="limit">Monthly Limit</Label>
+                          <Input id="limit" type="number" step="0.01" value={newBudgetLimit} onChange={(e) => setNewBudgetLimit(e.target.value)} placeholder="500.00" />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={handleSaveBudget}>Save Budget</Button>
+                          <Button variant="outline" onClick={() => setShowBudgetForm(false)}>Cancel</Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
