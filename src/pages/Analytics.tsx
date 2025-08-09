@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget, getInstance } from "@/lib/recai";
+import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget, getInstance, addCategory, renameCategory, removeCategory } from "@/lib/recai";
 import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,10 @@ export default function Analytics() {
   const [categories, setCategories] = useState<any[]>([]);
   const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null);
   const [editLimit, setEditLimit] = useState<string>("");
+  // Category management state
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [renamingCatId, setRenamingCatId] = useState<number | null>(null);
+  const [renameValue, setRenameValue] = useState("");
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -165,19 +169,23 @@ export default function Analytics() {
     setEditLimit("");
   };
 
-  // Safely get valid transactions with amount checks
-  const getValidTransactions = () => {
-    if (!reports?.top_items) return [];
-    return reports.top_items.filter((item: any) => 
-      item && typeof item.amount === 'number' && !isNaN(item.amount)
-    );
+  // Safely map top items from API into a unified shape
+  const getTopItems = () => {
+    const items = reports?.top_items || [];
+    return items
+      .map((it: any) => ({
+        text: it.text || it.item || it.name || "Unknown Item",
+        category: it.category || it.category_name || "Uncategorized",
+        amount: typeof it.amount === 'number' ? it.amount : (typeof it.total_spent === 'number' ? it.total_spent : 0)
+      }))
+      .filter((i: any) => typeof i.amount === 'number' && !isNaN(i.amount));
   };
 
   // Calculate average transaction safely
   const getAverageTransaction = () => {
-    const validItems = getValidTransactions();
-    if (!validItems.length || !reports?.total_spent) return 0;
-    return reports.total_spent / validItems.length;
+    const items = getTopItems();
+    if (!items.length || !reports?.total_spent) return 0;
+    return reports.total_spent / items.length;
   };
 
   if (loading) {
@@ -241,6 +249,7 @@ export default function Analytics() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="charts">Charts</TabsTrigger>
             <TabsTrigger value="budgets">Budgets</TabsTrigger>
+            <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="trends">Trends</TabsTrigger>
           </TabsList>
 
@@ -270,7 +279,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {getValidTransactions().length}
+                    {getTopItems().length}
                   </div>
                   <p className="text-xs text-muted-foreground">Total recorded</p>
                 </CardContent>
@@ -312,9 +321,9 @@ export default function Analytics() {
                 <CardDescription>Your latest expenses</CardDescription>
               </CardHeader>
               <CardContent>
-                {getValidTransactions().length > 0 ? (
+                {getTopItems().length > 0 ? (
                   <div className="space-y-4">
-                    {getValidTransactions().slice(0, 5).map((item: any, index: number) => (
+                    {getTopItems().slice(0, 5).map((item: any, index: number) => (
                       <div key={index} className="flex items-center justify-between">
                         <div>
                           <div className="font-medium">{item.text || "Unknown Item"}</div>
@@ -408,6 +417,28 @@ export default function Analytics() {
                 <CardDescription>Track your spending against budgets</CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Add budgets by category */}
+                <div className="space-y-3 mb-6">
+                  <h4 className="text-sm font-medium">Add budgets by category</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((c:any) => {
+                      const hasBudget = (budgets?.details || []).some((b:any)=> (b.category||"").toLowerCase() === (c.name||"").toLowerCase());
+                      return (
+                        <Button key={c.id} size="sm" variant={hasBudget ? "secondary" : "outline"} onClick={() => startEditBudget(c.name, hasBudget ? ((budgets?.details || []).find((b:any)=> (b.category||"").toLowerCase() === (c.name||"").toLowerCase())?.limit || 0) : 0)}>
+                          {hasBudget ? `${c.name} • has budget` : `Set ${c.name}`}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  {/* Quick add editor for categories without a budget */}
+                  {editingCategoryName && !(budgets?.details || []).some((b:any)=> (b.category||"").toLowerCase() === (editingCategoryName||"").toLowerCase()) && (
+                    <div className="flex items-center gap-2">
+                      <Input type="number" step="0.01" value={editLimit} onChange={(e)=> setEditLimit(e.target.value)} placeholder={`Enter ${editingCategoryName} limit`} className="max-w-[220px]" />
+                      <Button size="sm" onClick={() => saveEditBudget(editingCategoryName!)}>Save</Button>
+                      <Button size="sm" variant="outline" onClick={cancelEditBudget}>Cancel</Button>
+                    </div>
+                  )}
+                </div>
                 {budgets?.details?.length > 0 ? (
                   <div className="space-y-6">
                     {budgets.details.map((budget: any, index: number) => {
@@ -488,6 +519,86 @@ export default function Analytics() {
                     )}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="categories" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Manage Categories</CardTitle>
+                <CardDescription>Add, rename, or remove categories</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-end gap-2">
+                    <div className="grid gap-2 flex-1">
+                      <Label htmlFor="newCat">New Category</Label>
+                      <Input id="newCat" value={newCategoryName} onChange={(e)=> setNewCategoryName(e.target.value)} placeholder="e.g., Groceries" />
+                    </div>
+                    <Button onClick={async () => {
+                      if (!newCategoryName.trim()) { toast({ title: 'Category name required', variant: 'destructive' }); return; }
+                      try {
+                        await addCategory(selectedBook, { name: newCategoryName.trim() });
+                        const inst:any = await getInstance(selectedBook);
+                        setCategories(inst?.categories || []);
+                        setNewCategoryName('');
+                        toast({ title: 'Category added' });
+                      } catch (e:any) {
+                        toast({ title: 'Failed to add category', description: e?.message || 'Unknown error', variant: 'destructive' });
+                      }
+                    }}>Add</Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {categories.length === 0 ? (
+                      <p className="text-muted-foreground">No categories yet.</p>
+                    ) : (
+                      categories.map((c:any) => (
+                        <div key={c.id} className="flex items-center justify-between gap-2 border rounded-md p-3">
+                          {renamingCatId === c.id ? (
+                            <div className="flex-1 flex items-center gap-2">
+                              <Input value={renameValue} onChange={(e)=> setRenameValue(e.target.value)} />
+                              <Button size="sm" onClick={async () => {
+                                try {
+                                  await renameCategory(String(c.id), renameValue.trim());
+                                  const inst:any = await getInstance(selectedBook);
+                                  setCategories(inst?.categories || []);
+                                  setRenamingCatId(null);
+                                  setRenameValue('');
+                                  toast({ title: 'Category renamed' });
+                                } catch (e:any) {
+                                  toast({ title: 'Rename failed', description: e?.message || 'Unknown error', variant: 'destructive' });
+                                }
+                              }}>Save</Button>
+                              <Button size="sm" variant="outline" onClick={()=> { setRenamingCatId(null); setRenameValue(''); }}>Cancel</Button>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="flex-1">
+                                <div className="font-medium">{c.name}</div>
+                                <div className="text-xs text-muted-foreground">ID: {c.id}</div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Button size="sm" variant="outline" onClick={()=> { setRenamingCatId(c.id); setRenameValue(c.name || ''); }}>Rename</Button>
+                                <Button size="sm" variant="destructive" onClick={async () => {
+                                  try {
+                                    await removeCategory(String(c.id));
+                                    const inst:any = await getInstance(selectedBook);
+                                    setCategories(inst?.categories || []);
+                                    toast({ title: 'Category deleted' });
+                                  } catch (e:any) {
+                                    toast({ title: 'Delete failed', description: e?.message || 'Unknown error', variant: 'destructive' });
+                                  }
+                                }}>Delete</Button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
