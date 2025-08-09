@@ -84,6 +84,12 @@ export function AppLayout({
                         <span>{item.name}</span>
                       </Link>;
                 })}
+                
+                {/* Settings Link for Mobile */}
+                <Link to="/settings" className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${location.pathname === '/settings' ? "bg-primary text-primary-foreground shadow-soft" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}>
+                  <Settings className="h-5 w-5" aria-hidden="true" />
+                  <span>Settings</span>
+                </Link>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -138,7 +144,7 @@ export function AppLayout({
               </DialogContent>
             </Dialog>
 
-            {/* User Menu */}
+            {/* User Menu with Settings Link */}
             <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border/50">
               <div className="hidden sm:flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
@@ -149,6 +155,13 @@ export function AppLayout({
                   <p className="text-xs text-muted-foreground">User Account</p>
                 </div>
               </div>
+              
+              <Link to="/settings">
+                <Button variant="ghost" size="icon" aria-label="Settings">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </Link>
+              
               <Button
                 variant="ghost"
                 size="icon"
@@ -175,6 +188,12 @@ export function AppLayout({
                   <span className="font-medium">{item.name}</span>
                 </Link>;
           })}
+          
+          {/* Settings Link */}
+          <Link to="/settings" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${location.pathname === '/settings' ? "bg-primary text-primary-foreground shadow-soft transform scale-[1.02]" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:transform hover:scale-[1.01]"}`}>
+            <Settings className="h-5 w-5" aria-hidden="true" />
+            <span className="font-medium">Settings</span>
+          </Link>
           </nav>
         </aside>
 

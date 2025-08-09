@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { cleanupAuthState } from '@/lib/auth-utils';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -50,11 +51,27 @@ export function useAuth() {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
+    try {
+      // Clean up auth state first
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+        console.warn('Global signout failed:', err);
+      }
+      
+      // Force page reload for clean state
+      window.location.href = '/auth';
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force redirect even on error
       window.location.href = '/auth';
     }
-    return { error };
+    
+    return { error: null };
   };
 
   return {
