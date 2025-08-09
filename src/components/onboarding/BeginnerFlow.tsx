@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Camera, Tags, CheckCircle } from 'lucide-react';
+import { Camera, Tags } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface BeginnerFlowProps {
   onComplete: () => void;
@@ -9,38 +10,25 @@ interface BeginnerFlowProps {
 
 export function BeginnerFlow({ onComplete }: BeginnerFlowProps) {
   const { language, t } = useLanguage();
-  const [step, setStep] = useState<'choice' | 'success'>('choice');
+  const navigate = useNavigate();
+  const [showTour, setShowTour] = useState(true);
+  const [tourStep, setTourStep] = useState(0);
+  const tourSteps = [
+    { title: 'Welcome to quick scanning', description: 'Upload a receipt image and let AI extract items.' },
+    { title: 'Pick your book', description: 'Choose the book (instance) where this receipt will be stored.' },
+    { title: 'Review items', description: 'Check extracted items and totals before saving.' },
+    { title: 'Fix mistakes', description: 'Edit any line item name or price to correct it.' },
+    { title: 'Save and track', description: 'Save results and see them in Analytics instantly.' }
+  ];
 
   const handleChoice = (choice: 'scan' | 'categorize') => {
-    // Simulate the chosen action
-    setTimeout(() => {
-      setStep('success');
-    }, 1000);
+    if (choice === 'scan') {
+      navigate('/scanner?tour=beginner');
+    } else {
+      navigate('/analytics?tab=categories');
+    }
   };
 
-  if (step === 'success') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-green-50 flex items-center justify-center px-6">
-        <div className="text-center max-w-2xl mx-auto animate-fade-in">
-          <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center">
-            <CheckCircle className="w-12 h-12 text-green-600" />
-          </div>
-          
-          <h2 className={`text-3xl font-light mb-6 text-gray-800 ${language === 'ur' ? 'font-urdu' : ''}`}>
-            {t('success_message')}
-          </h2>
-
-          <Button
-            onClick={onComplete}
-            size="lg"
-            className="bg-white/20 backdrop-blur-sm border border-white/30 text-gray-800 hover:bg-white/30 px-12 py-4 text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            {t('start_tracking')}
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-green-50 flex items-center justify-center px-6">
@@ -95,6 +83,25 @@ export function BeginnerFlow({ onComplete }: BeginnerFlowProps) {
           </div>
         </div>
       </div>
+      {showTour && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-background/95 border rounded-3xl p-8 max-w-md mx-6 text-center shadow-2xl">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center bg-primary/10">
+              <Camera className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className={`heading-zen text-xl mb-3 ${language === 'ur' ? 'font-urdu' : ''}`}>{tourSteps[tourStep].title}</h3>
+            <p className={`text-zen mb-6 ${language === 'ur' ? 'font-urdu' : ''}`}>{tourSteps[tourStep].description}</p>
+            <Button
+              onClick={() => {
+                if (tourStep < tourSteps.length - 1) setTourStep(tourStep + 1);
+                else setShowTour(false);
+              }}
+            >
+              {tourStep < tourSteps.length - 1 ? 'Next' : t('start_tracking')}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

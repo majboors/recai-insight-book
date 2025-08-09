@@ -259,7 +259,7 @@ export default function Analytics() {
           </CardContent>
         </Card>
       ) : (
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue={searchParams.get("tab") || "overview"} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="charts" className="text-xs sm:text-sm">Charts</TabsTrigger>
