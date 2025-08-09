@@ -2,99 +2,144 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --brand: 222 89% 55%;
-    --brand-soft: 222 89% 64%;
-    --gradient-primary: linear-gradient(135deg, hsl(var(--brand)), hsl(var(--brand-soft)));
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--brand) / 0.35);
-
+    /* Japanese-inspired color palette */
+    --background: 350 20% 99%;
+    --foreground: 240 6% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 240 6% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    --popover-foreground: 240 6% 10%;
+    
+    /* Zen-inspired primary colors - deep indigo */
+    --primary: 230 35% 25%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 230 35% 30%;
+    --primary-soft: 230 35% 95%;
+    
+    /* Warm secondary - inspired by cedar wood */
+    --secondary: 20 15% 92%;
+    --secondary-foreground: 240 6% 10%;
+    --secondary-hover: 20 15% 87%;
+    
+    /* Muted tones - stone and pebble */
+    --muted: 220 13% 95%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 350 20% 97%;
+    --accent-foreground: 240 6% 10%;
+    
+    /* Status colors */
+    --destructive: 0 65% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    
+    /* Borders and inputs - subtle and clean */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 230 35% 25%;
+    
+    /* Gradients for depth */
+    --gradient-primary: linear-gradient(135deg, hsl(230 35% 25%), hsl(230 35% 30%));
+    --gradient-secondary: linear-gradient(135deg, hsl(20 15% 92%), hsl(20 15% 87%));
+    --gradient-soft: linear-gradient(180deg, hsl(350 20% 99%), hsl(220 13% 97%));
+    
+    /* Shadows for depth */
+    --shadow-soft: 0 1px 3px hsl(240 6% 10% / 0.1);
+    --shadow-medium: 0 4px 12px hsl(240 6% 10% / 0.15);
+    --shadow-large: 0 10px 25px hsl(240 6% 10% / 0.2);
+    
+    /* Chart colors - harmonious palette */
+    --chart-1: 230 35% 55%;
+    --chart-2: 142 76% 46%;
+    --chart-3: 20 80% 60%;
+    --chart-4: 280 60% 65%;
+    --chart-5: 38 92% 60%;
+    
+    /* Typography */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    
+    /* Spacing rhythm */
+    --spacing-unit: 0.25rem;
+    
+    /* Border radius */
     --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    --radius-sm: 0.25rem;
+    --radius-lg: 0.75rem;
+    
+    /* Sidebar */
+    --sidebar-background: 350 20% 98%;
+    --sidebar-foreground: 240 6% 10%;
+    --sidebar-primary: 230 35% 25%;
     --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
+    --sidebar-accent: 220 13% 95%;
+    --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 230 35% 25%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Dark mode - ink and moonlight */
+    --background: 240 10% 4%;
+    --foreground: 220 13% 91%;
+    --card: 240 10% 6%;
+    --card-foreground: 220 13% 91%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 220 13% 91%;
+    
+    /* Primary - moonlit indigo */
+    --primary: 230 35% 70%;
+    --primary-foreground: 240 10% 4%;
+    --primary-hover: 230 35% 75%;
+    --primary-soft: 230 35% 12%;
+    
+    /* Secondary - warm charcoal */
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 220 13% 91%;
+    --secondary-hover: 240 4% 20%;
+    
+    /* Muted tones */
+    --muted: 240 4% 16%;
+    --muted-foreground: 220 9% 65%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 220 13% 91%;
+    
+    /* Status colors for dark mode */
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 240 10% 4%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 240 10% 4%;
+    --success: 142 76% 40%;
+    --success-foreground: 240 10% 4%;
+    
+    /* Borders */
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 230 35% 70%;
+    
+    /* Chart colors for dark mode */
+    --chart-1: 230 35% 65%;
+    --chart-2: 142 76% 50%;
+    --chart-3: 20 80% 65%;
+    --chart-4: 280 60% 70%;
+    --chart-5: 38 92% 65%;
+    
+    /* Sidebar dark */
+    --sidebar-background: 240 10% 3%;
+    --sidebar-foreground: 220 13% 91%;
+    --sidebar-primary: 230 35% 70%;
+    --sidebar-primary-foreground: 240 10% 4%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 220 13% 91%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 230 35% 70%;
   }
 }
 
@@ -102,8 +147,84 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
+  
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  /* Smooth animations */
+  * {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, 
+                box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  /* Skip link for accessibility */
+  .skip-link {
+    @apply absolute left-4 top-4 z-50 bg-primary text-primary-foreground px-4 py-2 rounded-md;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+}
+
+@layer components {
+  /* Button variants with Japanese aesthetic */
+  .btn-minimal {
+    @apply bg-transparent hover:bg-muted/50 text-foreground border border-border;
+    @apply rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .btn-zen {
+    @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground;
+    @apply rounded-lg px-6 py-3 text-sm font-medium shadow-soft;
+    @apply hover:shadow-medium transform hover:scale-[1.02] transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  /* Card styles */
+  .card-minimal {
+    @apply bg-card border border-border rounded-lg p-6 shadow-soft;
+    @apply hover:shadow-medium transition-shadow duration-200;
+  }
+
+  .card-zen {
+    @apply bg-gradient-to-br from-card to-accent/20 border border-border/50;
+    @apply rounded-lg p-6 shadow-soft backdrop-blur-sm;
+  }
+
+  /* Layout utilities */
+  .container-zen {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Text styles */
+  .text-zen {
+    @apply text-foreground/90 leading-relaxed tracking-wide;
+  }
+
+  .heading-zen {
+    @apply text-foreground font-medium tracking-tight leading-tight;
+  }
+
+  /* Mobile-friendly spacing */
+  .space-zen > * + * {
+    @apply mt-4 sm:mt-6;
+  }
+
+  .grid-zen {
+    @apply grid gap-4 sm:gap-6 lg:gap-8;
   }
 }

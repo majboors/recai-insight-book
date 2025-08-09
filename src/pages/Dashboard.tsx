@@ -88,15 +88,15 @@ export default function Dashboard() {
   const budgetPercent = budgetTotals.limit ? Math.round((budgetTotals.spent / budgetTotals.limit) * 100) : 0;
 
   return (
-    <div className="container py-8 space-y-8">
+    <div className="space-zen">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your expense tracking across all books</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-medium heading-zen">Dashboard</h1>
+          <p className="text-zen">Overview of your expense tracking across all books</p>
         </div>
         <Link to="/scanner">
-          <Button>
+          <Button className="btn-zen">
             <Plus className="h-4 w-4 mr-2" />
             Scan Receipt
           </Button>
@@ -104,56 +104,56 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Books</CardTitle>
-            <Receipt className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{books.length}</div>
-            <p className="text-xs text-muted-foreground">Active expense books</p>
-          </CardContent>
-        </Card>
+      <div className="grid-zen grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="card-zen">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-zen">Total Books</h3>
+            <Receipt className="h-5 w-5 text-primary/60" aria-hidden="true" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-medium heading-zen">{books.length}</div>
+            <p className="text-xs text-zen">Active expense books</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Month Spending</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${monthSpent.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
+        <div className="card-zen">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-zen">Month Spending</h3>
+            <DollarSign className="h-5 w-5 text-success/60" aria-hidden="true" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-medium heading-zen">${monthSpent.toFixed(2)}</div>
+            <p className="text-xs text-zen flex items-center">
+              <TrendingUp className="inline h-3 w-3 mr-1" aria-hidden="true" />
               This month
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Budget Status</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{budgetPercent}%</div>
-            <p className="text-xs text-muted-foreground">Of monthly budget used</p>
-          </CardContent>
-        </Card>
+        <div className="card-zen">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-zen">Budget Status</h3>
+            <AlertTriangle className={`h-5 w-5 ${budgetPercent > 80 ? 'text-warning/60' : 'text-primary/60'}`} aria-hidden="true" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-medium heading-zen">{budgetPercent}%</div>
+            <p className="text-xs text-zen">Of monthly budget used</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg/Transaction</CardTitle>
-            <TrendingDown className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${avgTxn.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
+        <div className="card-zen">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-zen">Avg/Transaction</h3>
+            <TrendingDown className="h-5 w-5 text-chart-3/60" aria-hidden="true" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-medium heading-zen">${avgTxn.toFixed(2)}</div>
+            <p className="text-xs text-zen flex items-center">
+              <TrendingUp className="inline h-3 w-3 mr-1" aria-hidden="true" />
               This month
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

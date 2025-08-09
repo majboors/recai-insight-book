@@ -31,18 +31,35 @@ export function AppSidebar() {
     isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50";
 
   return (
-    <Sidebar className="w-60" collapsible="icon">
-      <SidebarContent>
+    <Sidebar 
+      className="border-r border-border/50 bg-sidebar/80 backdrop-blur-sm" 
+      collapsible="icon"
+    >
+      <SidebarContent className="p-4">
         <SidebarGroup>
-          <SidebarGroupLabel>Book</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground font-medium px-2 mb-4">
+            Book Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={`/books/${id}${item.url}`} end className={getNavCls}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      <span>{item.title}</span>
+                  <SidebarMenuButton asChild className="group">
+                    <NavLink 
+                      to={`/books/${id}${item.url}`} 
+                      end 
+                      className={({ isActive }) => 
+                        `flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                          isActive 
+                            ? "bg-primary text-primary-foreground shadow-soft" 
+                            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                      <span className="font-medium group-data-[collapsible=icon]:hidden">
+                        {item.title}
+                      </span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

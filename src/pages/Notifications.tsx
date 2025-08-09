@@ -203,27 +203,27 @@ export default function Notifications() {
   }
 
   return (
-    <div className="container py-8 space-y-8">
+    <div className="container-zen py-6 space-zen">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col space-y-4">
         <div className="flex items-center gap-3">
-          <Bell className="h-8 w-8" />
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
-            <p className="text-muted-foreground">
+          <Bell className="h-6 w-6 sm:h-8 sm:w-8" />
+          <div className="flex-1">
+            <h1 className="heading-zen text-2xl sm:text-3xl">Notifications</h1>
+            <p className="text-zen text-sm">
               Stay updated with your spending alerts and insights
             </p>
           </div>
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="ml-2">
+            <Badge variant="destructive" className="text-xs">
               {unreadCount} unread
             </Badge>
           )}
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           <Select value={selectedBook} onValueChange={setSelectedBook}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48 btn-minimal">
               <SelectValue placeholder="All books" />
             </SelectTrigger>
             <SelectContent>
@@ -237,7 +237,7 @@ export default function Notifications() {
           </Select>
           
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48 btn-minimal">
               <SelectValue placeholder="All notifications" />
             </SelectTrigger>
             <SelectContent>
@@ -250,7 +250,7 @@ export default function Notifications() {
           </Select>
 
           {unreadCount > 0 && (
-            <Button variant="outline" onClick={markAllAsRead}>
+            <Button variant="outline" onClick={markAllAsRead} size="sm" className="w-full sm:w-auto">
               <CheckCircle className="h-4 w-4 mr-2" />
               Mark All Read
             </Button>
@@ -260,11 +260,11 @@ export default function Notifications() {
 
       {/* Notifications List */}
       {getFilteredNotifications().length === 0 ? (
-        <Card className="text-center py-12">
+        <Card className="card-zen text-center py-12">
           <CardContent>
             <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No notifications</h3>
-            <p className="text-muted-foreground">
+            <h3 className="heading-zen text-lg mb-2">No notifications</h3>
+            <p className="text-zen">
               {filter === "unread" 
                 ? "You're all caught up! No unread notifications."
                 : "We'll notify you about budget alerts and spending insights here."}
@@ -272,45 +272,46 @@ export default function Notifications() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {getFilteredNotifications().map((notification) => (
             <Card 
               key={notification.id} 
-              className={`transition-all cursor-pointer hover:shadow-md ${
-                notification.read ? 'opacity-75' : 'border-l-4 border-l-primary'
+              className={`card-minimal transition-all cursor-pointer hover:shadow-medium ${
+                notification.read ? 'opacity-75' : 'border-l-4 border-l-primary shadow-soft'
               }`}
               onClick={() => !notification.read && markAsRead(notification.id)}
             >
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <div className={`p-2 rounded-full flex-shrink-0 ${
                       notification.severity === 'high' ? 'bg-destructive/10 text-destructive' :
-                      notification.severity === 'medium' ? 'bg-orange-100 text-orange-600' :
-                      'bg-blue-100 text-blue-600'
+                      notification.severity === 'medium' ? 'bg-warning/10 text-warning-foreground' :
+                      'bg-primary-soft text-primary'
                     }`}>
                       {getNotificationIcon(notification.type)}
                     </div>
-                    <div>
-                      <CardTitle className="text-base">{notification.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2">
-                        <span>{notification.bookName}</span>
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="heading-zen text-base truncate">{notification.title}</CardTitle>
+                      <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <span className="truncate">{notification.bookName}</span>
                         <Badge 
                           variant={getSeverityColor(notification.severity) as any}
-                          className="text-xs"
+                          className="text-xs w-fit"
                         >
                           {notification.severity}
                         </Badge>
                       </CardDescription>
                     </div>
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    {notification.timestamp.toLocaleDateString()} {notification.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div className="text-xs text-muted-foreground text-right flex-shrink-0">
+                    <div>{notification.timestamp.toLocaleDateString()}</div>
+                    <div>{notification.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <p className="text-sm">{notification.message}</p>
+                <p className="text-sm text-zen break-words">{notification.message}</p>
                 {!notification.read && (
                   <div className="flex items-center gap-1 mt-2 text-xs text-primary">
                     <div className="w-2 h-2 bg-primary rounded-full"></div>

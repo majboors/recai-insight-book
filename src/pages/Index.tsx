@@ -15,37 +15,43 @@ const links = [
 ];
 
 export default function Index() {
-  useEffect(() => { document.title = "API Test Console | Receipt Spending Analyzer"; }, []);
+  useEffect(() => { document.title = "API Test Console | Receipt Zen"; }, []);
   return (
-    <main className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container flex items-center justify-between h-16">
-          <h1 className="text-2xl font-semibold">Receipt Spending Analyzer – API Test Console</h1>
+    <main className="min-h-screen bg-gradient-soft">
+      <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm">
+        <div className="container-zen flex items-center justify-between h-16">
+          <h1 className="text-2xl font-medium heading-zen">Receipt Zen – API Console</h1>
           <ApiTokenDialog />
         </div>
       </header>
-      <section className="container py-8 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Start</CardTitle>
-            <CardDescription>Set your API Base URL and Bearer token, then open a test page.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="container-zen py-8 space-zen">
+        <div className="card-zen">
+          <div className="space-y-6">
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-medium heading-zen">Quick Start</h2>
+              <p className="text-zen max-w-2xl mx-auto">
+                Configure your API settings and explore the powerful features of Receipt Zen
+              </p>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {links.map((l) => (
-                <Card key={l.to} className="border-muted-foreground/20">
-                  <CardHeader>
-                    <CardTitle className="text-base">{l.title}</CardTitle>
-                    <CardDescription>{l.desc}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button asChild variant="secondary"><Link to={l.to}>Open</Link></Button>
-                  </CardContent>
-                </Card>
+                <div key={l.to} className="card-minimal group hover:shadow-medium">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-medium heading-zen group-hover:text-primary transition-colors">
+                        {l.title}
+                      </h3>
+                      <p className="text-zen text-sm">{l.desc}</p>
+                    </div>
+                    <Button asChild className="btn-zen w-full">
+                      <Link to={l.to}>Explore</Link>
+                    </Button>
+                  </div>
+                </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
     </main>
   );
