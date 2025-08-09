@@ -49,7 +49,13 @@ export default function Auth() {
         error = result.error;
         
         if (!error) {
-          navigate('/');
+          // Check if onboarding is complete
+          const onboardingComplete = localStorage.getItem('onboarding_complete');
+          if (onboardingComplete) {
+            navigate('/');
+          } else {
+            navigate('/onboarding');
+          }
         }
       }
 
