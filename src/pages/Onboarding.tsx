@@ -16,9 +16,14 @@ export default function Onboarding() {
   useEffect(() => {
     document.title = 'Welcome | Receipt Zen';
     
-    // Redirect if not authenticated
     if (!user) {
       navigate('/auth');
+      return;
+    }
+
+    const completed = localStorage.getItem('onboarding_complete') === 'true';
+    if (completed) {
+      navigate('/');
     }
   }, [user, navigate]);
 
