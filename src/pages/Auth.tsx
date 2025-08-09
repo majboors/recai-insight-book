@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -14,7 +14,7 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [finalizing, setFinalizing] = useState(false);
+  
   
   const { signUp, signIn, user, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -46,37 +46,6 @@ useEffect(() => {
   }
 }, [user, authLoading, navigate]);
 
-// Handle token hashes after email confirmation / magic link
-useEffect(() => {
-  const hash = window.location.hash || '';
-  const search = window.location.search || '';
-  const hasTokens = hash.includes('access_token') || hash.includes('refresh_token') || hash.includes('type=signup') || search.includes('code=');
-  if (!hasTokens) return;
-
-  setFinalizing(true);
-  // Defer to allow Supabase to process URL fragments internally
-  setTimeout(async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      // Clean URL hash
-      window.history.replaceState(null, '', window.location.pathname + window.location.search);
-      if (session?.user) {
-        const u = session.user;
-        const key = `onboarding_complete:${u.id}`;
-        const legacy = localStorage.getItem('onboarding_complete') === 'true';
-        const local = localStorage.getItem(key) === 'true' || legacy;
-        if (legacy && !localStorage.getItem(key)) {
-          localStorage.setItem(key, 'true');
-        }
-        navigate(local ? '/' : '/onboarding', { replace: true });
-      } else {
-        setFinalizing(false);
-      }
-    } catch {
-      setFinalizing(false);
-    }
-  }, 0);
-}, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,12 +109,12 @@ useEffect(() => {
     }
   };
 
-if (finalizing || authLoading) {
+if (authLoading) {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        <p className="text-sm text-muted-foreground">Finishing sign-in...</p>
+        <p className="text-sm text-muted-foreground">Loading...</p>
       </div>
     </div>
   );

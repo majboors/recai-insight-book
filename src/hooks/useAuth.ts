@@ -29,7 +29,7 @@ export function useAuth() {
   }, []);
 
   const signUp = async (email: string, password: string, displayName?: string) => {
-    const redirectUrl = `${window.location.origin}/auth`;
+    
 
     // Clean up any existing auth state to avoid limbo
     cleanupAuthState();
@@ -43,7 +43,6 @@ export function useAuth() {
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl,
         data: displayName ? { display_name: displayName } : undefined
       }
     });
