@@ -10,6 +10,7 @@ import { listInstances, createInstance, updateInstance, deleteInstance } from "@
 import { Plus, Edit, Trash2, Book, MoreHorizontal } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 export default function BookManagement() {
   const [books, setBooks] = useState<any[]>([]);

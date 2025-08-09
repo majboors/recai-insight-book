@@ -11,6 +11,7 @@ import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudg
 import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "react-router-dom";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -25,6 +26,7 @@ export default function Analytics() {
   const [newBudgetCategoryId, setNewBudgetCategoryId] = useState("");
   const [newBudgetLimit, setNewBudgetLimit] = useState("");
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     document.title = "Analytics | AI Receipt Analyzer";
@@ -43,7 +45,9 @@ export default function Analytics() {
       if (response?.instances) {
         setBooks(response.instances);
         if (response.instances.length > 0) {
-          setSelectedBook(response.instances[0].id);
+          const fromUrl = searchParams.get("book");
+          const exists = response.instances.find((b: any) => b.id === fromUrl);
+          setSelectedBook(exists ? exists.id : response.instances[0].id);
         }
       }
     } catch (error) {
@@ -145,7 +149,7 @@ export default function Analytics() {
           <p className="text-muted-foreground">Insights and reports for your spending patterns</p>
         </div>
         <div className="flex items-center gap-4">
-          <Select value={selectedBook} onValueChange={setSelectedBook}>
+          <Select value={selectedBook} onValueChange={(val) => { setSelectedBook(val); setSearchParams({ book: val }); }}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Select book" />
             </SelectTrigger>
@@ -191,7 +195,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${reports?.[0]?.total_spent?.toFixed(2) || "0.00"}
+                    ${reports?.total_spent?.toFixed(2) || "0.00"}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     <TrendingUp className="inline h-3 w-3 mr-1" />
@@ -207,7 +211,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {reports?.[0]?.top_items?.length || 0}
+                    {reports?.top_items?.length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">Total recorded</p>
                 </CardContent>
@@ -220,10 +224,10 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {reports?.[0]?.top_categories?.[0]?.category_name || "None"}
+                    {reports?.top_categories?.[0]?.category_name || "None"}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    ${reports?.[0]?.top_categories?.[0]?.total?.toFixed(2) || "0.00"}
+                    ${reports?.top_categories?.[0]?.total?.toFixed(2) || "0.00"}
                   </p>
                 </CardContent>
               </Card>
@@ -235,7 +239,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${(reports?.[0]?.total_spent / (reports?.[0]?.top_items?.length || 1))?.toFixed(2) || "0.00"}
+                    ${(reports?.total_spent / (reports?.top_items?.length || 1))?.toFixed(2) || "0.00"}
                   </div>
                   <p className="text-xs text-muted-foreground">Per transaction</p>
                 </CardContent>
@@ -249,9 +253,9 @@ export default function Analytics() {
                 <CardDescription>Your latest expenses</CardDescription>
               </CardHeader>
               <CardContent>
-                {reports?.[0]?.top_items?.length > 0 ? (
+                {reports?.top_items?.length > 0 ? (
                   <div className="space-y-4">
-                    {reports[0].top_items.slice(0, 5).map((item: any, index: number) => (
+                    {reports.top_items.slice(0, 5).map((item: any, index: number) => (
                       <div key={index} className="flex items-center justify-between">
                         <div>
                           <div className="font-medium">{item.text}</div>
@@ -287,6 +291,7 @@ export default function Analytics() {
                           cx="50%"
                           cy="50%"
                           labelLine={false}
+                          nameKey="label"
                           label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                           outerRadius={80}
                           fill="#8884d8"
@@ -314,16 +319,16 @@ export default function Analytics() {
                   <CardDescription>Detailed spending by category</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {reports?.[0]?.top_categories?.length > 0 ? (
+                  {reports?.top_categories?.length > 0 ? (
                     <div className="space-y-4">
-                      {reports[0].top_categories.map((category: any, index: number) => (
+                      {reports.top_categories.map((category: any, index: number) => (
                         <div key={index} className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>{category.category_name}</span>
                             <span>${category.total.toFixed(2)}</span>
                           </div>
                           <Progress 
-                            value={(category.total / reports[0].total_spent) * 100} 
+                            value={reports.total_spent ? (category.total / reports.total_spent) * 100 : 0} 
                             className="h-2"
                           />
                         </div>
