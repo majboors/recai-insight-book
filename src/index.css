@@ -10,6 +10,10 @@ All colors MUST be HSL.
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    --brand: 222 89% 55%;
+    --brand-soft: 222 89% 64%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--brand)), hsl(var(--brand-soft)));
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--brand) / 0.35);
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
