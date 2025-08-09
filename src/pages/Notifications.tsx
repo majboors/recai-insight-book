@@ -1,350 +1,321 @@
+
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Bell, AlertTriangle, TrendingUp, Calendar, Check, X, Settings } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Bell, AlertTriangle, TrendingUp, Calendar, DollarSign, CheckCircle } from "lucide-react";
+import { listInstances, getBudgets, getInsights, getReports } from "@/lib/recai";
 import { useToast } from "@/hooks/use-toast";
 
 interface Notification {
   id: string;
-  type: "budget_alert" | "insight" | "summary" | "achievement";
+  type: 'budget_alert' | 'spending_insight' | 'weekly_summary' | 'monthly_summary';
   title: string;
   message: string;
+  severity: 'high' | 'medium' | 'low';
+  bookId: string;
+  bookName: string;
   timestamp: Date;
   read: boolean;
-  severity: "low" | "medium" | "high";
 }
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [settings, setSettings] = useState({
-    budgetAlerts: true,
-    weeklyReports: true,
-    spendingInsights: true,
-    achievements: false,
-  });
+  const [books, setBooks] = useState<any[]>([]);
+  const [selectedBook, setSelectedBook] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<string>("all");
   const { toast } = useToast();
 
   useEffect(() => {
     document.title = "Notifications | AI Receipt Analyzer";
-    loadNotifications();
+    loadBooksAndNotifications();
   }, []);
 
-  const loadNotifications = () => {
-    // Mock notifications - in real app, these would come from the API
-    const mockNotifications: Notification[] = [
-      {
-        id: "1",
-        type: "budget_alert",
-        title: "Budget Alert: Food Category",
-        message: "You've spent $450 out of your $400 monthly food budget. Consider reducing dining out expenses.",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        read: false,
-        severity: "high"
-      },
-      {
-        id: "2",
-        type: "insight",
-        title: "Spending Trend Analysis",
-        message: "Your spending has increased by 15% compared to last month. Your biggest increase is in the Entertainment category (+$85).",
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-        read: false,
-        severity: "medium"
-      },
-      {
-        id: "3",
-        type: "summary",
-        title: "Weekly Expense Summary",
-        message: "This week you spent $285.50 across 12 transactions. Your average transaction was $23.79.",
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-        read: true,
-        severity: "low"
-      },
-      {
-        id: "4",
-        type: "achievement",
-        title: "Savings Milestone Reached!",
-        message: "Congratulations! You stayed under budget in 3 categories this month and saved $150.",
-        timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000), // 2 days ago
-        read: true,
-        severity: "low"
-      },
-      {
-        id: "5",
-        type: "budget_alert",
-        title: "Transportation Budget Warning",
-        message: "You've reached 85% of your transportation budget with 8 days left in the month.",
-        timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000), // 3 days ago
-        read: true,
-        severity: "medium"
+  const loadBooksAndNotifications = async () => {
+    try {
+      const response = await listInstances();
+      if (response?.instances) {
+        setBooks(response.instances);
+        await generateNotifications(response.instances);
       }
-    ];
-
-    setNotifications(mockNotifications);
+    } catch (error) {
+      console.error("Failed to load books:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const markAsRead = (id: string) => {
+  const generateNotifications = async (bookList: any[]) => {
+    const allNotifications: Notification[] = [];
+
+    for (const book of bookList) {
+      try {
+        // Generate budget alerts
+        const budgets = await getBudgets(book.id);
+        if (budgets?.details) {
+          for (const budget of budgets.details) {
+            const percentage = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;
+            
+            if (percentage >= 90) {
+              allNotifications.push({
+                id: `budget-${book.id}-${budget.category}`,
+                type: 'budget_alert',
+                title: 'Budget Alert',
+                message: `You've spent ${percentage.toFixed(0)}% of your ${budget.category} budget (${budget.spent?.toFixed(2) || 0}/${budget.limit?.toFixed(2) || 0})`,
+                severity: percentage >= 100 ? 'high' : 'medium',
+                bookId: book.id,
+                bookName: book.name,
+                timestamp: new Date(),
+                read: false
+              });
+            }
+          }
+        }
+
+        // Generate spending insights
+        const insights = await getInsights(book.id, { insight_type: "spending_forecast" });
+        if (insights?.trend === "increasing" || (insights?.predicted_spending && insights?.confidence > 0.7)) {
+          allNotifications.push({
+            id: `insight-${book.id}`,
+            type: 'spending_insight',
+            title: 'Spending Trend Alert',
+            message: insights.trend === "increasing" ? 
+              `Your spending trend is increasing. Predicted next month: $${insights.predicted_spending?.toFixed(2) || 0}` :
+              `AI detected unusual spending patterns in ${book.name}`,
+            severity: 'medium',
+            bookId: book.id,
+            bookName: book.name,
+            timestamp: new Date(),
+            read: false
+          });
+        }
+
+        // Generate weekly summary
+        const reports = await getReports(book.id, { period: "weekly" });
+        if (reports?.weekly_spend?.length > 0) {
+          const latestWeek = reports.weekly_spend[reports.weekly_spend.length - 1];
+          if (latestWeek?.total > 0) {
+            allNotifications.push({
+              id: `weekly-${book.id}`,
+              type: 'weekly_summary',
+              title: 'Weekly Summary',
+              message: `This week you spent $${latestWeek.total.toFixed(2)} in ${book.name}`,
+              severity: 'low',
+              bookId: book.id,
+              bookName: book.name,
+              timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
+              read: false
+            });
+          }
+        }
+
+      } catch (error) {
+        console.error(`Failed to generate notifications for book ${book.id}:`, error);
+      }
+    }
+
+    // Sort by timestamp (newest first)
+    allNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    setNotifications(allNotifications);
+  };
+
+  const markAsRead = (notificationId: string) => {
     setNotifications(prev => 
       prev.map(notif => 
-        notif.id === id ? { ...notif, read: true } : notif
+        notif.id === notificationId ? { ...notif, read: true } : notif
       )
     );
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notif => ({ ...notif, read: true }))
-    );
+    setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
     toast({
-      title: "Success",
-      description: "All notifications marked as read",
+      title: "All notifications marked as read",
+      description: "Your notification list has been updated"
     });
   };
 
-  const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
-    toast({
-      title: "Notification deleted",
-      description: "The notification has been removed",
-    });
+  const getFilteredNotifications = () => {
+    let filtered = notifications;
+
+    if (selectedBook !== "all") {
+      filtered = filtered.filter(notif => notif.bookId === selectedBook);
+    }
+
+    if (filter !== "all") {
+      if (filter === "unread") {
+        filtered = filtered.filter(notif => !notif.read);
+      } else {
+        filtered = filtered.filter(notif => notif.type === filter);
+      }
+    }
+
+    return filtered;
   };
 
-  const updateSettings = (key: keyof typeof settings, value: boolean) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-    toast({
-      title: "Settings updated",
-      description: "Your notification preferences have been saved",
-    });
-  };
-
-  const getNotificationIcon = (type: Notification["type"]) => {
+  const getNotificationIcon = (type: string) => {
     switch (type) {
-      case "budget_alert":
-        return <AlertTriangle className="h-4 w-4" />;
-      case "insight":
-        return <TrendingUp className="h-4 w-4" />;
-      case "summary":
-        return <Calendar className="h-4 w-4" />;
-      case "achievement":
-        return <Check className="h-4 w-4" />;
-      default:
-        return <Bell className="h-4 w-4" />;
+      case 'budget_alert': return <AlertTriangle className="h-4 w-4" />;
+      case 'spending_insight': return <TrendingUp className="h-4 w-4" />;
+      case 'weekly_summary': 
+      case 'monthly_summary': return <Calendar className="h-4 w-4" />;
+      default: return <Bell className="h-4 w-4" />;
     }
   };
 
-  const getSeverityColor = (severity: Notification["severity"]) => {
+  const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case "high":
-        return "destructive";
-      case "medium":
-        return "default";
-      case "low":
-        return "secondary";
-      default:
-        return "secondary";
+      case 'high': return 'destructive';
+      case 'medium': return 'default';
+      case 'low': return 'secondary';
+      default: return 'secondary';
     }
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  if (loading) {
+    return (
+      <div className="container py-8">
+        <div className="space-y-6">
+          {[...Array(5)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader>
+                <div className="h-4 bg-muted rounded w-32"></div>
+                <div className="h-3 bg-muted rounded w-24"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-16 bg-muted rounded"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container py-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Bell className="h-8 w-8" />
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
-            <p className="text-muted-foreground">Stay updated on your financial activity</p>
+            <p className="text-muted-foreground">
+              Stay updated with your spending alerts and insights
+            </p>
           </div>
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="text-sm">
+            <Badge variant="destructive" className="ml-2">
               {unreadCount} unread
             </Badge>
           )}
         </div>
-        <div className="flex gap-2">
+        
+        <div className="flex items-center gap-4">
+          <Select value={selectedBook} onValueChange={setSelectedBook}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="All books" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Books</SelectItem>
+              {books.map((book) => (
+                <SelectItem key={book.id} value={book.id}>
+                  {book.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="All notifications" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Notifications</SelectItem>
+              <SelectItem value="unread">Unread Only</SelectItem>
+              <SelectItem value="budget_alert">Budget Alerts</SelectItem>
+              <SelectItem value="spending_insight">Insights</SelectItem>
+              <SelectItem value="weekly_summary">Summaries</SelectItem>
+            </SelectContent>
+          </Select>
+
           {unreadCount > 0 && (
             <Button variant="outline" onClick={markAllAsRead}>
-              <Check className="h-4 w-4 mr-2" />
+              <CheckCircle className="h-4 w-4 mr-2" />
               Mark All Read
             </Button>
           )}
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Notifications List */}
-        <div className="lg:col-span-2 space-y-4">
-          {notifications.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No notifications</h3>
-                <p className="text-muted-foreground">You're all caught up!</p>
-              </CardContent>
-            </Card>
-          ) : (
-            notifications.map((notification) => (
-              <Card key={notification.id} className={`transition-colors ${!notification.read ? "border-primary" : ""}`}>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className={`p-2 rounded-full ${!notification.read ? "bg-primary/10" : "bg-muted"}`}>
+      {/* Notifications List */}
+      {getFilteredNotifications().length === 0 ? (
+        <Card className="text-center py-12">
+          <CardContent>
+            <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">No notifications</h3>
+            <p className="text-muted-foreground">
+              {filter === "unread" 
+                ? "You're all caught up! No unread notifications."
+                : "We'll notify you about budget alerts and spending insights here."}
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {getFilteredNotifications().map((notification) => (
+            <Card 
+              key={notification.id} 
+              className={`transition-all cursor-pointer hover:shadow-md ${
+                notification.read ? 'opacity-75' : 'border-l-4 border-l-primary'
+              }`}
+              onClick={() => !notification.read && markAsRead(notification.id)}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-full ${
+                      notification.severity === 'high' ? 'bg-destructive/10 text-destructive' :
+                      notification.severity === 'medium' ? 'bg-orange-100 text-orange-600' :
+                      'bg-blue-100 text-blue-600'
+                    }`}>
                       {getNotificationIcon(notification.type)}
                     </div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between">
-                        <h3 className={`font-medium ${!notification.read ? "text-primary" : ""}`}>
-                          {notification.title}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={getSeverityColor(notification.severity)}>
-                            {notification.severity}
-                          </Badge>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteNotification(notification.id)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {notification.message}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">
-                          {notification.timestamp.toLocaleDateString()} at {notification.timestamp.toLocaleTimeString()}
-                        </span>
-                        {!notification.read && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => markAsRead(notification.id)}
-                          >
-                            Mark as read
-                          </Button>
-                        )}
-                      </div>
+                    <div>
+                      <CardTitle className="text-base">{notification.title}</CardTitle>
+                      <CardDescription className="flex items-center gap-2">
+                        <span>{notification.bookName}</span>
+                        <Badge 
+                          variant={getSeverityColor(notification.severity) as any}
+                          className="text-xs"
+                        >
+                          {notification.severity}
+                        </Badge>
+                      </CardDescription>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+                  <div className="text-xs text-muted-foreground">
+                    {notification.timestamp.toLocaleDateString()} {notification.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <p className="text-sm">{notification.message}</p>
+                {!notification.read && (
+                  <div className="flex items-center gap-1 mt-2 text-xs text-primary">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span>New</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </div>
-
-        {/* Settings Sidebar */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Notification Settings
-              </CardTitle>
-              <CardDescription>Manage your notification preferences</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="budget-alerts">Budget Alerts</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Get notified when approaching budget limits
-                    </p>
-                  </div>
-                  <Switch
-                    id="budget-alerts"
-                    checked={settings.budgetAlerts}
-                    onCheckedChange={(checked) => updateSettings("budgetAlerts", checked)}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="weekly-reports">Weekly Reports</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Receive weekly spending summaries
-                    </p>
-                  </div>
-                  <Switch
-                    id="weekly-reports"
-                    checked={settings.weeklyReports}
-                    onCheckedChange={(checked) => updateSettings("weeklyReports", checked)}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="spending-insights">Spending Insights</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Get AI-powered spending analysis
-                    </p>
-                  </div>
-                  <Switch
-                    id="spending-insights"
-                    checked={settings.spendingInsights}
-                    onCheckedChange={(checked) => updateSettings("spendingInsights", checked)}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="achievements">Achievements</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Celebrate savings milestones
-                    </p>
-                  </div>
-                  <Switch
-                    id="achievements"
-                    checked={settings.achievements}
-                    onCheckedChange={(checked) => updateSettings("achievements", checked)}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Summary</CardTitle>
-              <CardDescription>Your notification overview</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span>Total notifications</span>
-                <Badge variant="secondary">{notifications.length}</Badge>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Unread</span>
-                <Badge variant="destructive">{unreadCount}</Badge>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Budget alerts</span>
-                <Badge variant="default">
-                  {notifications.filter(n => n.type === "budget_alert").length}
-                </Badge>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Insights</span>
-                <Badge variant="secondary">
-                  {notifications.filter(n => n.type === "insight").length}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

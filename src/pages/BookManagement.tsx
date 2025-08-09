@@ -1,23 +1,27 @@
-import { useEffect, useState } from "react";
+
+import { useState, useEffect } from "react";
+import { Plus, BookOpen, Settings, Trash2, BarChart3, Camera } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { listInstances, createInstance, updateInstance, deleteInstance } from "@/lib/recai";
-import { Plus, Edit, Trash2, Book, MoreHorizontal } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, DialogClose, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { listInstances, createInstance, updateInstance, deleteInstance, initializeCategories } from "@/lib/recai";
 import { useToast } from "@/hooks/use-toast";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function BookManagement() {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newBookName, setNewBookName] = useState("");
   const [editingBook, setEditingBook] = useState<any>(null);
+  const [editName, setEditName] = useState("");
+  const [showNewBookDialog, setShowNewBookDialog] = useState(false);
+  const [creatingBook, setCreatingBook] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Book Management | AI Receipt Analyzer";
@@ -31,58 +35,66 @@ export default function BookManagement() {
         setBooks(response.instances);
       }
     } catch (error) {
+      console.error("Failed to load books:", error);
       toast({
         title: "Error",
         description: "Failed to load books",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateBook = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-
+  const handleCreateBook = async () => {
+    if (!newBookName.trim()) return;
+    
+    setCreatingBook(true);
     try {
-      await createInstance({ name, description: description || undefined });
+      const response = await createInstance({ name: newBookName });
+      
+      if (response?.instance_id) {
+        // Initialize with default categories
+        await initializeCategories(response.instance_id, "Food, Transportation, Entertainment, Shopping, Utilities, Healthcare, Travel, Business");
+      }
+      
+      setNewBookName("");
+      setShowNewBookDialog(false);
+      loadBooks();
       toast({
         title: "Success",
-        description: "Book created successfully",
+        description: "Book created successfully"
       });
-      setShowCreateDialog(false);
-      loadBooks();
     } catch (error) {
+      console.error("Failed to create book:", error);
       toast({
         title: "Error",
         description: "Failed to create book",
-        variant: "destructive",
+        variant: "destructive"
       });
+    } finally {
+      setCreatingBook(false);
     }
   };
 
-  const handleEditBook = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-
+  const handleUpdateBook = async () => {
+    if (!editingBook || !editName.trim()) return;
+    
     try {
-      await updateInstance(editingBook.id, { name, description: description || undefined });
+      await updateInstance(editingBook.id, { name: editName });
+      setEditingBook(null);
+      setEditName("");
+      loadBooks();
       toast({
         title: "Success",
-        description: "Book updated successfully",
+        description: "Book updated successfully"
       });
-      setEditingBook(null);
-      loadBooks();
     } catch (error) {
+      console.error("Failed to update book:", error);
       toast({
         title: "Error",
         description: "Failed to update book",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -90,29 +102,38 @@ export default function BookManagement() {
   const handleDeleteBook = async (bookId: string) => {
     try {
       await deleteInstance(bookId);
+      loadBooks();
       toast({
         title: "Success",
-        description: "Book deleted successfully",
+        description: "Book deleted successfully"
       });
-      loadBooks();
     } catch (error) {
+      console.error("Failed to delete book:", error);
       toast({
         title: "Error",
         description: "Failed to delete book",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
+  };
+
+  const handleViewAnalytics = (bookId: string) => {
+    navigate(`/analytics?book=${bookId}`);
+  };
+
+  const handleScanReceipt = (bookId: string) => {
+    navigate(`/scanner?book=${bookId}`);
   };
 
   if (loading) {
     return (
       <div className="container py-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader>
-                <div className="h-4 bg-muted rounded w-32"></div>
-                <div className="h-3 bg-muted rounded w-48"></div>
+                <div className="h-6 bg-muted rounded w-32"></div>
+                <div className="h-4 bg-muted rounded w-24"></div>
               </CardHeader>
               <CardContent>
                 <div className="h-20 bg-muted rounded"></div>
@@ -130,31 +151,41 @@ export default function BookManagement() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Book Management</h1>
-          <p className="text-muted-foreground">Create and manage your expense tracking workspaces</p>
+          <p className="text-muted-foreground">Create and manage your expense books</p>
         </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <Dialog open={showNewBookDialog} onOpenChange={setShowNewBookDialog}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Create Book
+              New Book
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create New Book</DialogTitle>
-              <DialogDescription>Create a new expense tracking workspace</DialogDescription>
+              <DialogDescription>
+                Create a new expense book to organize your receipts and spending
+              </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleCreateBook} className="space-y-4">
-              <div>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
                 <Label htmlFor="name">Book Name</Label>
-                <Input id="name" name="name" placeholder="e.g., Personal Expenses" required />
+                <Input
+                  id="name"
+                  value={newBookName}
+                  onChange={(e) => setNewBookName(e.target.value)}
+                  placeholder="e.g., Personal Expenses"
+                />
               </div>
-              <div>
-                <Label htmlFor="description">Description (Optional)</Label>
-                <Input id="description" name="description" placeholder="e.g., My personal monthly expenses" />
-              </div>
-              <Button type="submit" className="w-full">Create Book</Button>
-            </form>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowNewBookDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleCreateBook} disabled={!newBookName.trim() || creatingBook}>
+                {creatingBook ? "Creating..." : "Create Book"}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
@@ -163,14 +194,12 @@ export default function BookManagement() {
       {books.length === 0 ? (
         <Card className="text-center py-12">
           <CardContent>
-            <Book className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No books created yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Create your first expense tracking book to get started
-            </p>
-            <Button onClick={() => setShowCreateDialog(true)}>
+            <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">No books yet</h3>
+            <p className="text-muted-foreground mb-4">Create your first expense book to get started</p>
+            <Button onClick={() => setShowNewBookDialog(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Create Your First Book
+              Create First Book
             </Button>
           </CardContent>
         </Card>
@@ -180,91 +209,118 @@ export default function BookManagement() {
             <Card key={book.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
+                  <div>
                     <CardTitle className="text-lg">{book.name}</CardTitle>
                     <CardDescription>
-                      {book.description || "No description"}
+                      Created {new Date(book.created_at || Date.now()).toLocaleDateString()}
                     </CardDescription>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setEditingBook(book)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleDeleteBook(book.id)}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Badge variant="secondary">Active</Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Status</span>
-                  <Badge variant="secondary">Active</Badge>
+                <div className="text-sm text-muted-foreground">
+                  <p>ID: {book.id}</p>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Created</span>
-                  <span>Today</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Transactions</span>
-                  <span>0</span>
-                </div>
-                <Separator />
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    View Analytics
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Scan Receipt
-                  </Button>
+                
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleViewAnalytics(book.id)}
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      View Analytics
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleScanReceipt(book.id)}
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      Scan Receipt
+                    </Button>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => {
+                            setEditingBook(book);
+                            setEditName(book.name);
+                          }}
+                        >
+                          <Settings className="h-4 w-4 mr-2" />
+                          Edit
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Edit Book</DialogTitle>
+                          <DialogDescription>
+                            Update the name of your expense book
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="editName">Book Name</Label>
+                            <Input
+                              id="editName"
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setEditingBook(null)}>
+                            Cancel
+                          </Button>
+                          <Button onClick={handleUpdateBook}>
+                            Update
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="destructive" className="flex-1">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Book</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{book.name}"? This action cannot be undone and will permanently delete all receipts and data in this book.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteBook(book.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
-
-      {/* Edit Dialog */}
-      <Dialog open={!!editingBook} onOpenChange={() => setEditingBook(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Book</DialogTitle>
-            <DialogDescription>Update your book details</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleEditBook} className="space-y-4">
-            <div>
-              <Label htmlFor="edit-name">Book Name</Label>
-              <Input 
-                id="edit-name" 
-                name="name" 
-                defaultValue={editingBook?.name} 
-                required 
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-description">Description (Optional)</Label>
-              <Input 
-                id="edit-description" 
-                name="description" 
-                defaultValue={editingBook?.description || ""} 
-              />
-            </div>
-            <Button type="submit" className="w-full">Update Book</Button>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

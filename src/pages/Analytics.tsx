@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -97,6 +98,8 @@ export default function Analytics() {
       const budgetData = await getBudgets(selectedBook);
       setBudgets(budgetData);
       setShowBudgetForm(false);
+      setNewBudgetCategoryId("");
+      setNewBudgetLimit("");
       toast({ title: "Budget saved", description: "Your budget was created successfully." });
     } catch (error: any) {
       toast({ title: "Failed to save budget", description: error?.message || "Unknown error", variant: "destructive" });
@@ -119,6 +122,21 @@ export default function Analytics() {
     } catch (error) {
       console.error("Failed to export CSV:", error);
     }
+  };
+
+  // Safely get valid transactions with amount checks
+  const getValidTransactions = () => {
+    if (!reports?.top_items) return [];
+    return reports.top_items.filter((item: any) => 
+      item && typeof item.amount === 'number' && !isNaN(item.amount)
+    );
+  };
+
+  // Calculate average transaction safely
+  const getAverageTransaction = () => {
+    const validItems = getValidTransactions();
+    if (!validItems.length || !reports?.total_spent) return 0;
+    return reports.total_spent / validItems.length;
   };
 
   if (loading) {
@@ -195,7 +213,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${reports?.total_spent?.toFixed(2) || "0.00"}
+                    ${reports?.total_spent ? reports.total_spent.toFixed(2) : "0.00"}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     <TrendingUp className="inline h-3 w-3 mr-1" />
@@ -211,7 +229,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {reports?.top_items?.length || 0}
+                    {getValidTransactions().length}
                   </div>
                   <p className="text-xs text-muted-foreground">Total recorded</p>
                 </CardContent>
@@ -227,7 +245,7 @@ export default function Analytics() {
                     {reports?.top_categories?.[0]?.category_name || "None"}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    ${reports?.top_categories?.[0]?.total?.toFixed(2) || "0.00"}
+                    ${reports?.top_categories?.[0]?.total ? reports.top_categories[0].total.toFixed(2) : "0.00"}
                   </p>
                 </CardContent>
               </Card>
@@ -239,7 +257,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${(reports?.total_spent / (reports?.top_items?.length || 1))?.toFixed(2) || "0.00"}
+                    ${getAverageTransaction().toFixed(2)}
                   </div>
                   <p className="text-xs text-muted-foreground">Per transaction</p>
                 </CardContent>
@@ -253,13 +271,13 @@ export default function Analytics() {
                 <CardDescription>Your latest expenses</CardDescription>
               </CardHeader>
               <CardContent>
-                {reports?.top_items?.length > 0 ? (
+                {getValidTransactions().length > 0 ? (
                   <div className="space-y-4">
-                    {reports.top_items.slice(0, 5).map((item: any, index: number) => (
+                    {getValidTransactions().slice(0, 5).map((item: any, index: number) => (
                       <div key={index} className="flex items-center justify-between">
                         <div>
-                          <div className="font-medium">{item.text}</div>
-                          <div className="text-sm text-muted-foreground">{item.category}</div>
+                          <div className="font-medium">{item.text || "Unknown Item"}</div>
+                          <div className="text-sm text-muted-foreground">{item.category || "Uncategorized"}</div>
                         </div>
                         <div className="text-right">
                           <div className="font-medium">${item.amount.toFixed(2)}</div>
@@ -292,7 +310,7 @@ export default function Analytics() {
                           cy="50%"
                           labelLine={false}
                           nameKey="label"
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          label={({ label, percent }) => `${label} ${(percent * 100).toFixed(0)}%`}
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"
@@ -325,10 +343,10 @@ export default function Analytics() {
                         <div key={index} className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>{category.category_name}</span>
-                            <span>${category.total.toFixed(2)}</span>
+                            <span>${category.total ? category.total.toFixed(2) : "0.00"}</span>
                           </div>
                           <Progress 
-                            value={reports.total_spent ? (category.total / reports.total_spent) * 100 : 0} 
+                            value={reports.total_spent && category.total ? (category.total / reports.total_spent) * 100 : 0} 
                             className="h-2"
                           />
                         </div>
@@ -352,7 +370,7 @@ export default function Analytics() {
                 {budgets?.details?.length > 0 ? (
                   <div className="space-y-6">
                     {budgets.details.map((budget: any, index: number) => {
-                      const percentage = (budget.spent / budget.limit) * 100;
+                      const percentage = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;
                       const isOverBudget = percentage > 100;
                       
                       return (
@@ -365,8 +383,8 @@ export default function Analytics() {
                           </div>
                           <div className="space-y-2">
                             <div className="flex justify-between text-sm text-muted-foreground">
-                              <span>${budget.spent.toFixed(2)} spent</span>
-                              <span>${budget.limit.toFixed(2)} budget</span>
+                              <span>${budget.spent ? budget.spent.toFixed(2) : "0.00"} spent</span>
+                              <span>${budget.limit ? budget.limit.toFixed(2) : "0.00"} budget</span>
                             </div>
                             <Progress 
                               value={Math.min(percentage, 100)} 
@@ -374,7 +392,10 @@ export default function Analytics() {
                             />
                             <div className="flex justify-between text-sm">
                               <span className={isOverBudget ? "text-destructive" : "text-muted-foreground"}>
-                                {isOverBudget ? `$${(budget.spent - budget.limit).toFixed(2)} over budget` : `$${budget.remaining.toFixed(2)} remaining`}
+                                {isOverBudget ? 
+                                  `$${((budget.spent || 0) - (budget.limit || 0)).toFixed(2)} over budget` : 
+                                  `$${(budget.remaining || 0).toFixed(2)} remaining`
+                                }
                               </span>
                             </div>
                           </div>
