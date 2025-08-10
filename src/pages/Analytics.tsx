@@ -22,6 +22,7 @@ export default function Analytics() {
   const [selectedBook, setSelectedBook] = useState("");
   const [reports, setReports] = useState<any>(null);
   const [chartData, setChartData] = useState<any>(null);
+  const [chartType, setChartType] = useState<"pie" | "bar" | "line">("pie");
   const [budgets, setBudgets] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showBudgetForm, setShowBudgetForm] = useState(false);
@@ -48,6 +49,19 @@ export default function Analytics() {
       loadAnalyticsData();
     }
   }, [selectedBook]);
+
+  // Load chart data whenever book or chart type changes
+  useEffect(() => {
+    if (!selectedBook) return;
+    (async () => {
+      try {
+        const data = await getGraphs(selectedBook, { chart_type: chartType, format: "json" });
+        setChartData(data);
+      } catch (e) {
+        console.error("Failed to load chart data:", e);
+      }
+    })();
+  }, [selectedBook, chartType]);
 
   const loadBooks = async () => {
     try {
@@ -79,12 +93,6 @@ export default function Analytics() {
       });
       setReports(reportsData);
 
-      // Load pie chart data
-      const pieData = await getGraphs(selectedBook, {
-        chart_type: "pie",
-        format: "json"
-      });
-      setChartData(pieData);
 
       // Load budgets
       const budgetData = await getBudgets(selectedBook);
@@ -361,33 +369,66 @@ export default function Analytics() {
 
           <TabsContent value="charts" className="space-y-6">
             <div className="grid-zen grid-cols-1 lg:grid-cols-2">
-              {/* Pie Chart */}
               <Card className="card-minimal">
-                <CardHeader>
-                  <CardTitle className="heading-zen">Spending by Category</CardTitle>
-                  <CardDescription className="text-zen">Distribution of expenses</CardDescription>
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                  <div>
+                    <CardTitle className="heading-zen">
+                      {chartType === "pie" ? "Spending by Category" : chartType === "bar" ? "Monthly Spending" : "Daily Spending"}
+                    </CardTitle>
+                    <CardDescription className="text-zen">
+                      {chartType === "pie" ? "Distribution of expenses" : chartType === "bar" ? "Total per month" : "Total per day"}
+                    </CardDescription>
+                  </div>
+                  <Select value={chartType} onValueChange={(val) => setChartType(val as any)}>
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Chart type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pie">Pie</SelectItem>
+                      <SelectItem value="bar">Bar</SelectItem>
+                      <SelectItem value="line">Line</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </CardHeader>
                 <CardContent>
                   {chartData?.data?.length > 0 ? (
                     <ResponsiveContainer width="100%" height={250}>
-                      <RechartsPieChart>
-                        <Pie
-                          data={chartData.data}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          nameKey="label"
-                          label={({ label, percent }) => `${label} ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {chartData.data.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
-                      </RechartsPieChart>
+                      {chartType === "pie" ? (
+                        <RechartsPieChart>
+                          <Pie
+                            data={chartData.data}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            nameKey="label"
+                            label={({ label, percent }) => `${label} ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            {chartData.data.map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                        </RechartsPieChart>
+                      ) : chartType === "bar" ? (
+                        <BarChart data={chartData.data}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="label" />
+                          <YAxis />
+                          <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                          <Bar dataKey="value" fill="#8884d8" />
+                        </BarChart>
+                      ) : (
+                        <LineChart data={chartData.data}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="label" />
+                          <YAxis />
+                          <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                          <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} dot={{ r: 2 }} />
+                        </LineChart>
+                      )}
                     </ResponsiveContainer>
                   ) : (
                     <div className="text-center py-12 text-zen">
