@@ -243,20 +243,24 @@ export default function BookManagement() {
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="w-full text-xs h-8"
+                      className="w-full text-xs h-8 relative overflow-hidden justify-center"
                       onClick={() => handleViewAnalytics(book.id)}
                     >
-                      <BarChart3 className="h-3 w-3 mr-1" />
-                      Analytics
+                      <span className="inline-flex items-center gap-2">
+                        <BarChart3 className="h-3 w-3" />
+                        <span>Analytics</span>
+                      </span>
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="w-full text-xs h-8"
+                      className="w-full text-xs h-8 relative overflow-hidden justify-center"
                       onClick={() => handleScanReceipt(book.id)}
                     >
-                      <Camera className="h-3 w-3 mr-1" />
-                      Scan
+                      <span className="inline-flex items-center gap-2">
+                        <Camera className="h-3 w-3" />
+                        <span>Scan</span>
+                      </span>
                     </Button>
                   </div>
                   
@@ -266,14 +270,16 @@ export default function BookManagement() {
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="w-full text-xs h-8"
+                          className="w-full text-xs h-8 relative overflow-hidden justify-center"
                           onClick={() => {
                             setEditingBook(book);
                             setEditName(book.name);
                           }}
                         >
-                          <Settings className="h-3 w-3 mr-1" />
-                          Edit
+                          <span className="inline-flex items-center gap-2">
+                            <Settings className="h-3 w-3" />
+                            <span>Edit</span>
+                          </span>
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="card-zen mx-4">
