@@ -76,7 +76,7 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
   };
 
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-[1000]">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-[1000] pointer-events-none">
       {/* Dim background */}
       <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] z-0 pointer-events-none" />
 
@@ -90,7 +90,7 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
 
       {/* Tooltip card */}
       <div
-        className="absolute z-20 max-w-sm p-4 rounded-lg bg-card border shadow-xl animate-fade-in"
+        className="absolute z-20 max-w-sm p-4 rounded-lg bg-card border shadow-xl animate-fade-in pointer-events-auto"
         style={{
           top: (() => {
             const desired = (targetRect?.top ?? 24) + (targetRect ? targetRect.height + 12 : 0);
