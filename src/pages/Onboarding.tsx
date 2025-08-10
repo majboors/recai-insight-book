@@ -43,12 +43,55 @@ export default function Onboarding() {
     setStep('skill-level');
   };
 
-  const handleBeginnerSelect = () => {
-    setStep('beginner');
+  const handleBeginnerSelect = async () => {
+    if (!user) return;
+    const key = `onboarding_complete:${user.id}`;
+    localStorage.setItem(key, 'true');
+    localStorage.removeItem('onboarding_complete');
+    try {
+      await supabase.auth.updateUser({ data: { onboarding_complete: true } });
+    } catch (e) {
+      console.warn('Failed to update user metadata for onboarding:', e);
+    }
+    navigate('/', {
+      state: {
+        tourSteps: [
+          {
+            selector: "[data-tour-id='scan-receipt']",
+            title: 'Scan your first receipt',
+            description: 'Tap here to scan and extract items automatically.'
+          }
+        ]
+      }
+    });
   };
-
-  const handleAdvancedSelect = () => {
-    setStep('advanced');
+ 
+  const handleAdvancedSelect = async () => {
+    if (!user) return;
+    const key = `onboarding_complete:${user.id}`;
+    localStorage.setItem(key, 'true');
+    localStorage.removeItem('onboarding_complete');
+    try {
+      await supabase.auth.updateUser({ data: { onboarding_complete: true } });
+    } catch (e) {
+      console.warn('Failed to update user metadata for onboarding:', e);
+    }
+    navigate('/', {
+      state: {
+        tourSteps: [
+          {
+            selector: "[data-tour-id='scan-receipt']",
+            title: 'Quick capture',
+            description: 'Scan receipts to populate your data fast.'
+          },
+          {
+            selector: "[data-tour-id='view-reports-action']",
+            title: 'Deep analysis',
+            description: 'Open Reports to analyze spending and budgets.'
+          }
+        ]
+      }
+    });
   };
 
   const handleComplete = async () => {

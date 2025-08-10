@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { listInstances, getBudgets, getReports } from "@/lib/recai";
 import { TrendingUp, TrendingDown, DollarSign, Receipt, AlertTriangle, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TourOverlay } from "@/components/guided/TourOverlay";
 export default function Dashboard() {
   const [books, setBooks] = useState<any[]>([]);
@@ -15,17 +15,26 @@ export default function Dashboard() {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTour, setShowTour] = useState<boolean>(false);
-  const tourSteps = [
+  const [steps, setSteps] = useState<any[]>([
     { selector: "[data-tour-id='scan-receipt']", title: "Scan Receipts", description: "Quickly scan receipts to extract transactions." },
     { selector: "[data-tour-id='books-list']", title: "Your Books", description: "Workspaces where your receipts and budgets live." },
     { selector: "[data-tour-id='create-book-action']", title: "Create a Book", description: "Start by creating a book to organize expenses." },
-  ];
+  ]);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Dashboard | AI Receipt Analyzer";
     loadDashboardData();
-    if (!localStorage.getItem("tour_seen_dashboard")) setShowTour(true);
-  }, []);
+    const incoming = (location.state as any)?.tourSteps;
+    if (incoming?.length) {
+      setSteps(incoming);
+      setShowTour(true);
+      navigate(".", { replace: true, state: null });
+    } else if (!localStorage.getItem("tour_seen_dashboard")) {
+      setShowTour(true);
+    }
+  }, [location, navigate]);
 
   const loadDashboardData = async () => {
     try {
@@ -96,7 +105,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-zen">
-      <TourOverlay open={showTour} steps={tourSteps} onClose={() => { localStorage.setItem("tour_seen_dashboard","1"); setShowTour(false); }} />
+      <TourOverlay open={showTour} steps={steps} onClose={() => { localStorage.setItem("tour_seen_dashboard","1"); setShowTour(false); }} />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-2">
@@ -248,7 +257,7 @@ export default function Dashboard() {
               </Button>
             </Link>
             <Link to="/analytics">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex-col gap-2" data-tour-id="view-reports-action">
                 <TrendingUp className="h-6 w-6" />
                 View Reports
               </Button>
