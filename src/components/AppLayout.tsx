@@ -105,7 +105,7 @@ export function AppLayout({
             </Sheet>
             
             <div className="flex items-center gap-4">
-              <h1 className="text-xl font-medium heading-zen">ReceiptWala</h1>
+              <h1 className="text-xl font-medium heading-zen">WalletWala</h1>
               <div className="hidden sm:block">
                 <Select value={currentBook} onValueChange={setCurrentBook}>
                   <SelectTrigger className="w-48 btn-minimal">

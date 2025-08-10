@@ -116,7 +116,7 @@ export function PWAInstallPrompt({ isOpen, onClose, onInstall }: PWAInstallPromp
               <Smartphone className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="heading-zen text-lg">Download ReceiptWala</CardTitle>
+              <CardTitle className="heading-zen text-lg">Download WalletWala</CardTitle>
               <CardDescription className="text-zen">
                 Get the app for a better experience
               </CardDescription>

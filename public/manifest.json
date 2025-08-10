@@ -1,6 +1,6 @@
 {
-  "name": "ReceiptWala - AI Receipt Analyzer",
-  "short_name": "ReceiptWala",
+  "name": "WalletWala - AI Receipt Analyzer",
+  "short_name": "WalletWala",
   "description": "AI-powered receipt scanning and expense tracking app",
   "start_url": "/",
   "display": "standalone",
