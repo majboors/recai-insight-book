@@ -59,6 +59,25 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Progressive Web App (PWA) support
+
+## PWA Features
+
+This application includes Progressive Web App (PWA) functionality:
+
+- **Install Prompt**: Automatic popup for logged-in users to install the app
+- **Offline Support**: Service worker for caching and offline functionality
+- **App-like Experience**: Standalone mode with custom icon and splash screen
+- **Cross-platform**: Works on iOS, Android, and desktop browsers
+
+### PWA Installation
+
+Users can install the app in several ways:
+1. **Automatic Prompt**: Shows after login for eligible browsers
+2. **Manual Button**: Available in the header and sidebar
+3. **Browser Menu**: Via browser's "Add to Home Screen" option
+
+The app uses the `icon.jpeg` file as the app icon and provides a native app-like experience when installed.
 
 ## How can I deploy this project?
 

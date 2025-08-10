@@ -17,8 +17,68 @@ import Onboarding from "./pages/Onboarding";
 import { AppLayout } from "@/components/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { usePWA } from "@/hooks/usePWA";
+import { PWADebug } from "@/components/PWADebug";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  const { showInstallPrompt, dismissPrompt, handleInstall } = usePWA();
+
+  // Register service worker in App component
+  useEffect(() => {
+    console.log('🎯 App component mounted');
+    console.log('🌐 Current URL:', window.location.href);
+    
+    if ('serviceWorker' in navigator) {
+      console.log('✅ Service Worker is supported in App');
+      
+      navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none'
+      })
+      .then((registration) => {
+        console.log('✅ Service Worker registered from App:', registration);
+      })
+      .catch((error) => {
+        console.error('❌ Service Worker registration failed from App:', error);
+      });
+    } else {
+      console.warn('⚠️ Service Worker not supported in App');
+    }
+  }, []);
+
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+          <Route path="/books" element={<ProtectedRoute><AppLayout><BookManagement /></AppLayout></ProtectedRoute>} />
+          <Route path="/scanner" element={<ProtectedRoute><AppLayout><ReceiptScanner /></AppLayout></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><AppLayout><Analytics /></AppLayout></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><AppLayout><AIChat /></AppLayout></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><AppLayout><Notifications /></AppLayout></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
+          <Route path="/test/api-troubleshoot" element={<ProtectedRoute><AppLayout><TestApiTroubleshoot /></AppLayout></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+      
+      <PWAInstallPrompt 
+        isOpen={showInstallPrompt}
+        onClose={dismissPrompt}
+        onInstall={handleInstall}
+      />
+      
+      {/* PWA Debug Component - Remove in production */}
+      <PWADebug />
+    </>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,21 +86,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-            <Route path="/books" element={<ProtectedRoute><AppLayout><BookManagement /></AppLayout></ProtectedRoute>} />
-            <Route path="/scanner" element={<ProtectedRoute><AppLayout><ReceiptScanner /></AppLayout></ProtectedRoute>} />
-            <Route path="/analytics" element={<ProtectedRoute><AppLayout><Analytics /></AppLayout></ProtectedRoute>} />
-            <Route path="/chat" element={<ProtectedRoute><AppLayout><AIChat /></AppLayout></ProtectedRoute>} />
-            <Route path="/notifications" element={<ProtectedRoute><AppLayout><Notifications /></AppLayout></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
-            <Route path="/test/api-troubleshoot" element={<ProtectedRoute><AppLayout><TestApiTroubleshoot /></AppLayout></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AppContent />
       </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>
