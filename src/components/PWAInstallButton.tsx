@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import { usePWA } from '@/hooks/usePWA';
+import { usePWAContext } from '@/contexts/PWAContext';
 
 interface PWAInstallButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
@@ -16,7 +16,7 @@ export function PWAInstallButton({
   className = '',
   publicMode = false,
 }: PWAInstallButtonProps) {
-  const { isPWAInstalled, hasInstallPrompt, openPrompt } = usePWA({ requireAuth: !publicMode });
+  const { isPWAInstalled, hasInstallPrompt, openPrompt } = usePWAContext();
   const [showManualInstall, setShowManualInstall] = useState(false);
 
   const handleClick = () => {

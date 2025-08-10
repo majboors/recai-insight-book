@@ -18,7 +18,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
-import { usePWA } from "@/hooks/usePWA";
+import { PWAProvider, usePWAContext } from "@/contexts/PWAContext";
 import AppInstallPage from "./pages/AppInstall";
 
 import { useEffect } from "react";
@@ -26,7 +26,7 @@ import { useEffect } from "react";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { showInstallPrompt, dismissPrompt, handleInstall } = usePWA();
+  const { showInstallPrompt, dismissPrompt, handleInstall } = usePWAContext();
 
   // Register service worker in App component
   useEffect(() => {
@@ -85,11 +85,13 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AppContent />
-      </TooltipProvider>
+      <PWAProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AppContent />
+        </TooltipProvider>
+      </PWAProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );
