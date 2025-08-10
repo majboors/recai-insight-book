@@ -32,6 +32,21 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
     };
   }, [open]);
 
+  // Nudge reflow when step changes or overlay opens (handles late-rendered DOM)
+  useEffect(() => {
+    if (!open) return;
+    const id = requestAnimationFrame(() => setReflow((r) => r + 1));
+    const t = setTimeout(() => setReflow((r) => r + 1), 60);
+    return () => { cancelAnimationFrame(id); clearTimeout(t); };
+  }, [open, index]);
+
+  // Observe DOM mutations while open to reposition highlight when targets appear
+  useEffect(() => {
+    if (!open) return;
+    const observer = new MutationObserver(() => setReflow((r) => r + 1));
+    try { observer.observe(document.body, { childList: true, subtree: true, attributes: true }); } catch {}
+    return () => observer.disconnect();
+  }, [open]);
   // Ensure target is visible and handle cross-page steps
   useEffect(() => {
     if (!open) return;
@@ -76,7 +91,7 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
   };
 
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-[1000] pointer-events-none">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-[1000]">
       {/* Dim background */}
       <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] z-0 pointer-events-none" />
 
