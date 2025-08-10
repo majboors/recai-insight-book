@@ -7,14 +7,16 @@ interface PWAInstallButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
+  publicMode?: boolean; // allow use without auth
 }
 
 export function PWAInstallButton({ 
   variant = 'outline', 
   size = 'sm', 
-  className = '' 
+  className = '',
+  publicMode = false,
 }: PWAInstallButtonProps) {
-  const { isPWAInstalled, hasInstallPrompt, openPrompt } = usePWA();
+  const { isPWAInstalled, hasInstallPrompt, openPrompt } = usePWA({ requireAuth: !publicMode });
   const [showManualInstall, setShowManualInstall] = useState(false);
 
   const handleClick = () => {

@@ -19,6 +19,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { usePWA } from "@/hooks/usePWA";
+import AppInstallPage from "./pages/AppInstall";
 
 import { useEffect } from "react";
 
@@ -56,6 +57,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/install" element={<AppInstallPage />} />
           <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
           <Route path="/books" element={<ProtectedRoute><AppLayout><BookManagement /></AppLayout></ProtectedRoute>} />
           <Route path="/scanner" element={<ProtectedRoute><AppLayout><ReceiptScanner /></AppLayout></ProtectedRoute>} />

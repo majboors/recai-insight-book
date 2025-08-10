@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 
-export function usePWA() {
+export function usePWA(options?: { requireAuth?: boolean }) {
   const { user } = useAuth();
+  const requireAuth = options?.requireAuth ?? true;
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isPWAInstalled, setIsPWAInstalled] = useState(false);
   const [hasInstallPrompt, setHasInstallPrompt] = useState(false);
 
   useEffect(() => {
-    // Only show prompt for logged-in users
-    if (!user) return;
+    // Only show prompt for logged-in users if required
+    if (requireAuth && !user) return;
 
     // Check if already installed
     const checkIfInstalled = () => {
@@ -95,7 +96,7 @@ export function usePWA() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, [user, hasInstallPrompt, isPWAInstalled]);
+  }, [user, hasInstallPrompt, isPWAInstalled, requireAuth]);
 
   const dismissPrompt = () => {
     setShowInstallPrompt(false);
