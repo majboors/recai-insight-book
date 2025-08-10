@@ -50,6 +50,15 @@ export default function Analytics() {
     }
   }, [selectedBook]);
 
+  // Sync selected book to the global Quick Chat widget
+  useEffect(() => {
+    if (!selectedBook) return;
+    try {
+      sessionStorage.setItem("session_instance_id", selectedBook);
+      window.dispatchEvent(new Event("session_instance_changed"));
+    } catch {}
+  }, [selectedBook]);
+
   // Load chart data whenever book or chart type changes
   useEffect(() => {
     if (!selectedBook) return;

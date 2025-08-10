@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,34 @@ export function ChatWidget({ instanceId }: ChatWidgetProps) {
     const sid = sessionStorage.getItem("session_instance_id");
     if (sid) setStoredInstanceId(sid);
   }, []);
+
+  // When provided a prop instanceId (e.g., on book pages), sync it to session and notify listeners
+  useEffect(() => {
+    if (instanceId) {
+      try {
+        sessionStorage.setItem("session_instance_id", instanceId);
+        setStoredInstanceId(instanceId);
+        window.dispatchEvent(new Event("session_instance_changed"));
+      } catch {}
+    }
+  }, [instanceId]);
+
+  // Listen for custom session changes from other parts of the app
+  useEffect(() => {
+    const handler = () => {
+      const sid = sessionStorage.getItem("session_instance_id");
+      setStoredInstanceId(sid);
+    };
+    window.addEventListener("session_instance_changed", handler);
+    return () => window.removeEventListener("session_instance_changed", handler);
+  }, []);
+
+  // Also resync on route changes (fallback for same-tab sessionStorage updates)
+  const location = useLocation();
+  useEffect(() => {
+    const sid = sessionStorage.getItem("session_instance_id");
+    if (sid) setStoredInstanceId(sid);
+  }, [location.pathname, location.search]);
 
   const effectiveInstanceId = useMemo(() => instanceId || storedInstanceId || "", [instanceId, storedInstanceId]);
 
