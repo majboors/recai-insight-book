@@ -17,8 +17,40 @@ import Onboarding from "./pages/Onboarding";
 import { AppLayout } from "@/components/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { usePWA } from "@/hooks/usePWA";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  const { showInstallPrompt, dismissPrompt, handleInstall } = usePWA();
+
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+          <Route path="/books" element={<ProtectedRoute><AppLayout><BookManagement /></AppLayout></ProtectedRoute>} />
+          <Route path="/scanner" element={<ProtectedRoute><AppLayout><ReceiptScanner /></AppLayout></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><AppLayout><Analytics /></AppLayout></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><AppLayout><AIChat /></AppLayout></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><AppLayout><Notifications /></AppLayout></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
+          <Route path="/test/api-troubleshoot" element={<ProtectedRoute><AppLayout><TestApiTroubleshoot /></AppLayout></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+      
+      <PWAInstallPrompt 
+        isOpen={showInstallPrompt}
+        onClose={dismissPrompt}
+        onInstall={handleInstall}
+      />
+    </>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,21 +58,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-            <Route path="/books" element={<ProtectedRoute><AppLayout><BookManagement /></AppLayout></ProtectedRoute>} />
-            <Route path="/scanner" element={<ProtectedRoute><AppLayout><ReceiptScanner /></AppLayout></ProtectedRoute>} />
-            <Route path="/analytics" element={<ProtectedRoute><AppLayout><Analytics /></AppLayout></ProtectedRoute>} />
-            <Route path="/chat" element={<ProtectedRoute><AppLayout><AIChat /></AppLayout></ProtectedRoute>} />
-            <Route path="/notifications" element={<ProtectedRoute><AppLayout><Notifications /></AppLayout></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
-            <Route path="/test/api-troubleshoot" element={<ProtectedRoute><AppLayout><TestApiTroubleshoot /></AppLayout></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AppContent />
       </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>

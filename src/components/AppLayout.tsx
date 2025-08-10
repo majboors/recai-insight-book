@@ -9,6 +9,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { TourOverlay, type TourStep } from "@/components/guided/TourOverlay";
+import { PWAInstallButton } from "@/components/PWAInstallButton";
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -83,6 +84,11 @@ export function AppLayout({
                       </Link>;
                 })}
                 
+                {/* PWA Install Button for Mobile */}
+                <div className="px-3 py-2">
+                  <PWAInstallButton variant="outline" size="sm" className="w-full justify-start" />
+                </div>
+
                 {/* Settings Link for Mobile */}
                 <Link to="/settings" className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${location.pathname === '/settings' ? "bg-primary text-primary-foreground shadow-soft" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}>
                   <Settings className="h-5 w-5" aria-hidden="true" />
@@ -124,6 +130,8 @@ export function AppLayout({
               </Badge>
             </Button>
             
+            {/* PWA Install Button */}
+            <PWAInstallButton variant="outline" size="sm" className="hidden sm:inline-flex" />
 
             {/* User Menu with Settings Link */}
             <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border/50">
@@ -170,6 +178,11 @@ export function AppLayout({
                 </Link>;
           })}
           
+          {/* PWA Install Button */}
+          <div className="px-4 py-2">
+            <PWAInstallButton variant="outline" size="sm" className="w-full justify-start" />
+          </div>
+
           {/* Settings Link */}
           <Link to="/settings" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${location.pathname === '/settings' ? "bg-primary text-primary-foreground shadow-soft transform scale-[1.02]" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:transform hover:scale-[1.01]"}`}>
             <Settings className="h-5 w-5" aria-hidden="true" />
