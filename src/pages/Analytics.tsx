@@ -269,13 +269,13 @@ export default function Analytics() {
         </Card>
       ) : (
         <Tabs defaultValue={searchParams.get("tab") || "overview"} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 h-auto">
-            <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
-            <TabsTrigger value="charts" className="text-xs sm:text-sm">Charts</TabsTrigger>
-            <TabsTrigger value="budgets" className="text-xs sm:text-sm">Budgets</TabsTrigger>
-            <TabsTrigger value="categories" className="text-xs sm:text-sm">Categories</TabsTrigger>
-            <TabsTrigger value="transactions" className="text-xs sm:text-sm">Transactions</TabsTrigger>
-            <TabsTrigger value="trends" className="text-xs sm:text-sm">Trends</TabsTrigger>
+          <TabsList aria-label="Analytics tabs" className="w-full overflow-x-auto whitespace-nowrap sm:flex-wrap">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm shrink-0">Overview</TabsTrigger>
+            <TabsTrigger value="charts" className="text-xs sm:text-sm shrink-0">Charts</TabsTrigger>
+            <TabsTrigger value="budgets" className="text-xs sm:text-sm shrink-0">Budgets</TabsTrigger>
+            <TabsTrigger value="categories" className="text-xs sm:text-sm shrink-0">Categories</TabsTrigger>
+            <TabsTrigger value="transactions" className="text-xs sm:text-sm shrink-0">Transactions</TabsTrigger>
+            <TabsTrigger value="trends" className="text-xs sm:text-sm shrink-0">Trends</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
