@@ -148,7 +148,7 @@ export default function TransactionsManager({ instanceId, categories }: Transact
             <div className="grid gap-2">
               <Label>Category</Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger className="btn-minimal">
+                <SelectTrigger className="text-base md:text-sm h-11 btn-minimal">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -183,7 +183,7 @@ export default function TransactionsManager({ instanceId, categories }: Transact
             <div className="flex items-center gap-2">
               <Label className="text-zen">Limit</Label>
               <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setOffset(0); }}>
-                <SelectTrigger className="w-24 btn-minimal">
+                <SelectTrigger className="w-24 text-base md:text-sm h-11 btn-minimal">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
