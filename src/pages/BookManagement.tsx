@@ -227,7 +227,7 @@ export default function BookManagement() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div 
-                  className="text-xs text-muted-foreground font-mono cursor-pointer hover:text-primary hover:bg-accent/20 rounded p-2 -m-2 transition-colors flex items-center gap-1"
+                  className="text-xs text-muted-foreground font-mono cursor-pointer hover:text-primary hover:bg-accent/20 rounded p-2 transition-colors flex items-center gap-1"
                   onClick={() => {
                     navigator.clipboard.writeText(book.id);
                     toast({ title: "Copied!", description: "Book ID copied to clipboard" });
