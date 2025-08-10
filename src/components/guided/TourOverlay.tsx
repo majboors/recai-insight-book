@@ -78,12 +78,12 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
   return (
     <div role="dialog" aria-modal="true" className="fixed inset-0 z-[1000]">
       {/* Dim background */}
-      <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] z-0" />
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] z-0 pointer-events-none" />
 
       {/* Highlight box */}
       {targetRect && (
         <div
-          className="absolute z-10 rounded-lg ring-2 ring-primary shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"
+          className="absolute z-10 rounded-lg ring-2 ring-primary shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] pulse"
           style={{ top: targetRect.top, left: targetRect.left, width: targetRect.width, height: targetRect.height, pointerEvents: "none" }}
         />
       )}
