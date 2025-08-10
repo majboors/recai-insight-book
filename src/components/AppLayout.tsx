@@ -187,7 +187,7 @@ export function AppLayout({
       </div>
 
       {/* Global Tour Overlay */}
-      <TourOverlay open={globalTourOpen} steps={globalTourSteps} onClose={() => setGlobalTourOpen(false)} />
+      <TourOverlay open={globalTourOpen} steps={globalTourSteps} onClose={() => { try { localStorage.setItem("tour_seen_dashboard","1"); } catch {} setGlobalTourOpen(false); }} />
 
       {/* Global Chat Widget */}
       <ChatWidget />
