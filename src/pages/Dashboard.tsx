@@ -94,14 +94,23 @@ export default function Dashboard() {
   }
 
   // Derived metrics for tiles
-  const monthSpent = Number(reports?.[0]?.total_spent || 0);
-  const txCount = Number(reports?.[0]?.top_items?.length || 0);
+  const monthSpent = Number(reports?.total_spent || 0);
+  const txCount = Number(reports?.transaction_count || 0);
   const avgTxn = txCount ? monthSpent / txCount : 0;
   const budgetTotals = (budgetData?.details || []).reduce(
     (acc: any, b: any) => ({ spent: acc.spent + (b.spent || 0), limit: acc.limit + (b.limit || 0) }),
     { spent: 0, limit: 0 }
   );
   const budgetPercent = budgetTotals.limit ? Math.round((budgetTotals.spent / budgetTotals.limit) * 100) : 0;
+
+  // Latest breakdowns
+  const lastDaily = reports?.daily_spend?.length ? reports.daily_spend[reports.daily_spend.length - 1] : null;
+  const lastWeekly = reports?.weekly_spend?.length ? reports.weekly_spend[reports.weekly_spend.length - 1] : null;
+  const lastMonthly = reports?.monthly_spend?.length ? reports.monthly_spend[reports.monthly_spend.length - 1] : null;
+
+  const dailyAmount: number = lastDaily ? Number((lastDaily.total ?? lastDaily.total_spent ?? lastDaily.amount) || 0) : 0;
+  const weeklyAmount: number = lastWeekly ? Number((lastWeekly.total ?? lastWeekly.total_spent ?? lastWeekly.amount) || 0) : 0;
+  const monthlyAmount: number = lastMonthly ? Number((lastMonthly.total ?? lastMonthly.total_spent ?? lastMonthly.amount) || 0) : monthSpent;
 
   return (
     <div className="space-zen">
@@ -169,6 +178,39 @@ export default function Dashboard() {
               <TrendingUp className="inline h-3 w-3 mr-1" aria-hidden="true" />
               This month
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Time Breakdown */}
+      <div className="grid-zen grid-cols-1 sm:grid-cols-3">
+        <div className="card-zen">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-zen">Latest Daily Spend</h3>
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-medium heading-zen">${dailyAmount.toFixed(2)}</div>
+            <p className="text-xs text-zen">{lastDaily?.date ? `Date: ${lastDaily.date}` : "No recent data"}</p>
+          </div>
+        </div>
+
+        <div className="card-zen">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-zen">Latest Weekly Spend</h3>
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-medium heading-zen">${weeklyAmount.toFixed(2)}</div>
+            <p className="text-xs text-zen">{lastWeekly?.week ? `Week: ${lastWeekly.week}` : "No recent data"}</p>
+          </div>
+        </div>
+
+        <div className="card-zen">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-zen">Latest Monthly Spend</h3>
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-medium heading-zen">${monthlyAmount.toFixed(2)}</div>
+            <p className="text-xs text-zen">{lastMonthly?.month ? `Month: ${lastMonthly.month}` : "No recent data"}</p>
           </div>
         </div>
       </div>
