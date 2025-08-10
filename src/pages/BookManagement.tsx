@@ -264,7 +264,7 @@ export default function BookManagement() {
                     </Button>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button 
@@ -313,9 +313,11 @@ export default function BookManagement() {
 
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="destructive" className="w-full text-xs h-8">
-                          <Trash2 className="h-3 w-3 mr-1" />
-                          Delete
+                        <Button size="sm" variant="destructive" className="w-full text-xs h-8 relative overflow-hidden min-w-0">
+                          <span className="inline-flex items-center gap-2 min-w-0">
+                            <Trash2 className="h-3 w-3 shrink-0" />
+                            <span className="truncate">Delete</span>
+                          </span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="mx-4">
