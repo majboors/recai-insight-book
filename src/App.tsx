@@ -19,7 +19,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { usePWA } from "@/hooks/usePWA";
-import { PWADebug } from "@/components/PWADebug";
+
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -75,7 +75,7 @@ const AppContent = () => {
       />
       
       {/* PWA Debug Component - Remove in production */}
-      <PWADebug />
+      
     </>
   );
 };

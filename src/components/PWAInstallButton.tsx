@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Smartphone, Info } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { usePWA } from '@/hooks/usePWA';
 
 interface PWAInstallButtonProps {
@@ -14,13 +14,13 @@ export function PWAInstallButton({
   size = 'sm', 
   className = '' 
 }: PWAInstallButtonProps) {
-  const { showInstallPrompt, dismissPrompt, handleInstall, isPWAInstalled, hasInstallPrompt } = usePWA();
+  const { isPWAInstalled, hasInstallPrompt, openPrompt } = usePWA();
   const [showManualInstall, setShowManualInstall] = useState(false);
 
   const handleClick = () => {
     if (hasInstallPrompt) {
-      // Show the PWA prompt
-      setShowManualInstall(false);
+      // Open centralized install prompt
+      openPrompt();
     } else {
       // Show manual installation instructions
       setShowManualInstall(true);
@@ -73,54 +73,6 @@ export function PWAInstallButton({
         Install App
       </Button>
 
-      {/* PWA Install Prompt Modal */}
-      {showInstallPrompt && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full shadow-large">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Smartphone className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Install ReceiptWala</h3>
-                <p className="text-sm text-muted-foreground">Get the app for a better experience</p>
-              </div>
-            </div>
-            
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-2 h-2 bg-success rounded-full"></span>
-                <span>Scan receipts with AI</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-2 h-2 bg-success rounded-full"></span>
-                <span>Track expenses offline</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-2 h-2 bg-success rounded-full"></span>
-                <span>Get financial insights</span>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleInstall}
-                className="flex-1"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Install Now
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={dismissPrompt}
-                className="flex-1"
-              >
-                Maybe Later
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 } 
