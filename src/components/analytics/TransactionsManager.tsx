@@ -193,14 +193,44 @@ export default function TransactionsManager({ instanceId, categories }: Transact
                 </SelectContent>
               </Select>
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="sm:ml-auto flex items-center gap-2 w-full sm:w-auto justify-end">
               <Button variant="outline" size="sm" disabled={offset === 0 || loading} onClick={() => setOffset(Math.max(0, offset - limit))}>Prev</Button>
               <Button variant="outline" size="sm" disabled={loading} onClick={() => setOffset(offset + limit)}>Next</Button>
               <Button size="sm" onClick={loadTxns} disabled={loading}>Refresh</Button>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile list (no horizontal scroll) */}
+          <div className="md:hidden space-y-2">
+            {txns.length === 0 ? (
+              <p className="text-zen text-center py-6">{loading ? "Loading..." : "No transactions found"}</p>
+            ) : (
+              txns.map((t) => (
+                <div key={`${t.index}-${t.text}`} className="rounded-lg border border-border/50 bg-card p-3 space-y-2">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-medium text-sm truncate">{t.text || "—"}</div>
+                      <div className="text-xs text-muted-foreground truncate">{t.category_name || categoryMap.get(Number(t.category_id)) || "Uncategorized"}</div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="font-semibold heading-zen">${t.amount?.toFixed ? t.amount.toFixed(2) : Number(t.amount).toFixed(2)}</div>
+                      <div className="text-[10px] text-muted-foreground">#{t.index}</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zen">
+                    <span className="truncate">Date: {t.date || "—"}</span>
+                    <span className="truncate">Receipt: <span className="break-all">{t.receipt_id || "—"}</span></span>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button size="sm" variant="destructive" onClick={() => onDeleteIndex(t.index)}>Delete</Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-zen">
