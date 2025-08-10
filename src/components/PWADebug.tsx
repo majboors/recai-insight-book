@@ -294,6 +294,25 @@ export function PWADebug() {
                 Unregister Service Worker
               </Button>
             )}
+            
+            {pwaStatus.swRegistered && !pwaStatus.swController && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    console.log('Forcing service worker to take control...');
+                    // Force page reload to activate service worker
+                    window.location.reload();
+                  } catch (error) {
+                    console.error('Failed to force service worker control:', error);
+                  }
+                }}
+                className="w-full"
+              >
+                Force Service Worker Control
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>

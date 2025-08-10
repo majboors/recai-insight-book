@@ -44,6 +44,20 @@ if ('serviceWorker' in navigator) {
       console.error('❌ Service Worker error:', error);
     });
 
+    // Check if service worker is controlling
+    if (navigator.serviceWorker.controller) {
+      console.log('✅ Service worker is controlling the page');
+    } else {
+      console.log('⏳ Service worker is not yet controlling the page');
+      // Force a page reload to activate the service worker
+      setTimeout(() => {
+        if (!navigator.serviceWorker.controller) {
+          console.log('🔄 Reloading page to activate service worker...');
+          window.location.reload();
+        }
+      }, 1000);
+    }
+
     return registration;
   })
   .catch((registrationError) => {
