@@ -243,23 +243,23 @@ export default function BookManagement() {
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="w-full text-xs h-8 relative overflow-hidden justify-center"
+                      className="w-full text-xs h-8 relative overflow-hidden min-w-0"
                       onClick={() => handleViewAnalytics(book.id)}
                     >
-                      <span className="inline-flex items-center gap-2">
-                        <BarChart3 className="h-3 w-3" />
-                        <span>Analytics</span>
+                      <span className="inline-flex items-center gap-2 min-w-0">
+                        <BarChart3 className="h-3 w-3 shrink-0" />
+                        <span className="truncate">Analytics</span>
                       </span>
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="w-full text-xs h-8 relative overflow-hidden justify-center"
+                      className="w-full text-xs h-8 relative overflow-hidden min-w-0"
                       onClick={() => handleScanReceipt(book.id)}
                     >
-                      <span className="inline-flex items-center gap-2">
-                        <Camera className="h-3 w-3" />
-                        <span>Scan</span>
+                      <span className="inline-flex items-center gap-2 min-w-0">
+                        <Camera className="h-3 w-3 shrink-0" />
+                        <span className="truncate">Scan</span>
                       </span>
                     </Button>
                   </div>
@@ -270,15 +270,15 @@ export default function BookManagement() {
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="w-full text-xs h-8 relative overflow-hidden justify-center"
+                          className="w-full text-xs h-8 relative overflow-hidden min-w-0"
                           onClick={() => {
                             setEditingBook(book);
                             setEditName(book.name);
                           }}
                         >
-                          <span className="inline-flex items-center gap-2">
-                            <Settings className="h-3 w-3" />
-                            <span>Edit</span>
+                          <span className="inline-flex items-center gap-2 min-w-0">
+                            <Settings className="h-3 w-3 shrink-0" />
+                            <span className="truncate">Edit</span>
                           </span>
                         </Button>
                       </DialogTrigger>
