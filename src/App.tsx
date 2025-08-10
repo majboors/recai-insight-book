@@ -19,11 +19,36 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { usePWA } from "@/hooks/usePWA";
+import { PWADebug } from "@/components/PWADebug";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
   const { showInstallPrompt, dismissPrompt, handleInstall } = usePWA();
+
+  // Register service worker in App component
+  useEffect(() => {
+    console.log('🎯 App component mounted');
+    console.log('🌐 Current URL:', window.location.href);
+    
+    if ('serviceWorker' in navigator) {
+      console.log('✅ Service Worker is supported in App');
+      
+      navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none'
+      })
+      .then((registration) => {
+        console.log('✅ Service Worker registered from App:', registration);
+      })
+      .catch((error) => {
+        console.error('❌ Service Worker registration failed from App:', error);
+      });
+    } else {
+      console.warn('⚠️ Service Worker not supported in App');
+    }
+  }, []);
 
   return (
     <>
@@ -48,6 +73,9 @@ const AppContent = () => {
         onClose={dismissPrompt}
         onInstall={handleInstall}
       />
+      
+      {/* PWA Debug Component - Remove in production */}
+      <PWADebug />
     </>
   );
 };

@@ -1,48 +1,22 @@
-const CACHE_NAME = 'receiptwala-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/icon.jpeg',
-  '/favicon.ico'
-];
+console.log('Service Worker: Script loaded');
 
-// Install event - cache resources
+// Install event
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  console.log('Service Worker: Installing...');
+  // Skip waiting to activate immediately
+  self.skipWaiting();
 });
 
-// Fetch event - serve from cache, fallback to network
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      }
-    )
-  );
-});
-
-// Activate event - clean up old caches
+// Activate event
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+  console.log('Service Worker: Activating...');
+  // Take control of all clients immediately
+  event.waitUntil(self.clients.claim());
+});
+
+// Fetch event
+self.addEventListener('fetch', (event) => {
+  console.log('Service Worker: Fetching', event.request.url);
+  // For now, just pass through all requests
+  event.respondWith(fetch(event.request));
 }); 

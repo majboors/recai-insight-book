@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker Test</title>
+</head>
+<body>
+    <h1>Service Worker Test Page</h1>
+    <p>Check the console for service worker registration logs.</p>
+    
+    <button onclick="testSW()">Test Service Worker Registration</button>
+    <button onclick="checkSW()">Check Service Worker Status</button>
+    
+    <div id="status"></div>
+
+    <script>
+        console.log('🎯 Test page loaded');
+        console.log('🌐 URL:', window.location.href);
+        console.log('🔧 User Agent:', navigator.userAgent);
+        
+        function testSW() {
+            console.log('🧪 Testing service worker registration...');
+            
+            if ('serviceWorker' in navigator) {
+                console.log('✅ Service Worker is supported');
+                
+                navigator.serviceWorker.register('/sw.js', {
+                    scope: '/',
+                    updateViaCache: 'none'
+                })
+                .then((registration) => {
+                    console.log('✅ Service Worker registered successfully:', registration);
+                    document.getElementById('status').innerHTML = '<p style="color: green;">✅ Service Worker registered!</p>';
+                })
+                .catch((error) => {
+                    console.error('❌ Service Worker registration failed:', error);
+                    document.getElementById('status').innerHTML = '<p style="color: red;">❌ Service Worker registration failed: ' + error.message + '</p>';
+                });
+            } else {
+                console.warn('⚠️ Service Worker not supported');
+                document.getElementById('status').innerHTML = '<p style="color: orange;">⚠️ Service Worker not supported</p>';
+            }
+        }
+        
+        function checkSW() {
+            console.log('🔍 Checking service worker status...');
+            
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then((registrations) => {
+                    console.log('Service Worker registrations:', registrations);
+                    console.log('Service Worker controller:', navigator.serviceWorker.controller);
+                    
+                    let status = '<h3>Service Worker Status:</h3>';
+                    status += '<p>Registrations: ' + registrations.length + '</p>';
+                    status += '<p>Controller: ' + (navigator.serviceWorker.controller ? 'Yes' : 'No') + '</p>';
+                    
+                    document.getElementById('status').innerHTML = status;
+                });
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            console.log('📄 Page loaded, testing service worker...');
+            testSW();
+        });
+    </script>
+</body>
+</html> 
