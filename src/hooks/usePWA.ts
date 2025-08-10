@@ -58,9 +58,12 @@ export function usePWA() {
       
       // Show prompt after a delay if not dismissed and not installed
       if (!checkDismissed() && !checkInstalled() && !checkIfInstalled()) {
-        setTimeout(() => {
-          setShowInstallPrompt(true);
-        }, 3000); // Show after 3 seconds
+        const onDashboard = window.location.pathname === '/';
+        if (onDashboard) {
+          setTimeout(() => {
+            setShowInstallPrompt(true);
+          }, 3000); // Show after 3 seconds
+        }
       }
     };
 
@@ -73,12 +76,15 @@ export function usePWA() {
 
     // Initial checks
     if (!checkDismissed() && !checkInstalled() && !checkIfInstalled()) {
-      // Show prompt after a delay for users who might not have the beforeinstallprompt event
-      setTimeout(() => {
-        if (!hasInstallPrompt && !isPWAInstalled) {
-          setShowInstallPrompt(true);
-        }
-      }, 5000); // Show after 5 seconds if no beforeinstallprompt event
+      const onDashboard = window.location.pathname === '/';
+      if (onDashboard) {
+        // Show prompt after a delay for users who might not have the beforeinstallprompt event
+        setTimeout(() => {
+          if (!hasInstallPrompt && !isPWAInstalled) {
+            setShowInstallPrompt(true);
+          }
+        }, 5000); // Show after 5 seconds if no beforeinstallprompt event
+      }
     }
 
     // Add event listeners
@@ -102,11 +108,16 @@ export function usePWA() {
     setShowInstallPrompt(false);
   };
 
+  const openPrompt = () => {
+    setShowInstallPrompt(true);
+  };
+
   return {
     showInstallPrompt,
     isPWAInstalled,
     hasInstallPrompt,
     dismissPrompt,
     handleInstall,
+    openPrompt,
   };
 } 

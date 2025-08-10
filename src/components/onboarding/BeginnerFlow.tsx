@@ -22,6 +22,7 @@ export function BeginnerFlow({ onComplete }: BeginnerFlowProps) {
   ];
 
   const handleChoice = (choice: 'scan' | 'categorize') => {
+    try { onComplete(); } catch {}
     if (choice === 'scan') {
       navigate('/scanner?tour=beginner');
     } else {

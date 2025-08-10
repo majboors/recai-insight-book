@@ -20,6 +20,22 @@ export default function Dashboard() {
     loadDashboardData();
   }, []);
 
+  // Ensure Service Worker takes control when on dashboard
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      const reloaded = sessionStorage.getItem('sw_reloaded');
+      if (!navigator.serviceWorker.controller && !reloaded) {
+        const t = setTimeout(() => {
+          if (!navigator.serviceWorker.controller) {
+            sessionStorage.setItem('sw_reloaded', '1');
+            window.location.reload();
+          }
+        }, 1000);
+        return () => clearTimeout(t);
+      }
+    }
+  }, []);
+
   const loadDashboardData = async () => {
     try {
       // Load books/instances
