@@ -31,7 +31,8 @@ async function getRecaiConfig() {
       base = (data?.recai_base_url || API_BASE_DEFAULT).trim();
     }
     // Fallback demo token to avoid hard crashes during onboarding
-    if (!token) token = "any";
+    // Use per-user default (uid) if available to ensure data isolation; otherwise use a shared demo token
+    if (!token) token = uid || "any";
     cachedConfig = { token, base };
     return cachedConfig;
   } catch {

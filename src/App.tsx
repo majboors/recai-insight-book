@@ -22,11 +22,13 @@ import { PWAProvider, usePWAContext } from "@/contexts/PWAContext";
 import AppInstallPage from "./pages/AppInstall";
 
 import { useEffect } from "react";
+import { useEnsureRecaiWorkspace } from "@/hooks/useEnsureRecaiWorkspace";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
   const { showInstallPrompt, dismissPrompt, handleInstall } = usePWAContext();
+  useEnsureRecaiWorkspace();
 
   // Register service worker in App component
   useEffect(() => {
