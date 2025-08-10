@@ -8,6 +8,7 @@ export type TourStep = {
 
 export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: TourStep[]; onClose: () => void; }) {
   const [index, setIndex] = useState(0);
+  const [reflow, setReflow] = useState(0);
   useEffect(() => { if (!open) setIndex(0); }, [open]);
 
   // Lock scroll only while tour is open
@@ -16,6 +17,18 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
+  // Recalculate positions on resize/scroll while open
+  useEffect(() => {
+    if (!open) return;
+    const handler = () => setReflow((r) => r + 1);
+    window.addEventListener("resize", handler);
+    window.addEventListener("scroll", handler, true);
+    return () => {
+      window.removeEventListener("resize", handler);
+      window.removeEventListener("scroll", handler, true);
+    };
   }, [open]);
 
   // Ensure target is visible and reflow on step changes
@@ -42,7 +55,7 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
       width: rect.width + 16,
       height: rect.height + 16,
     };
-  }, [open, steps, index]);
+  }, [open, steps, index, reflow]);
 
   if (!open) return null;
 

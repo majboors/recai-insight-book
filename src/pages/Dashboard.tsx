@@ -208,7 +208,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Budget Overview */}
-        <Card>
+        <Card data-tour-id="budget-overview">
           <CardHeader>
             <CardTitle>Budget Overview</CardTitle>
             <CardDescription>Current month spending by category</CardDescription>

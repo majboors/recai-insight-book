@@ -56,11 +56,11 @@ export default function Onboarding() {
     navigate('/', {
       state: {
         tourSteps: [
-          {
-            selector: "[data-tour-id='scan-receipt']",
-            title: 'Scan your first receipt',
-            description: 'Tap here to scan and extract items automatically.'
-          }
+          { selector: "[data-tour-id='scan-receipt']", title: 'Scan your first receipt', description: 'Tap here to scan and extract items automatically.' },
+          { selector: "[data-tour-id='books-list']", title: 'Your Books', description: 'Organize receipts and budgets in books.' },
+          { selector: "[data-tour-id='budget-overview']", title: 'Budget Overview', description: 'See how much you’ve spent vs your limits.' },
+          { selector: "[data-tour-id='view-reports-action']", title: 'Reports', description: 'Dive into monthly summaries and trends.' },
+          { selector: "[data-tour-id='create-book-action']", title: 'Create a Book', description: 'Set up your first book to get started.' },
         ]
       }
     });
@@ -79,16 +79,9 @@ export default function Onboarding() {
     navigate('/', {
       state: {
         tourSteps: [
-          {
-            selector: "[data-tour-id='scan-receipt']",
-            title: 'Quick capture',
-            description: 'Scan receipts to populate your data fast.'
-          },
-          {
-            selector: "[data-tour-id='view-reports-action']",
-            title: 'Deep analysis',
-            description: 'Open Reports to analyze spending and budgets.'
-          }
+          { selector: "[data-tour-id='scan-receipt']", title: 'Quick capture', description: 'Scan receipts to populate your data fast.' },
+          { selector: "[data-tour-id='view-reports-action']", title: 'Deep analysis', description: 'Open Reports to analyze spending and budgets.' },
+          { selector: "[data-tour-id='budget-overview']", title: 'Budget health', description: 'Monitor categories nearing their limits.' },
         ]
       }
     });
