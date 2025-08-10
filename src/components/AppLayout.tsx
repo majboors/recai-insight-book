@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, Menu, LogOut, User } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatWidget } from "@/components/chat/ChatWidget";
+import { TourOverlay, type TourStep } from "@/components/guided/TourOverlay";
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -15,9 +16,12 @@ export function AppLayout({
   children
 }: AppLayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   
   const { user, signOut } = useAuth();
   const [currentBook, setCurrentBook] = useState("personal-expenses");
+  const [globalTourOpen, setGlobalTourOpen] = useState(false);
+  const [globalTourSteps, setGlobalTourSteps] = useState<TourStep[]>([]);
   const navigation = [{
     name: "Dashboard",
     href: "/",
@@ -43,6 +47,16 @@ export function AppLayout({
     href: "/notifications",
     icon: Bell
   }];
+
+  useEffect(() => {
+    const incoming = (location.state as any)?.tourSteps;
+    if (incoming?.length) {
+      setGlobalTourSteps(incoming);
+      setGlobalTourOpen(true);
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location, navigate]);
+
   return <div className="min-h-screen bg-gradient-soft">
       {/* Skip link for accessibility */}
       
@@ -171,6 +185,9 @@ export function AppLayout({
           </div>
         </main>
       </div>
+
+      {/* Global Tour Overlay */}
+      <TourOverlay open={globalTourOpen} steps={globalTourSteps} onClose={() => setGlobalTourOpen(false)} />
 
       {/* Global Chat Widget */}
       <ChatWidget />

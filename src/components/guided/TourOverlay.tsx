@@ -1,22 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export type TourStep = {
   selector: string; // CSS selector for element to highlight
   title: string;
   description?: string;
+  navigateTo?: string; // optional route to navigate for this step
 };
 
 export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: TourStep[]; onClose: () => void; }) {
   const [index, setIndex] = useState(0);
   const [reflow, setReflow] = useState(0);
+  const [lastNavIndex, setLastNavIndex] = useState<number>(-1);
+  const navigate = useNavigate();
   useEffect(() => { if (!open) setIndex(0); }, [open]);
 
-  // Lock scroll only while tour is open
+  // Allow page scroll during tour so targets can come into view
   useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
+    // intentionally do not lock scroll
   }, [open]);
 
   // Recalculate positions on resize/scroll while open
@@ -31,16 +32,25 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
     };
   }, [open]);
 
-  // Ensure target is visible and reflow on step changes
+  // Ensure target is visible and handle cross-page steps
   useEffect(() => {
     if (!open) return;
     const sel = steps[index]?.selector;
+    const navTo = steps[index]?.navigateTo;
     if (!sel) return;
     const el = document.querySelector(sel) as HTMLElement | null;
     if (el) {
       try { el.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }); } catch {}
+      return;
     }
-  }, [open, index, steps]);
+    // If element not found and step declares a route, navigate once
+    if (navTo && lastNavIndex !== index) {
+      setLastNavIndex(index);
+      try { navigate(navTo); } catch {}
+      // allow layout to render before next reflow
+      setTimeout(() => setReflow((r) => r + 1), 50);
+    }
+  }, [open, index, steps, navigate, lastNavIndex]);
 
   const targetRect = useMemo(() => {
     if (!open) return null;
@@ -68,21 +78,28 @@ export function TourOverlay({ open, steps, onClose }: { open: boolean; steps: To
   return (
     <div role="dialog" aria-modal="true" className="fixed inset-0 z-[1000]">
       {/* Dim background */}
-      <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] z-0" />
 
       {/* Highlight box */}
       {targetRect && (
         <div
-          className="absolute rounded-lg ring-2 ring-primary shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"
+          className="absolute z-10 rounded-lg ring-2 ring-primary shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"
           style={{ top: targetRect.top, left: targetRect.left, width: targetRect.width, height: targetRect.height, pointerEvents: "none" }}
         />
       )}
 
       {/* Tooltip card */}
       <div
-        className="absolute max-w-sm p-4 rounded-lg bg-card border shadow-xl animate-fade-in"
+        className="absolute z-20 max-w-sm p-4 rounded-lg bg-card border shadow-xl animate-fade-in"
         style={{
-          top: (targetRect?.top ?? 24) + (targetRect ? targetRect.height + 12 : 0),
+          top: (() => {
+            const desired = (targetRect?.top ?? 24) + (targetRect ? targetRect.height + 12 : 0);
+            const est = 180; // estimated tooltip height
+            if (targetRect && desired + est > window.innerHeight - 8) {
+              return Math.max(targetRect.top - (est + 12), 8);
+            }
+            return desired;
+          })(),
           left: targetRect ? Math.min(targetRect.left, window.innerWidth - 360) : 24,
         }}
       >
