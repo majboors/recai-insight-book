@@ -81,6 +81,10 @@ export default {
 					'5': 'hsl(var(--chart-5))',
 				},
 			},
+			fontFamily: {
+				'urdu': ['Noto Nastaliq Urdu', 'serif'],
+				'sans': ['Inter', 'system-ui', 'sans-serif'],
+			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-secondary': 'var(--gradient-secondary)',

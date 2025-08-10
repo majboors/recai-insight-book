@@ -1,15 +1,33 @@
 import { useEffect, useState } from "react";
-import { getToken, setToken, getBaseUrl, setBaseUrl, API_BASE_DEFAULT, health } from "@/lib/recai";
+import { API_BASE_DEFAULT, health, clearRecaiConfigCache } from "@/lib/recai";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./useAuth";
 
 export function useRecaiAuth() {
-  const [token, _setToken] = useState<string>(getToken());
-  const [baseUrl, _setBase] = useState<string>(getBaseUrl());
+  const { user } = useAuth();
+  const [token, setTokenState] = useState<string>("");
+  const [baseUrl, setBaseState] = useState<string>(API_BASE_DEFAULT);
   const [healthy, setHealthy] = useState<boolean | null>(null);
 
+  // Load from Supabase profile
   useEffect(() => {
-    // try health when token/base change
+    (async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("recai_api_token, recai_base_url")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setTokenState(data?.recai_api_token || "");
+      setBaseState(data?.recai_base_url || API_BASE_DEFAULT);
+    })();
+  }, [user]);
+
+  useEffect(() => {
     (async () => {
       try {
+        if (!token) { setHealthy(null); return; }
+        clearRecaiConfigCache();
         const h = await health();
         setHealthy(!!h);
       } catch (e) {
@@ -18,17 +36,27 @@ export function useRecaiAuth() {
     })();
   }, [token, baseUrl]);
 
+  const saveConfig = async (t: string, b?: string) => {
+    if (!user) throw new Error("Not authenticated");
+    const updates: any = { recai_api_token: t.trim() };
+    if (b) updates.recai_base_url = b.trim() || API_BASE_DEFAULT;
+    const { data, error } = await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("user_id", user.id);
+    if (error || (data as any)?.length === 0) {
+      await supabase.from("profiles").insert({ user_id: user.id, ...updates });
+    }
+    setTokenState(t.trim());
+    if (b) setBaseState(b.trim() || API_BASE_DEFAULT);
+    clearRecaiConfigCache();
+  };
+
   return {
     token,
     baseUrl,
     healthy,
-    setToken: (t: string) => {
-      setToken(t);
-      _setToken(t);
-    },
-    setBaseUrl: (u: string) => {
-      setBaseUrl(u || API_BASE_DEFAULT);
-      _setBase(u || API_BASE_DEFAULT);
-    },
+    setToken: (t: string) => saveConfig(t),
+    setBaseUrl: (u: string) => saveConfig(token, u),
   };
 }

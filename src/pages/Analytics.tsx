@@ -13,6 +13,7 @@ import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } fr
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams, Link } from "react-router-dom";
+import TransactionsManager from "@/components/analytics/TransactionsManager";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -259,12 +260,13 @@ export default function Analytics() {
           </CardContent>
         </Card>
       ) : (
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto">
+        <Tabs defaultValue={searchParams.get("tab") || "overview"} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 h-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="charts" className="text-xs sm:text-sm">Charts</TabsTrigger>
             <TabsTrigger value="budgets" className="text-xs sm:text-sm">Budgets</TabsTrigger>
             <TabsTrigger value="categories" className="text-xs sm:text-sm">Categories</TabsTrigger>
+            <TabsTrigger value="transactions" className="text-xs sm:text-sm">Transactions</TabsTrigger>
             <TabsTrigger value="trends" className="text-xs sm:text-sm">Trends</TabsTrigger>
           </TabsList>
 
@@ -619,6 +621,10 @@ export default function Analytics() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="transactions" className="space-y-6">
+            <TransactionsManager instanceId={selectedBook} categories={categories} />
           </TabsContent>
 
           <TabsContent value="trends" className="space-y-6">

@@ -89,6 +89,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-zen">
+      
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-2">
@@ -96,7 +97,7 @@ export default function Dashboard() {
           <p className="text-zen">Overview of your expense tracking across all books</p>
         </div>
         <Link to="/scanner">
-          <Button className="btn-zen">
+          <Button className="btn-zen" data-tour-id="scan-receipt">
             <Plus className="h-4 w-4 mr-2" />
             Scan Receipt
           </Button>
@@ -158,7 +159,7 @@ export default function Dashboard() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Books Overview */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2" data-tour-id="books-list">
           <CardHeader>
             <CardTitle>Your Books</CardTitle>
             <CardDescription>Manage your expense tracking workspaces</CardDescription>
@@ -191,7 +192,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Budget Overview */}
-        <Card>
+        <Card data-tour-id="budget-overview">
           <CardHeader>
             <CardTitle>Budget Overview</CardTitle>
             <CardDescription>Current month spending by category</CardDescription>
@@ -234,13 +235,13 @@ export default function Dashboard() {
               </Button>
             </Link>
             <Link to="/books">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex-col gap-2" data-tour-id="create-book-action">
                 <Plus className="h-6 w-6" />
                 Create Book
               </Button>
             </Link>
             <Link to="/analytics">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex-col gap-2" data-tour-id="view-reports-action">
                 <TrendingUp className="h-6 w-6" />
                 View Reports
               </Button>

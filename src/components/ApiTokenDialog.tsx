@@ -38,7 +38,7 @@ export default function ApiTokenDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Connect to RecAI API</DialogTitle>
-          <DialogDescription>Paste your Bearer token. It will be stored locally in your browser.</DialogDescription>
+          <DialogDescription>Paste your Bearer token. It will be stored securely in your account.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="grid gap-2">

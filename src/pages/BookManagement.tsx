@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { listInstances, createInstance, updateInstance, deleteInstance, initializeCategories } from "@/lib/recai";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
+import { TourOverlay } from "@/components/guided/TourOverlay";
 
 export default function BookManagement() {
   const [books, setBooks] = useState<any[]>([]);
@@ -21,10 +22,16 @@ export default function BookManagement() {
   const [creatingBook, setCreatingBook] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [showTour, setShowTour] = useState(false);
+  const tourSteps = [
+    { selector: "[data-tour-id='new-book']", title: "Create a Book", description: "Start by creating your first workspace." },
+    { selector: "[data-tour-id='scan-receipt']", title: "Scan Receipts", description: "Upload receipts to parse transactions." },
+  ];
 
   useEffect(() => {
     document.title = "Book Management | AI Receipt Analyzer";
     loadBooks();
+    if (!localStorage.getItem("tour_seen_books")) setShowTour(true);
   }, []);
 
   const loadBooks = async () => {

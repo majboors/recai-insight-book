@@ -1,29 +1,52 @@
 /* RecAI API client */
+import { supabase } from "@/integrations/supabase/client";
 export const API_BASE_DEFAULT = "https://recai.applytocollege.pk";
 
-const TOKEN_KEY = "recai_token";
-const BASE_KEY = "recai_base_url";
+// Backward-compat exports (no-ops or fallbacks) to avoid runtime import errors
+export const getBaseUrl = () => API_BASE_DEFAULT;
+export const getToken = () => "";
+export const setBaseUrl = (_: string) => {};
+export const setToken = (_: string) => {};
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY) || "test-user-123"; // Default token for testing
+let cachedConfig: { token: string; base: string } | null = null;
+
+export function clearRecaiConfigCache() {
+  cachedConfig = null;
 }
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-export function getBaseUrl() {
-  return localStorage.getItem(BASE_KEY) || API_BASE_DEFAULT;
-}
-export function setBaseUrl(url: string) {
-  localStorage.setItem(BASE_KEY, url);
+
+async function getRecaiConfig() {
+  if (cachedConfig) return cachedConfig;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const uid = session?.user?.id;
+    let token = "";
+    let base = API_BASE_DEFAULT;
+    if (uid) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("recai_api_token, recai_base_url")
+        .eq("user_id", uid)
+        .maybeSingle();
+      token = (data?.recai_api_token || "").trim();
+      base = (data?.recai_base_url || API_BASE_DEFAULT).trim();
+    }
+    // Fallback demo token to avoid hard crashes during onboarding
+    if (!token) token = "any";
+    cachedConfig = { token, base };
+    return cachedConfig;
+  } catch {
+    // As a last resort, use defaults to keep UI functional
+    cachedConfig = { token: "any", base: API_BASE_DEFAULT };
+    return cachedConfig;
+  }
 }
 
 async function recaiFetch<T>(path: string, init: RequestInit = {}, asBlob = false): Promise<T> {
-  const token = getToken();
-  const base = getBaseUrl();
+  const { token, base } = await getRecaiConfig();
   const headers: HeadersInit = {
     ...(init.headers || {}),
     ...(init.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    Authorization: `Bearer ${token}`,
   };
 
   const res = await fetch(`${base}${path}`, { ...init, headers });
@@ -94,6 +117,25 @@ export const getBudgets = (id: string, qs: Record<string, string> = {}) => {
   const query = new URLSearchParams(qs).toString();
   return recaiFetch(`/v1/instances/${id}/budgets${query ? `?${query}` : ""}`);
 };
+
+// Manual Transaction Management
+export const getTransactionsDetailed = (id: string, params: { limit?: number; offset?: number } = {}) => {
+  const query = new URLSearchParams(
+    Object.entries({ limit: params.limit ?? 50, offset: params.offset ?? 0 }) as any
+  ).toString();
+  return recaiFetch(`/v1/instances/${id}/transactions/detailed?${query}`);
+};
+
+export const addManualTransaction = (
+  id: string,
+  body: { text: string; amount: number; category_id: number; date?: string; receipt_id?: string }
+) => recaiRequest("POST", `/v1/instances/${id}/transactions`, body);
+
+export const deleteTransactionByIndex = (id: string, index: number) =>
+  recaiRequest("DELETE", `/v1/instances/${id}/transactions/${index}`);
+
+export const deleteReceiptTransactions = (id: string, receiptId: string) =>
+  recaiRequest("DELETE", `/v1/instances/${id}/receipts/${receiptId}/transactions`);
 
 // Reports / Graphs / Export
 export const getReports = (id: string, qs: Record<string, string> = {}) => {
