@@ -182,6 +182,14 @@
   }
 }
 
+/* Prevent iOS Safari auto-zoom by ensuring 16px controls on small screens */
+@media (max-width: 640px) {
+  input, select, textarea, button[role="combobox"], .btn-minimal {
+    font-size: 16px !important;
+    line-height: 1.25rem;
+  }
+}
+
 @layer components {
   /* Button variants with Japanese aesthetic */
   .btn-minimal {
