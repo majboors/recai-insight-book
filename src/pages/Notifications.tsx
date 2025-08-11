@@ -282,7 +282,7 @@ export default function Notifications() {
               onClick={() => !notification.read && markAsRead(notification.id)}
             >
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div className={`p-2 rounded-full flex-shrink-0 ${
                       notification.severity === 'high' ? 'bg-destructive/10 text-destructive' :
@@ -292,19 +292,19 @@ export default function Notifications() {
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="heading-zen text-base truncate">{notification.title}</CardTitle>
-                      <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                        <span className="truncate">{notification.bookName}</span>
+                      <CardTitle className="heading-zen text-base leading-snug break-words">{notification.title}</CardTitle>
+                      <CardDescription className="mt-1 flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                        <span className="truncate max-w-[60%] sm:max-w-none">{notification.bookName}</span>
                         <Badge 
                           variant={getSeverityColor(notification.severity) as any}
-                          className="text-xs w-fit"
+                          className="text-[10px] sm:text-xs w-fit"
                         >
                           {notification.severity}
                         </Badge>
                       </CardDescription>
                     </div>
                   </div>
-                  <div className="text-xs text-muted-foreground text-right flex-shrink-0">
+                  <div className="text-xs text-muted-foreground sm:text-right sm:flex-shrink-0">
                     <div>{notification.timestamp.toLocaleDateString()}</div>
                     <div>{notification.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
