@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { TourOverlay, type TourStep } from "@/components/guided/TourOverlay";
 import { PWAInstallButton } from "@/components/PWAInstallButton";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -192,15 +193,15 @@ export function AppLayout({
         </aside>
 
         {/* Main Content */}
-        <main id="main-content" className="flex-1 min-h-[calc(100vh-4rem)]" role="main">
+        <main id="main-content" className="flex-1 min-h-[calc(100vh-4rem)] pb-20 sm:pb-0" role="main">
           <div className="container-zen py-6 space-zen">
             {children}
           </div>
         </main>
       </div>
 
-      {/* Global Tour Overlay */}
-      <TourOverlay open={globalTourOpen} steps={globalTourSteps} onClose={() => { try { localStorage.setItem("tour_seen_dashboard","1"); } catch {} setGlobalTourOpen(false); }} />
+      {/* Mobile bottom navigation */}
+      <MobileBottomNav />
 
       {/* Global Chat Widget */}
       <ChatWidget />
