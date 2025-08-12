@@ -6,61 +6,63 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Japanese-inspired color palette */
-    --background: 350 20% 99%;
-    --foreground: 240 6% 10%;
+:root {
+    /* Pakistani-inspired color palette */
+    --background: 0 0% 100%;
+    --foreground: 210 15% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 240 6% 10%;
+    --card-foreground: 210 15% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 6% 10%;
+    --popover-foreground: 210 15% 12%;
     
-    /* Zen-inspired primary colors - deep indigo */
-    --primary: 230 35% 25%;
+    /* Brand: Green primary (Pakistan) */
+    --primary: 152 72% 28%;
     --primary-foreground: 0 0% 98%;
-    --primary-hover: 230 35% 30%;
-    --primary-soft: 230 35% 95%;
+    --primary-hover: 152 72% 33%;
+    --primary-soft: 152 50% 92%;
     
-    /* Warm secondary - inspired by cedar wood */
-    --secondary: 20 15% 92%;
-    --secondary-foreground: 240 6% 10%;
-    --secondary-hover: 20 15% 87%;
+    /* Complementary Blue as secondary */
+    --secondary: 205 90% 45%;
+    --secondary-foreground: 0 0% 98%;
+    --secondary-hover: 205 90% 40%;
     
-    /* Muted tones - stone and pebble */
-    --muted: 220 13% 95%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 350 20% 97%;
-    --accent-foreground: 240 6% 10%;
+    /* Neutral grays */
+    --muted: 210 16% 96%;
+    --muted-foreground: 210 10% 40%;
+    
+    /* Accent (subtle blue-tinted surfaces) */
+    --accent: 205 80% 96%;
+    --accent-foreground: 210 15% 15%;
     
     /* Status colors */
-    --destructive: 0 65% 51%;
+    --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
-    --success: 142 76% 36%;
+    --warning: 45 95% 50%;
+    --warning-foreground: 0 0% 10%;
+    --success: 152 72% 35%;
     --success-foreground: 0 0% 98%;
     
-    /* Borders and inputs - subtle and clean */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 230 35% 25%;
+    /* Borders and inputs */
+    --border: 210 16% 90%;
+    --input: 210 16% 90%;
+    --ring: 152 72% 28%;
     
-    /* Gradients for depth */
-    --gradient-primary: linear-gradient(135deg, hsl(230 35% 25%), hsl(230 35% 30%));
-    --gradient-secondary: linear-gradient(135deg, hsl(20 15% 92%), hsl(20 15% 87%));
-    --gradient-soft: linear-gradient(180deg, hsl(350 20% 99%), hsl(220 13% 97%));
+    /* Gradients combining green and blue */
+    --gradient-primary: linear-gradient(135deg, hsl(152 72% 28%), hsl(205 90% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(152 50% 92%), hsl(205 80% 96%));
+    --gradient-soft: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 16% 96%));
     
-    /* Shadows for depth */
-    --shadow-soft: 0 1px 3px hsl(240 6% 10% / 0.1);
-    --shadow-medium: 0 4px 12px hsl(240 6% 10% / 0.15);
-    --shadow-large: 0 10px 25px hsl(240 6% 10% / 0.2);
+    /* Shadows */
+    --shadow-soft: 0 1px 3px hsl(210 15% 12% / 0.08);
+    --shadow-medium: 0 6px 16px hsl(210 15% 12% / 0.12);
+    --shadow-large: 0 10px 25px hsl(210 15% 12% / 0.18);
     
-    /* Chart colors - harmonious palette */
-    --chart-1: 230 35% 55%;
-    --chart-2: 142 76% 46%;
-    --chart-3: 20 80% 60%;
-    --chart-4: 280 60% 65%;
-    --chart-5: 38 92% 60%;
+    /* Chart palette: green, blue, orange, purple, yellow */
+    --chart-1: 152 72% 40%;
+    --chart-2: 205 90% 52%;
+    --chart-3: 24 90% 58%;
+    --chart-4: 270 70% 60%;
+    --chart-5: 45 95% 60%;
     
     /* Typography */
     --font-size-xs: 0.75rem;
@@ -78,71 +80,71 @@
     --radius-lg: 0.75rem;
     
     /* Sidebar */
-    --sidebar-background: 350 20% 98%;
-    --sidebar-foreground: 240 6% 10%;
-    --sidebar-primary: 230 35% 25%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 15% 12%;
+    --sidebar-primary: 152 72% 28%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 220 13% 95%;
-    --sidebar-accent-foreground: 240 6% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 230 35% 25%;
+    --sidebar-accent: 210 16% 96%;
+    --sidebar-accent-foreground: 210 15% 15%;
+    --sidebar-border: 210 16% 90%;
+    --sidebar-ring: 152 72% 28%;
   }
 
-  .dark {
-    /* Dark mode - ink and moonlight */
-    --background: 240 10% 4%;
-    --foreground: 220 13% 91%;
-    --card: 240 10% 6%;
-    --card-foreground: 220 13% 91%;
-    --popover: 240 10% 6%;
-    --popover-foreground: 220 13% 91%;
+.dark {
+    /* Dark mode tuned for Pakistani theme */
+    --background: 210 20% 6%;
+    --foreground: 0 0% 96%;
+    --card: 210 20% 8%;
+    --card-foreground: 0 0% 96%;
+    --popover: 210 20% 8%;
+    --popover-foreground: 0 0% 96%;
     
-    /* Primary - moonlit indigo */
-    --primary: 230 35% 70%;
-    --primary-foreground: 240 10% 4%;
-    --primary-hover: 230 35% 75%;
-    --primary-soft: 230 35% 12%;
+    /* Primary - luminous emerald */
+    --primary: 152 60% 60%;
+    --primary-foreground: 210 20% 6%;
+    --primary-hover: 152 60% 65%;
+    --primary-soft: 152 30% 14%;
     
-    /* Secondary - warm charcoal */
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 220 13% 91%;
-    --secondary-hover: 240 4% 20%;
+    /* Secondary - bright blue */
+    --secondary: 205 80% 55%;
+    --secondary-foreground: 210 20% 6%;
+    --secondary-hover: 205 80% 60%;
     
     /* Muted tones */
-    --muted: 240 4% 16%;
-    --muted-foreground: 220 9% 65%;
-    --accent: 240 4% 16%;
-    --accent-foreground: 220 13% 91%;
+    --muted: 210 14% 18%;
+    --muted-foreground: 210 12% 70%;
+    --accent: 210 14% 18%;
+    --accent-foreground: 0 0% 96%;
     
     /* Status colors for dark mode */
-    --destructive: 0 65% 55%;
-    --destructive-foreground: 240 10% 4%;
-    --warning: 38 92% 55%;
-    --warning-foreground: 240 10% 4%;
-    --success: 142 76% 40%;
-    --success-foreground: 240 10% 4%;
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 210 20% 6%;
+    --warning: 45 95% 60%;
+    --warning-foreground: 210 20% 6%;
+    --success: 152 60% 55%;
+    --success-foreground: 210 20% 6%;
     
     /* Borders */
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 230 35% 70%;
+    --border: 210 14% 18%;
+    --input: 210 14% 18%;
+    --ring: 152 60% 60%;
     
     /* Chart colors for dark mode */
-    --chart-1: 230 35% 65%;
-    --chart-2: 142 76% 50%;
-    --chart-3: 20 80% 65%;
-    --chart-4: 280 60% 70%;
-    --chart-5: 38 92% 65%;
+    --chart-1: 152 60% 60%;
+    --chart-2: 205 80% 60%;
+    --chart-3: 24 90% 65%;
+    --chart-4: 270 70% 65%;
+    --chart-5: 45 95% 65%;
     
     /* Sidebar dark */
-    --sidebar-background: 240 10% 3%;
-    --sidebar-foreground: 220 13% 91%;
-    --sidebar-primary: 230 35% 70%;
-    --sidebar-primary-foreground: 240 10% 4%;
-    --sidebar-accent: 240 4% 16%;
-    --sidebar-accent-foreground: 220 13% 91%;
-    --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 230 35% 70%;
+    --sidebar-background: 210 20% 5%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 152 60% 60%;
+    --sidebar-primary-foreground: 210 20% 6%;
+    --sidebar-accent: 210 14% 18%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 210 14% 18%;
+    --sidebar-ring: 152 60% 60%;
   }
 }
 
@@ -198,8 +200,8 @@
     @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
   }
 
-  .btn-zen {
-    @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground;
+.btn-zen {
+    @apply bg-gradient-primary text-primary-foreground;
     @apply rounded-lg px-6 py-3 text-sm font-medium shadow-soft;
     @apply hover:shadow-medium transform hover:scale-[1.02] transition-all duration-200;
     @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
