@@ -21,11 +21,16 @@ export default function ReceiptScanner() {
   const [editingItem, setEditingItem] = useState<number | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const templateName = searchParams.get('template');
 
   useEffect(() => {
-    document.title = "Receipt Scanner | AI Receipt Analyzer";
+    const title = templateName ? `${templateName} | AI Receipt Analyzer` : "Receipt Scanner | AI Receipt Analyzer";
+    document.title = title;
     loadBooks();
-  }, []);
+  }, [templateName]);
+
+
 
   const loadBooks = async () => {
     try {
@@ -135,11 +140,23 @@ export default function ReceiptScanner() {
   return (
     <div className="container py-8 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Receipt Scanner</h1>
-          <p className="text-muted-foreground">Scan and process receipts with AI-powered recognition</p>
-        </div>
+              <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
+              {templateName && (
+                <Badge variant="secondary" className="text-xs">
+                  Template
+                </Badge>
+              )}
+            </div>
+            <p className="text-muted-foreground">
+              {templateName 
+                ? `Scan and process ${templateName} receipts with AI-powered recognition`
+                : "Scan and process receipts with AI-powered recognition"
+              }
+            </p>
+          </div>
         {scanResult && (
           <div className="flex items-center gap-2">
             <Button

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, Menu, LogOut, User, LayoutGrid } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,14 +33,6 @@ export function AppLayout({
     name: "Books",
     href: "/books",
     icon: Book
-  }, {
-    name: "Scanner",
-    href: "/scanner",
-    icon: Camera
-  }, {
-    name: "Templates",
-    href: "/templates",
-    icon: LayoutGrid
   }, {
     name: "Analytics",
     href: "/analytics",
@@ -88,6 +81,30 @@ export function AppLayout({
                         <span>{item.name}</span>
                       </Link>;
                 })}
+                
+                {/* Scanner Dropdown for Mobile */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-start gap-3 px-3 py-3 h-auto">
+                      <Camera className="h-5 w-5" />
+                      <span>Scanner</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link to="/scanner" className="flex items-center gap-2">
+                        <Camera className="h-4 w-4" />
+                        Scan Receipt
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/templates" className="flex items-center gap-2">
+                        <LayoutGrid className="h-4 w-4" />
+                        Templates
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 
                 {/* PWA Install Button for Mobile */}
                 <div className="px-3 py-2">
@@ -182,6 +199,30 @@ export function AppLayout({
                   <span className="font-medium">{item.name}</span>
                 </Link>;
           })}
+          
+          {/* Scanner Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start gap-3 px-4 py-3 h-auto">
+                <Camera className="h-5 w-5" />
+                <span className="font-medium">Scanner</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link to="/scanner" className="flex items-center gap-2">
+                  <Camera className="h-4 w-4" />
+                  Scan Receipt
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/templates" className="flex items-center gap-2">
+                  <LayoutGrid className="h-4 w-4" />
+                  Templates
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {/* PWA Install Button */}
           <div className="px-4 py-2">
