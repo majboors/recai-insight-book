@@ -111,18 +111,18 @@ export default function ReceiptTemplates() {
   const hasMore = visible < filtered.length;
 
   return (
-    <>
-      <header className="mb-4">
-        <h1 className="heading-zen text-2xl">Select a Template</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+    <div className="pb-24 sm:pb-0">
+      <header className="mb-3 sm:mb-4">
+        <h1 className="heading-zen text-xl sm:text-2xl">Select a Template</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
           Choose a category and template to quickly log expenses.
         </p>
       </header>
 
       {/* Search + Filter */}
-      <section aria-label="Search and filter" className="mb-4">
-        <div className="flex gap-2">
-          <div className="flex-1">
+      <section aria-label="Search and filter" className="mb-3 sm:mb-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex-1 min-w-0">
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -152,7 +152,7 @@ export default function ReceiptTemplates() {
       {/* Category Tabs - Horizontal scroll */}
       <nav aria-label="Template categories" className="mb-4">
         <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex gap-2 pb-2 overflow-x-auto">
+          <div className="flex gap-2 pb-2 overflow-x-auto px-1 -mx-1">
             {categories.map((c) => (
               <Button
                 key={c.key}
@@ -172,13 +172,10 @@ export default function ReceiptTemplates() {
       {/* Templates Grid */}
       <main>
         <section aria-label="Templates list">
-          <div
-            className="grid gap-3 sm:gap-4"
-            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))" }}
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
             {shown.map((t) => (
               <article key={t.id} className="rounded-lg border border-border bg-card p-4 hover-scale shadow-soft transition-colors">
-                <button className="w-full text-left">
+                <button className="w-full text-left" aria-label={`Use template ${t.label}`}>
                   <div className="flex items-center justify-center">
                     <div className="h-16 w-16 rounded-full bg-accent/40 flex items-center justify-center text-2xl">
                       <span aria-hidden>{t.emoji}</span>
@@ -222,6 +219,6 @@ export default function ReceiptTemplates() {
           )}
         </section>
       </main>
-    </>
+    </div>
   );
 }
