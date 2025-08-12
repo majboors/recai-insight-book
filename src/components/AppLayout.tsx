@@ -198,7 +198,7 @@ export function AppLayout({
 
         {/* Main Content */}
         <main id="main-content" className="flex-1 min-h-[calc(100vh-4rem)] pb-20 sm:pb-0" role="main">
-          <div className="container-zen py-6 space-zen">
+          <div className="container-zen w-full max-w-full overflow-x-hidden py-6 space-zen">
             {children}
           </div>
         </main>
