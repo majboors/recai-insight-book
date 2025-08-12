@@ -111,7 +111,7 @@ export default function ReceiptTemplates() {
   const hasMore = visible < filtered.length;
 
   return (
-    <div className="pb-24 sm:pb-0">
+    <div className="pb-24 sm:pb-0 overflow-x-hidden">
       <header className="mb-3 sm:mb-4">
         <h1 className="heading-zen text-xl sm:text-2xl">Select a Template</h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -152,7 +152,7 @@ export default function ReceiptTemplates() {
       {/* Category Tabs - Horizontal scroll */}
       <nav aria-label="Template categories" className="mb-4">
         <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex gap-2 pb-2 overflow-x-auto px-1 -mx-1">
+          <div className="flex gap-2 pb-2 overflow-x-auto px-1">
             {categories.map((c) => (
               <Button
                 key={c.key}
