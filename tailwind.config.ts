@@ -91,6 +91,7 @@ export default {
 				'gradient-soft': 'var(--gradient-soft)',
 				'gradient-landing-hero': 'var(--gradient-landing-hero)',
 				'gradient-landing-demo': 'var(--gradient-landing-demo)',
+				'gradient-app': 'var(--gradient-app)',
 			},
 			boxShadow: {
 				'soft': 'var(--shadow-soft)',

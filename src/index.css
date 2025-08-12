@@ -71,6 +71,9 @@
     --chart-3: 24 90% 58%;
     --chart-4: 270 70% 60%;
     --chart-5: 45 95% 60%;
+
+    /* App-wide background */
+    --gradient-app: var(--gradient-landing-hero);
     
     /* Typography */
     --font-size-xs: 0.75rem;
@@ -98,7 +101,7 @@
     --sidebar-ring: 152 72% 28%;
   }
 
-.dark {
+  .dark {
     /* Dark mode tuned for Pakistani theme */
     --background: 210 20% 6%;
     --foreground: 0 0% 96%;
@@ -153,6 +156,9 @@
     --sidebar-accent-foreground: 0 0% 96%;
     --sidebar-border: 210 14% 18%;
     --sidebar-ring: 152 60% 60%;
+
+    /* App-wide background in dark */
+    --gradient-app: linear-gradient(180deg, hsl(210 20% 6%), hsl(210 20% 8%));
   }
 }
 
@@ -162,7 +168,11 @@
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-image: var(--gradient-app);
+    background-color: hsl(var(--background));
+    background-repeat: no-repeat;
+    background-size: cover;
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;

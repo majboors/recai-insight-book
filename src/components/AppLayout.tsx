@@ -56,7 +56,7 @@ export function AppLayout({
     }
   }, [location, navigate]);
 
-  return <div className="min-h-screen bg-gradient-soft">
+  return <div className="min-h-screen bg-transparent">
       {/* Skip link for accessibility */}
       
 
