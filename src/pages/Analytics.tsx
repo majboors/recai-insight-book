@@ -297,7 +297,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl sm:text-2xl font-bold heading-zen">
-                    ${reports?.total_spent ? reports.total_spent.toFixed(2) : "0.00"}
+                    PKR {reports?.total_spent ? reports.total_spent.toFixed(2) : "0.00"}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     <TrendingUp className="inline h-3 w-3 mr-1" />
@@ -329,7 +329,7 @@ export default function Analytics() {
                     {reports?.top_categories?.[0]?.category_name || "None"}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    ${reports?.top_categories?.[0]?.total ? reports.top_categories[0].total.toFixed(2) : "0.00"}
+                    PKR {reports?.top_categories?.[0]?.total ? reports.top_categories[0].total.toFixed(2) : "0.00"}
                   </p>
                 </CardContent>
               </Card>
@@ -341,7 +341,7 @@ export default function Analytics() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl sm:text-2xl font-bold heading-zen">
-                    ${getAverageTransaction().toFixed(2)}
+                    PKR {getAverageTransaction().toFixed(2)}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">Per transaction</p>
                 </CardContent>
@@ -364,7 +364,7 @@ export default function Analytics() {
                           <div className="text-xs text-muted-foreground">{item.category || "Uncategorized"}</div>
                         </div>
                         <div className="text-right ml-2">
-                          <div className="font-medium text-sm">${item.amount.toFixed(2)}</div>
+                          <div className="font-medium text-sm">PKR {item.amount.toFixed(2)}</div>
                         </div>
                       </div>
                     ))}
@@ -419,14 +419,14 @@ export default function Analytics() {
                               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
                           </Pie>
-                          <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                          <Tooltip formatter={(value) => ["PKR " + value, "Amount"]} />
                         </RechartsPieChart>
                       ) : chartType === "bar" ? (
                         <BarChart data={chartData.data}>
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="label" />
                           <YAxis />
-                          <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                          <Tooltip formatter={(value) => ["PKR " + value, "Amount"]} />
                           <Bar dataKey="value" fill="#8884d8" />
                         </BarChart>
                       ) : (
@@ -434,7 +434,7 @@ export default function Analytics() {
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="label" />
                           <YAxis />
-                          <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                          <Tooltip formatter={(value) => ["PKR " + value, "Amount"]} />
                           <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} dot={{ r: 2 }} />
                         </LineChart>
                       )}

@@ -213,7 +213,7 @@ export default function TransactionsManager({ instanceId, categories }: Transact
                       <div className="text-xs text-muted-foreground truncate">{t.category_name || categoryMap.get(Number(t.category_id)) || "Uncategorized"}</div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="font-semibold heading-zen">${t.amount?.toFixed ? t.amount.toFixed(2) : Number(t.amount).toFixed(2)}</div>
+                      <div className="font-semibold heading-zen">PKR {t.amount?.toFixed ? t.amount.toFixed(2) : Number(t.amount).toFixed(2)}</div>
                       <div className="text-[10px] text-muted-foreground">#{t.index}</div>
                     </div>
                   </div>
@@ -255,7 +255,7 @@ export default function TransactionsManager({ instanceId, categories }: Transact
                       <td className="py-2 pr-3">{t.date || "—"}</td>
                       <td className="py-2 pr-3 max-w-[260px] truncate">{t.text}</td>
                       <td className="py-2 pr-3">{t.category_name || categoryMap.get(Number(t.category_id)) || ""}</td>
-                      <td className="py-2 pr-3">${t.amount?.toFixed ? t.amount.toFixed(2) : Number(t.amount).toFixed(2)}</td>
+                      <td className="py-2 pr-3">PKR {t.amount?.toFixed ? t.amount.toFixed(2) : Number(t.amount).toFixed(2)}</td>
                       <td className="py-2 pr-3">{t.receipt_id || "—"}</td>
                       <td className="py-2 pr-3">
                         <Button size="sm" variant="destructive" onClick={() => onDeleteIndex(t.index)}>Delete</Button>

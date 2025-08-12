@@ -148,7 +148,7 @@ export default function Dashboard() {
             <DollarSign className="h-5 w-5 text-success/60" aria-hidden="true" />
           </div>
           <div className="space-y-1">
-            <div className="text-3xl font-medium heading-zen">${monthSpent.toFixed(2)}</div>
+            <div className="text-3xl font-medium heading-zen">PKR {monthSpent.toFixed(2)}</div>
             <p className="text-xs text-zen flex items-center">
               <TrendingUp className="inline h-3 w-3 mr-1" aria-hidden="true" />
               This month
@@ -173,7 +173,7 @@ export default function Dashboard() {
             <TrendingDown className="h-5 w-5 text-chart-3/60" aria-hidden="true" />
           </div>
           <div className="space-y-1">
-            <div className="text-3xl font-medium heading-zen">${avgTxn.toFixed(2)}</div>
+            <div className="text-3xl font-medium heading-zen">PKR {avgTxn.toFixed(2)}</div>
             <p className="text-xs text-zen flex items-center">
               <TrendingUp className="inline h-3 w-3 mr-1" aria-hidden="true" />
               This month
@@ -189,7 +189,7 @@ export default function Dashboard() {
             <h3 className="text-sm font-medium text-zen">Latest Daily Spend</h3>
           </div>
           <div className="space-y-1">
-            <div className="text-3xl font-medium heading-zen">${dailyAmount.toFixed(2)}</div>
+            <div className="text-3xl font-medium heading-zen">PKR {dailyAmount.toFixed(2)}</div>
             <p className="text-xs text-zen">{lastDaily?.date ? `Date: ${lastDaily.date}` : "No recent data"}</p>
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function Dashboard() {
             <h3 className="text-sm font-medium text-zen">Latest Weekly Spend</h3>
           </div>
           <div className="space-y-1">
-            <div className="text-3xl font-medium heading-zen">${weeklyAmount.toFixed(2)}</div>
+            <div className="text-3xl font-medium heading-zen">PKR {weeklyAmount.toFixed(2)}</div>
             <p className="text-xs text-zen">{lastWeekly?.week ? `Week: ${lastWeekly.week}` : "No recent data"}</p>
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function Dashboard() {
             <h3 className="text-sm font-medium text-zen">Latest Monthly Spend</h3>
           </div>
           <div className="space-y-1">
-            <div className="text-3xl font-medium heading-zen">${monthlyAmount.toFixed(2)}</div>
+            <div className="text-3xl font-medium heading-zen">PKR {monthlyAmount.toFixed(2)}</div>
             <p className="text-xs text-zen">{lastMonthly?.month ? `Month: ${lastMonthly.month}` : "No recent data"}</p>
           </div>
         </div>
@@ -261,7 +261,7 @@ export default function Dashboard() {
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>{budget.category}</span>
-                    <span>${budget.spent.toFixed(2)} / ${budget.limit.toFixed(2)}</span>
+                    <span>PKR {budget.spent.toFixed(2)} / PKR {budget.limit.toFixed(2)}</span>
                   </div>
                   <Progress value={(budget.spent / budget.limit) * 100} className="h-2" />
                 </div>
