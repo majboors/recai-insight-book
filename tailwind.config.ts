@@ -89,6 +89,8 @@ export default {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-secondary': 'var(--gradient-secondary)',
 				'gradient-soft': 'var(--gradient-soft)',
+				'gradient-landing-hero': 'var(--gradient-landing-hero)',
+				'gradient-landing-demo': 'var(--gradient-landing-demo)',
 			},
 			boxShadow: {
 				'soft': 'var(--shadow-soft)',

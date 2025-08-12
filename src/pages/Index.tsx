@@ -17,7 +17,7 @@ const links = [
 export default function Index() {
   useEffect(() => { document.title = "API Test Console | Receipt Zen"; }, []);
   return (
-    <main className="min-h-screen bg-gradient-soft">
+    <main className="min-h-screen bg-gradient-landing-hero">
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm">
         <div className="container-zen flex items-center justify-between h-16">
           <h1 className="text-2xl font-medium heading-zen">Receipt Zen – API Console</h1>

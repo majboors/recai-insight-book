@@ -51,6 +51,14 @@
     --gradient-primary: linear-gradient(135deg, hsl(152 72% 28%), hsl(205 90% 45%));
     --gradient-secondary: linear-gradient(135deg, hsl(152 50% 92%), hsl(205 80% 96%));
     --gradient-soft: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 16% 96%));
+
+    /* Surface tints */
+    --green-50: 139 76% 97%;
+    --blue-50: 213 100% 97%;
+
+    /* Landing gradients */
+    --gradient-landing-hero: linear-gradient(135deg, hsl(var(--green-50)), hsl(0 0% 100%) 40%, hsl(var(--blue-50)));
+    --gradient-landing-demo: linear-gradient(135deg, hsl(var(--green-50)), hsl(var(--blue-50)));
     
     /* Shadows */
     --shadow-soft: 0 1px 3px hsl(210 15% 12% / 0.08);
