@@ -111,7 +111,7 @@ export default function ReceiptTemplates() {
   const hasMore = visible < filtered.length;
 
   return (
-    <div className="pb-24 sm:pb-0 overflow-x-hidden">
+    <div className="pb-24 sm:pb-0 overflow-x-hidden max-w-full">
       <header className="mb-3 sm:mb-4">
         <h1 className="heading-zen text-xl sm:text-2xl">Select a Template</h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -151,7 +151,7 @@ export default function ReceiptTemplates() {
 
       {/* Category Tabs - Horizontal scroll */}
       <nav aria-label="Template categories" className="mb-4">
-        <ScrollArea className="w-full whitespace-nowrap">
+        <ScrollArea className="w-full">
           <div className="flex gap-2 pb-2 overflow-x-auto px-1">
             {categories.map((c) => (
               <Button
@@ -172,16 +172,16 @@ export default function ReceiptTemplates() {
       {/* Templates Grid */}
       <main>
         <section aria-label="Templates list">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
             {shown.map((t) => (
-              <article key={t.id} className="rounded-lg border border-border bg-card p-4 hover-scale shadow-soft transition-colors">
+              <article key={t.id} className="rounded-lg border border-border bg-card p-3 hover-scale shadow-soft transition-colors">
                 <button className="w-full text-left" aria-label={`Use template ${t.label}`}>
                   <div className="flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-accent/40 flex items-center justify-center text-2xl">
+                    <div className="h-12 w-12 rounded-full bg-accent/40 flex items-center justify-center text-xl">
                       <span aria-hidden>{t.emoji}</span>
                     </div>
                   </div>
-                  <h3 className="mt-3 text-sm font-medium text-center truncate" title={t.label}>
+                  <h3 className="mt-3 text-xs font-medium text-center truncate" title={t.label}>
                     {t.label}
                   </h3>
                 </button>
