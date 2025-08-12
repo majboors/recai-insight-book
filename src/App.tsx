@@ -9,6 +9,7 @@ import ReceiptScanner from "./pages/ReceiptScanner";
 import Analytics from "./pages/Analytics";
 import AIChat from "./pages/AIChat";
 import Notifications from "./pages/Notifications";
+import ReceiptTemplates from "./pages/ReceiptTemplates";
 import Settings from "./pages/Settings";
 import TestApiTroubleshoot from "./pages/tests/TestApiTroubleshoot";
 import NotFound from "./pages/NotFound";
@@ -66,6 +67,7 @@ const AppContent = () => {
           <Route path="/analytics" element={<ProtectedRoute><AppLayout><Analytics /></AppLayout></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute><AppLayout><AIChat /></AppLayout></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><AppLayout><Notifications /></AppLayout></ProtectedRoute>} />
+          <Route path="/templates" element={<ProtectedRoute><AppLayout><ReceiptTemplates /></AppLayout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
           <Route path="/test/api-troubleshoot" element={<ProtectedRoute><AppLayout><TestApiTroubleshoot /></AppLayout></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />

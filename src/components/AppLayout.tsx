@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, Menu, LogOut, User } from "lucide-react";
+import { Bell, MessageCircle, Settings, Book, Camera, BarChart3, Home, Menu, LogOut, User, LayoutGrid } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatWidget } from "@/components/chat/ChatWidget";
@@ -36,6 +36,10 @@ export function AppLayout({
     name: "Scanner",
     href: "/scanner",
     icon: Camera
+  }, {
+    name: "Templates",
+    href: "/templates",
+    icon: LayoutGrid
   }, {
     name: "Analytics",
     href: "/analytics",
