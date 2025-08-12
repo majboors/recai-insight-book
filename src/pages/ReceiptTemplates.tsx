@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Filter, Plus } from "lucide-react";
 
@@ -151,22 +150,22 @@ export default function ReceiptTemplates() {
 
       {/* Category Tabs - Horizontal scroll */}
       <nav aria-label="Template categories" className="mb-4">
-        <ScrollArea className="w-full">
-          <div className="flex gap-2 pb-2 overflow-x-auto px-1">
+        <div className="w-full overflow-x-auto">
+          <div className="flex gap-2 pb-2 px-1">
             {categories.map((c) => (
               <Button
                 key={c.key}
                 variant={activeCat === c.key ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => setActiveCat(c.key)}
-                className="rounded-full"
+                className="rounded-full shrink-0"
                 aria-pressed={activeCat === c.key}
               >
                 {c.label}
               </Button>
             ))}
           </div>
-        </ScrollArea>
+        </div>
       </nav>
 
       {/* Templates Grid */}
