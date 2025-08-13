@@ -350,12 +350,12 @@ export default function ReceiptScanner() {
   };
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 max-w-7xl">
+    <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 space-y-3 sm:space-y-6 max-w-6xl">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="flex flex-col gap-2 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
             {templateName && (
               <Badge variant="secondary" className="text-xs">
                 Template
@@ -375,12 +375,12 @@ export default function ReceiptScanner() {
               onClick={() => {
                 if (window.history.length > 1) navigate(-1); else navigate('/analytics');
               }}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto text-sm h-9"
             >
               <Check className="h-4 w-4 mr-2" />
               Done
             </Button>
-            <Button onClick={resetScanner} variant="outline" className="w-full sm:w-auto">
+            <Button onClick={resetScanner} variant="outline" className="w-full sm:w-auto text-sm h-9">
               <Plus className="h-4 w-4 mr-2" />
               Scan Another
             </Button>
@@ -389,11 +389,11 @@ export default function ReceiptScanner() {
       </div>
 
       {/* Template Selection and Search */}
-      <div className="space-y-3 sm:space-y-4">
+      <div className="space-y-2 sm:space-y-4">
         {/* Mobile-First Templates Design */}
-        <div className="space-y-3 sm:space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="text-base sm:text-lg font-semibold">Quick Templates</h3>
+        <div className="space-y-2 sm:space-y-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="text-sm sm:text-lg font-semibold">Quick Templates</h3>
             
             {/* Search Section - Integrated into header */}
             <div className="relative w-full sm:max-w-xs">
@@ -401,15 +401,15 @@ export default function ReceiptScanner() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search templates..."
-                className="pl-8 pr-4 h-9 text-sm"
+                className="pl-7 pr-3 h-8 text-xs sm:text-sm"
               />
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </div>
           </div>
           
           {/* Mobile-First Category Tabs */}
-          <nav aria-label="Template categories" className="mb-3 sm:mb-4">
-            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1">
+          <nav aria-label="Template categories" className="mb-2 sm:mb-4">
+            <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
                 {categories.map((c) => {
                   const Icon = c.icon;
                   return (
@@ -418,10 +418,10 @@ export default function ReceiptScanner() {
                       variant={activeCat === c.key ? "secondary" : "outline"}
                       size="sm"
                       onClick={() => setActiveCat(c.key)}
-                      className="rounded-full flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 min-w-fit h-8 sm:h-9"
+                      className="rounded-full flex items-center justify-center gap-1 sm:gap-2 py-1 sm:py-1.5 px-2 sm:px-3 text-xs whitespace-nowrap flex-shrink-0 min-w-fit h-7 sm:h-8"
                       aria-pressed={activeCat === c.key}
                     >
-                      <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <Icon className="h-3 w-3" />
                       <span className="hidden xs:inline">{c.label}</span>
                       <span className="xs:hidden">{c.label.split(' ')[0]}</span>
                     </Button>
@@ -431,12 +431,12 @@ export default function ReceiptScanner() {
           </nav>
 
           {/* Mobile-First Templates Grid - Single Row Scrollable with Navigation */}
-          <div className="relative px-8 sm:px-10">
+          <div className="relative px-6 sm:px-8">
             {/* Left Arrow */}
             <Button
               variant="outline"
               size="icon"
-              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
                 canScrollLeft 
                   ? 'opacity-100 hover:bg-background hover:scale-105' 
                   : 'opacity-0 pointer-events-none'
@@ -444,14 +444,14 @@ export default function ReceiptScanner() {
               onClick={scrollLeft}
               disabled={!canScrollLeft}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
             
             {/* Right Arrow */}
             <Button
               variant="outline"
               size="icon"
-              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
                 canScrollRight 
                   ? 'opacity-100 hover:bg-background hover:scale-105' 
                   : 'opacity-0 pointer-events-none'
@@ -459,17 +459,17 @@ export default function ReceiptScanner() {
               onClick={scrollRight}
               disabled={!canScrollRight}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
 
-            <div ref={scrollContainerRef} className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 scroll-smooth"
+            <div ref={scrollContainerRef} className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-1 scroll-smooth"
                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {shown.slice(0, 12).map((t) => {
               const Icon = t.icon;
               return (
                 <article 
                   key={t.id} 
-                  className={`group rounded-xl border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-20 sm:w-24 ${
+                  className={`group rounded-lg border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-16 sm:w-20 ${
                     templateName === t.label 
                       ? "border-primary bg-primary/5 shadow-md" 
                       : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
@@ -485,20 +485,20 @@ export default function ReceiptScanner() {
                     window.location.reload();
                   }}
                 >
-                  <div className="p-2 sm:p-3 text-center h-full flex flex-col justify-center">
-                    <div className="flex items-center justify-center mb-2">
-                      <div className={`h-12 w-12 sm:h-14 sm:w-14 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                  <div className="p-1.5 sm:p-2 text-center h-full flex flex-col justify-center">
+                    <div className="flex items-center justify-center mb-1.5">
+                      <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center transition-all duration-200 ${
                         templateName === t.label 
                           ? "bg-primary text-primary-foreground shadow-lg" 
                           : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
                       }`}>
-                        <Icon className="h-7 w-7 sm:h-8 sm:w-8" />
+                        <Icon className="h-6 w-6 sm:h-7 sm:w-7" />
                       </div>
                     </div>
                     <h3 className={`text-xs font-medium text-center truncate leading-tight ${
                       templateName === t.label ? "text-primary" : "text-foreground"
                     }`} title={t.label}>
-                      {t.label.length > 8 ? t.label.substring(0, 8) + '...' : t.label}
+                      {t.label.length > 6 ? t.label.substring(0, 6) + '...' : t.label}
                     </h3>
                     <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">
                       {t.usageCount}
@@ -509,11 +509,11 @@ export default function ReceiptScanner() {
             })}
 
             {/* Add Custom Template Card - Single Row Design */}
-            <article className="group rounded-xl border-2 border-dashed border-border bg-card flex-shrink-0 w-20 sm:w-24 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
-              <div className="p-2 sm:p-3 text-center h-full flex flex-col justify-center">
-                <div className="flex items-center justify-center mb-2">
-                  <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
-                    <Plus className="h-7 w-7 sm:h-8 sm:w-8" />
+            <article className="group rounded-lg border-2 border-dashed border-border bg-card flex-shrink-0 w-16 sm:w-20 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
+              <div className="p-1.5 sm:p-2 text-center h-full flex flex-col justify-center">
+                <div className="flex items-center justify-center mb-1.5">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
+                    <Plus className="h-6 w-6 sm:h-7 sm:w-7" />
                   </div>
                 </div>
                 <h3 className="text-xs font-medium text-center truncate leading-tight">Custom</h3>
