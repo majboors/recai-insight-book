@@ -42,7 +42,7 @@ async function getRecaiConfig() {
   }
 }
 
-async function recaiFetch<T>(path: string, init: RequestInit = {}, asBlob = false): Promise<T> {
+export async function recaiFetch<T>(path: string, init: RequestInit = {}, asBlob = false): Promise<T> {
   const { token, base } = await getRecaiConfig();
   const headers: HeadersInit = {
     ...(init.headers || {}),

@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget, getInstance, addCategory, renameCategory, removeCategory } from "@/lib/recai";
+import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget, getInstance, addCategory, renameCategory, removeCategory, recaiFetch } from "@/lib/recai";
 import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 import { useToast } from "@/hooks/use-toast";
@@ -138,55 +138,23 @@ export default function Analytics() {
   const loadVendorData = async () => {
     if (!selectedBook) return;
     try {
-      // Mock vendor data - in real implementation, this would be from reports or a specific vendor endpoint
-      const mockVendorData = {
-        spending: {
-          pie_chart: {
-            data: [
-              { label: "Fropresso - Gulberg", value: 637.99 },
-              { label: "Walmart", value: 245.50 },
-              { label: "Target", value: 189.75 },
-              { label: "McDonald's", value: 89.25 },
-              { label: "Starbucks", value: 67.80 }
-            ]
-          },
-          bar_chart: {
-            data: [
-              { label: "Fropresso - Gulberg", value: 637.99 },
-              { label: "Walmart", value: 245.50 },
-              { label: "Target", value: 189.75 },
-              { label: "McDonald's", value: 89.25 },
-              { label: "Starbucks", value: 67.80 }
-            ]
-          },
-          detailed_data: [
-            { vendor: "Fropresso - Gulberg", total_spent: 637.99, transaction_count: 1, avg_transaction: 637.99 },
-            { vendor: "Walmart", total_spent: 245.50, transaction_count: 3, avg_transaction: 81.83 },
-            { vendor: "Target", total_spent: 189.75, transaction_count: 2, avg_transaction: 94.88 },
-            { vendor: "McDonald's", total_spent: 89.25, transaction_count: 4, avg_transaction: 22.31 },
-            { vendor: "Starbucks", total_spent: 67.80, transaction_count: 3, avg_transaction: 22.60 }
-          ]
-        },
-        frequency: {
-          data: [
-            { label: "McDonald's", value: 4 },
-            { label: "Walmart", value: 3 },
-            { label: "Starbucks", value: 3 },
-            { label: "Target", value: 2 },
-            { label: "Fropresso - Gulberg", value: 1 }
-          ]
-        },
-        trends: {
-          data: [
-            { label: "Jan", fropresso: 637.99, walmart: 120.00, target: 89.75 },
-            { label: "Feb", fropresso: 0, walmart: 125.50, target: 100.00 },
-            { label: "Mar", fropresso: 0, walmart: 0, target: 0 }
-          ]
-        }
-      };
-      setVendorData(mockVendorData);
+      // Fetch real vendor analytics data from API
+      const vendorResponse = await recaiFetch(`/v1/instances/${selectedBook}/analytics/vendors?chart_type=comprehensive&timeframe=all`);
+      
+      // Use real API data if available, otherwise keep structure for fallback
+      setVendorData(vendorResponse);
     } catch (e) {
       console.error("Failed to load vendor data:", e);
+      // Fallback to empty structure if API fails
+      setVendorData({
+        spending: {
+          pie_chart: { data: [] },
+          bar_chart: { data: [] },
+          detailed_data: []
+        },
+        frequency: { data: [] },
+        trends: { data: [] }
+      });
     }
   };
   const handleSaveBudget = async () => {
