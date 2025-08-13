@@ -313,25 +313,25 @@ export default function ReceiptScanner() {
   };
 
   return (
-    <div className="container py-8 space-y-8">
+    <div className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
       {/* Header */}
-              <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
-              {templateName && (
-                <Badge variant="secondary" className="text-xs">
-                  Template
-                </Badge>
-              )}
-            </div>
-            <p className="text-muted-foreground">
-              {templateName 
-                ? `Scan and process ${templateName} receipts with AI-powered recognition`
-                : "Scan and process receipts with AI-powered recognition"
-              }
-            </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
+            {templateName && (
+              <Badge variant="secondary" className="text-xs">
+                Template
+              </Badge>
+            )}
           </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            {templateName 
+              ? `Scan and process ${templateName} receipts with AI-powered recognition`
+              : "Scan and process receipts with AI-powered recognition"
+            }
+          </p>
+        </div>
         {scanResult && (
           <div className="flex items-center gap-2">
             <Button
@@ -351,14 +351,14 @@ export default function ReceiptScanner() {
       </div>
 
       {/* Template Selection and Search */}
-      <div className="space-y-6">
-        {/* Category Tabs */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
+      <div className="space-y-4">
+        {/* Mobile-First Templates Design */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h3 className="text-lg font-semibold">Quick Templates</h3>
             
             {/* Search Section - Integrated into header */}
-            <div className="relative max-w-xs">
+            <div className="relative w-full sm:max-w-xs">
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -369,9 +369,9 @@ export default function ReceiptScanner() {
             </div>
           </div>
           
-          {/* Category Tabs - Responsive grid instead of horizontal scroll */}
-          <nav aria-label="Template categories" className="mb-4 sm:mb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+          {/* Mobile-First Category Tabs */}
+          <nav aria-label="Template categories" className="mb-4">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
                 {categories.map((c) => {
                   const Icon = c.icon;
                   return (
@@ -380,115 +380,82 @@ export default function ReceiptScanner() {
                       variant={activeCat === c.key ? "secondary" : "outline"}
                       size="sm"
                       onClick={() => setActiveCat(c.key)}
-                      className="rounded-lg flex items-center justify-center gap-1.5 py-2 px-3 text-xs"
+                      className="rounded-full flex items-center justify-center gap-2 py-2 px-4 text-sm whitespace-nowrap flex-shrink-0"
                       aria-pressed={activeCat === c.key}
                     >
-                      <Icon className="h-3.5 w-3.5" />
-                      <span className="truncate">{c.label}</span>
+                      <Icon className="h-4 w-4" />
+                      <span>{c.label}</span>
                     </Button>
                   );
                 })}
             </div>
           </nav>
 
-          {/* Templates Carousel - Single Row */}
-          <div className="relative">
-            {/* Left Arrow */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const container = document.getElementById('templates-carousel');
-                if (container) {
-                  container.scrollLeft -= 200;
-                }
-              }}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm border-border shadow-sm hover:bg-background"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-
-            {/* Right Arrow */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const container = document.getElementById('templates-carousel');
-                if (container) {
-                  container.scrollLeft += 200;
-                }
-              }}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm border-border shadow-sm hover:bg-background"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-
-            {/* Templates Row */}
-            <div 
-              id="templates-carousel"
-              className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-8"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {shown.map((t) => {
-                const Icon = t.icon;
-                return (
-                  <article 
-                    key={t.id} 
-                    className={`group rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 ${
-                      templateName === t.label 
-                        ? "border-primary bg-primary/5 shadow-md" 
-                        : "border-border bg-card hover:bg-accent/50"
-                    }`}
-                    onClick={() => {
-                      const url = new URL(window.location.href);
-                      if (templateName === t.label) {
-                        url.searchParams.delete('template');
-                      } else {
-                        url.searchParams.set('template', t.label);
-                      }
-                      window.history.pushState({}, '', url);
-                      window.location.reload();
-                    }}
-                  >
-                    <div className="p-3 text-center w-24">
-                      <div className="flex items-center justify-center mb-3">
-                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
-                          <Icon className="h-6 w-6" />
-                        </div>
+          {/* Mobile-First Templates Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {shown.slice(0, 12).map((t) => {
+              const Icon = t.icon;
+              return (
+                <article 
+                  key={t.id} 
+                  className={`group rounded-2xl border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg ${
+                    templateName === t.label 
+                      ? "border-primary bg-primary/5 shadow-md" 
+                      : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
+                  }`}
+                  onClick={() => {
+                    const url = new URL(window.location.href);
+                    if (templateName === t.label) {
+                      url.searchParams.delete('template');
+                    } else {
+                      url.searchParams.set('template', t.label);
+                    }
+                    window.history.pushState({}, '', url);
+                    window.location.reload();
+                  }}
+                >
+                  <div className="p-4 text-center">
+                    <div className="flex items-center justify-center mb-3">
+                      <div className={`h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                        templateName === t.label 
+                          ? "bg-primary text-primary-foreground shadow-lg" 
+                          : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
+                      }`}>
+                        <Icon className="h-8 w-8" />
                       </div>
-                      <h3 className={`text-xs font-medium text-center truncate ${
-                        templateName === t.label ? "text-primary" : "text-foreground"
-                      }`} title={t.label}>
-                        {t.label}
-                      </h3>
-                      <p className="text-xs text-muted-foreground text-center mt-1">
-                        {t.usageCount} uses
-                      </p>
                     </div>
-                  </article>
-                );
-              })}
+                    <h3 className={`text-sm font-semibold text-center truncate ${
+                      templateName === t.label ? "text-primary" : "text-foreground"
+                    }`} title={t.label}>
+                      {t.label}
+                    </h3>
+                    <p className="text-xs text-muted-foreground text-center mt-1">
+                      {t.usageCount} uses
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
 
-              {/* Add Custom Template Card */}
-              <article className="group rounded-xl border-2 border-dashed border-border bg-card p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer flex-shrink-0 w-24">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200 mb-3">
-                  <Plus className="h-6 w-6" />
-                </div>
-                <h3 className="text-xs font-medium">Add Custom</h3>
-                <p className="text-xs text-muted-foreground mt-1">Create</p>
-              </article>
-            </div>
+            {/* Add Custom Template Card - Mobile Design */}
+            <article className="group rounded-2xl border-2 border-dashed border-border bg-card p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
+              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200 mb-3">
+                <Plus className="h-8 w-8" />
+              </div>
+              <h3 className="text-sm font-semibold">Add Custom</h3>
+              <p className="text-xs text-muted-foreground mt-1">Create template</p>
+            </article>
           </div>
 
-          {/* Load more */}
-          {hasMore && (
+          {/* Load more - Only show if there are more templates */}
+          {filtered.length > 12 && (
             <div className="flex justify-center mt-6">
               <Button 
                 onClick={() => setVisible((v) => Math.min(v + 12, filtered.length))} 
                 variant="outline"
-                className="px-6"
+                className="px-8 py-2 rounded-full"
               >
-                Load more templates
+                Load More Templates
               </Button>
             </div>
           )}
@@ -496,17 +463,17 @@ export default function ReceiptScanner() {
           {/* Empty state */}
           {!shown.length && (
             <div className="text-center py-16 text-muted-foreground">
-              <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Search className="h-8 w-8" />
+              <div className="mx-auto w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                <Search className="h-10 w-10" />
               </div>
-              <h3 className="text-lg font-medium mb-2">No templates found</h3>
+              <h3 className="text-xl font-semibold mb-2">No templates found</h3>
               <p className="text-sm">Try adjusting your search or filters</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Upload Section */}
         <Card>
           <CardHeader>
