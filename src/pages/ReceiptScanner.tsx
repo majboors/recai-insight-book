@@ -280,8 +280,25 @@ export default function ReceiptScanner() {
                 {/* Receipt Info */}
                 <div className="space-y-2">
                   <h3 className="font-medium">Receipt Details</h3>
-                  <div className="text-sm text-muted-foreground">
-                    Receipt ID: {scanResult.receipt_id}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    {scanResult.vendor && (
+                      <div>
+                        <span className="text-muted-foreground">Vendor:</span>
+                        <div className="font-medium">{scanResult.vendor}</div>
+                      </div>
+                    )}
+                    {scanResult.date && (
+                      <div>
+                        <span className="text-muted-foreground">Date:</span>
+                        <div className="font-medium">{scanResult.date}</div>
+                      </div>
+                    )}
+                    {scanResult.receipt_id && (
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground">Receipt ID:</span>
+                        <div className="font-medium">{scanResult.receipt_id}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -304,7 +321,7 @@ export default function ReceiptScanner() {
                           <div className="flex-1">
                             <div className="font-medium">{item.text}</div>
                             <div className="text-sm text-muted-foreground">
-                              ${item.price?.toFixed(2)} • Category: {item.category_id || "Unknown"}
+                              PKR {item.price?.toFixed(2)} • Category: {item.category_name || item.category_id || "Unknown"}
                             </div>
                           </div>
                           <div className="flex items-center gap-1">
@@ -333,11 +350,28 @@ export default function ReceiptScanner() {
 
                 {/* Total */}
                 <Separator />
-                <div className="flex justify-between items-center font-medium">
-                  <span>Total</span>
-                  <span>
-                    ${scanResult.items?.reduce((sum: number, item: any) => sum + (item.price || 0), 0).toFixed(2)}
-                  </span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center font-medium">
+                    <span>Items Total</span>
+                    <span>
+                      PKR {scanResult.items?.reduce((sum: number, item: any) => sum + (item.price || 0), 0).toFixed(2)}
+                    </span>
+                  </div>
+                  {scanResult.total && (
+                    <div className="flex justify-between items-center font-medium">
+                      <span>Receipt Total</span>
+                      <span>PKR {scanResult.total.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {scanResult.total_warning && (
+                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <div className="text-yellow-600 dark:text-yellow-400 text-sm">
+                          ⚠️ {scanResult.total_warning}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <Separator />

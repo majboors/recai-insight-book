@@ -296,7 +296,13 @@ function ReceiptScanner({ instanceId }: { instanceId: string }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const m = useMutation({
     mutationFn: (file: File) => uploadReceipt(file, instanceId),
-    onSuccess: (r: any) => toast.success(`Receipt parsed: ${r?.parsed_data?.merchant ?? r?.id}`),
+    onSuccess: (r: any) => {
+      const message = r?.vendor ? `Receipt parsed: ${r.vendor}` : `Receipt parsed successfully`;
+      toast.success(message);
+      if (r?.total_warning) {
+        toast.warning(r.total_warning);
+      }
+    },
     onError: (e: any) => toast.error(e.message),
   });
   return (
