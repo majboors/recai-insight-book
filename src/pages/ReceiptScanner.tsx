@@ -175,6 +175,52 @@ export default function ReceiptScanner() {
         )}
       </div>
 
+      {/* Template Selection and Search */}
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label>Quick Templates</Label>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+            {["Restaurant", "Grocery", "Gas Station", "Pharmacy", "Coffee Shop", "Retail", "Online Shopping", "Service", "Hotel", "Transport"].map((template) => (
+              <Button
+                key={template}
+                variant={templateName === template ? "default" : "outline"}
+                size="sm"
+                className="whitespace-nowrap flex-shrink-0"
+                onClick={() => {
+                  const url = new URL(window.location.href);
+                  if (templateName === template) {
+                    url.searchParams.delete('template');
+                  } else {
+                    url.searchParams.set('template', template);
+                  }
+                  window.history.pushState({}, '', url);
+                  window.location.reload();
+                }}
+              >
+                {template}
+              </Button>
+            ))}
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label>Search Templates</Label>
+          <Input
+            placeholder="Search for receipt type or vendor..."
+            className="max-w-md"
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('template', value);
+                window.history.pushState({}, '', url);
+                // Don't reload on search, just update the URL
+              }
+            }}
+          />
+        </div>
+      </div>
+
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Upload Section */}
         <Card>
