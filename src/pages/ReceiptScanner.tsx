@@ -313,19 +313,19 @@ export default function ReceiptScanner() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
             {templateName && (
               <Badge variant="secondary" className="text-xs">
                 Template
               </Badge>
             )}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             {templateName 
               ? `Scan and process ${templateName} receipts with AI-powered recognition`
               : "Scan and process receipts with AI-powered recognition"
@@ -333,16 +333,17 @@ export default function ReceiptScanner() {
           </p>
         </div>
         {scanResult && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <Button
               onClick={() => {
                 if (window.history.length > 1) navigate(-1); else navigate('/analytics');
               }}
+              className="w-full sm:w-auto"
             >
               <Check className="h-4 w-4 mr-2" />
               Done
             </Button>
-            <Button onClick={resetScanner} variant="outline">
+            <Button onClick={resetScanner} variant="outline" className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Scan Another
             </Button>
@@ -351,11 +352,11 @@ export default function ReceiptScanner() {
       </div>
 
       {/* Template Selection and Search */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {/* Mobile-First Templates Design */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h3 className="text-lg font-semibold">Quick Templates</h3>
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="text-base sm:text-lg font-semibold">Quick Templates</h3>
             
             {/* Search Section - Integrated into header */}
             <div className="relative w-full sm:max-w-xs">
@@ -363,15 +364,15 @@ export default function ReceiptScanner() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search templates..."
-                className="pl-8 pr-4 h-8 text-sm"
+                className="pl-8 pr-4 h-9 text-sm"
               />
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
           
           {/* Mobile-First Category Tabs */}
-          <nav aria-label="Template categories" className="mb-4">
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+          <nav aria-label="Template categories" className="mb-3 sm:mb-4">
+            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1">
                 {categories.map((c) => {
                   const Icon = c.icon;
                   return (
@@ -380,11 +381,12 @@ export default function ReceiptScanner() {
                       variant={activeCat === c.key ? "secondary" : "outline"}
                       size="sm"
                       onClick={() => setActiveCat(c.key)}
-                      className="rounded-full flex items-center justify-center gap-2 py-2 px-4 text-sm whitespace-nowrap flex-shrink-0"
+                      className="rounded-full flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
                       aria-pressed={activeCat === c.key}
                     >
-                      <Icon className="h-4 w-4" />
-                      <span>{c.label}</span>
+                      <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="hidden xs:inline">{c.label}</span>
+                      <span className="xs:hidden">{c.label.split(' ')[0]}</span>
                     </Button>
                   );
                 })}
@@ -392,13 +394,13 @@ export default function ReceiptScanner() {
           </nav>
 
           {/* Mobile-First Templates Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
             {shown.slice(0, 12).map((t) => {
               const Icon = t.icon;
               return (
                 <article 
                   key={t.id} 
-                  className={`group rounded-2xl border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg ${
+                  className={`group rounded-xl sm:rounded-2xl border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg ${
                     templateName === t.label 
                       ? "border-primary bg-primary/5 shadow-md" 
                       : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
@@ -414,22 +416,22 @@ export default function ReceiptScanner() {
                     window.location.reload();
                   }}
                 >
-                  <div className="p-4 text-center">
-                    <div className="flex items-center justify-center mb-3">
-                      <div className={`h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                  <div className="p-2 sm:p-3 md:p-4 text-center">
+                    <div className="flex items-center justify-center mb-2 sm:mb-3">
+                      <div className={`h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-200 ${
                         templateName === t.label 
                           ? "bg-primary text-primary-foreground shadow-lg" 
                           : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
                       }`}>
-                        <Icon className="h-8 w-8" />
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8" />
                       </div>
                     </div>
-                    <h3 className={`text-sm font-semibold text-center truncate ${
+                    <h3 className={`text-xs sm:text-sm font-semibold text-center truncate ${
                       templateName === t.label ? "text-primary" : "text-foreground"
                     }`} title={t.label}>
                       {t.label}
                     </h3>
-                    <p className="text-xs text-muted-foreground text-center mt-1">
+                    <p className="text-xs text-muted-foreground text-center mt-0.5 sm:mt-1">
                       {t.usageCount} uses
                     </p>
                   </div>
@@ -438,12 +440,12 @@ export default function ReceiptScanner() {
             })}
 
             {/* Add Custom Template Card - Mobile Design */}
-            <article className="group rounded-2xl border-2 border-dashed border-border bg-card p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200 mb-3">
-                <Plus className="h-8 w-8" />
+            <article className="group rounded-xl sm:rounded-2xl border-2 border-dashed border-border bg-card p-2 sm:p-3 md:p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200 mb-2 sm:mb-3">
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8" />
               </div>
-              <h3 className="text-sm font-semibold">Add Custom</h3>
-              <p className="text-xs text-muted-foreground mt-1">Create template</p>
+              <h3 className="text-xs sm:text-sm font-semibold">Add Custom</h3>
+              <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">Create template</p>
             </article>
           </div>
 
@@ -473,19 +475,19 @@ export default function ReceiptScanner() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         {/* Upload Section */}
         <Card>
-          <CardHeader>
-            <CardTitle>Upload Receipt</CardTitle>
-            <CardDescription>Select a book and upload your receipt image</CardDescription>
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-base sm:text-lg">Upload Receipt</CardTitle>
+            <CardDescription className="text-sm">Select a book and upload your receipt image</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6">
             {/* Book Selection */}
             <div className="space-y-2">
-              <Label>Select Book</Label>
+              <Label className="text-sm">Select Book</Label>
               <Select value={selectedBook} onValueChange={setSelectedBook}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 sm:h-10">
                   <SelectValue placeholder="Choose a book" />
                 </SelectTrigger>
                 <SelectContent>
@@ -499,33 +501,33 @@ export default function ReceiptScanner() {
             </div>
 
             {/* File Upload */}
-            <div className="space-y-4">
-              <Label>Receipt Image</Label>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+            <div className="space-y-3 sm:space-y-4">
+              <Label className="text-sm">Receipt Image</Label>
+              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 sm:p-6 md:p-8 text-center">
                 {previewUrl ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <img 
                       src={previewUrl} 
                       alt="Receipt preview" 
-                      className="max-w-full max-h-64 mx-auto rounded-md"
+                      className="max-w-full max-h-48 sm:max-h-64 mx-auto rounded-md"
                     />
-                    <Button variant="outline" onClick={() => document.getElementById('receipt-upload')?.click()}>
+                    <Button variant="outline" size="sm" onClick={() => document.getElementById('receipt-upload')?.click()}>
                       <Upload className="h-4 w-4 mr-2" />
                       Change Image
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <Image className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <div className="space-y-3 sm:space-y-4">
+                    <Image className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
                         Click to upload or drag and drop
                       </p>
                       <p className="text-xs text-muted-foreground">
                         PNG, JPG or JPEG (max 10MB)
                       </p>
                     </div>
-                    <Button variant="outline" onClick={() => document.getElementById('receipt-upload')?.click()}>
+                    <Button variant="outline" size="sm" onClick={() => document.getElementById('receipt-upload')?.click()}>
                       <Upload className="h-4 w-4 mr-2" />
                       Choose File
                     </Button>
@@ -545,7 +547,7 @@ export default function ReceiptScanner() {
             <Button 
               onClick={handleScanReceipt} 
               disabled={!uploadedFile || !selectedBook || loading}
-              className="w-full"
+              className="w-full h-10 sm:h-11"
             >
               {loading ? (
                 "Scanning..."
@@ -561,28 +563,28 @@ export default function ReceiptScanner() {
 
         {/* Results Section */}
         <Card>
-          <CardHeader>
-            <CardTitle>Scan Results</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-base sm:text-lg">Scan Results</CardTitle>
+            <CardDescription className="text-sm">
               {scanResult ? "Review and correct the extracted data" : "Upload and scan a receipt to see results"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {!scanResult ? (
-              <div className="text-center py-12">
-                <Camera className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No receipt scanned yet</p>
+              <div className="text-center py-8 sm:py-12">
+                <Camera className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-muted-foreground mb-3 sm:mb-4" />
+                <p className="text-sm text-muted-foreground">No receipt scanned yet</p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Receipt Info */}
                 <div className="space-y-2">
-                  <h3 className="font-medium">Receipt Details</h3>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <h3 className="text-sm sm:text-base font-medium">Receipt Details</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
                     {scanResult.vendor && (
                       <div>
                         <span className="text-muted-foreground">Vendor:</span>
-                        <div className="font-medium">{scanResult.vendor}</div>
+                        <div className="font-medium break-words">{scanResult.vendor}</div>
                       </div>
                     )}
                     {scanResult.date && (
@@ -592,9 +594,9 @@ export default function ReceiptScanner() {
                       </div>
                     )}
                     {scanResult.receipt_id && (
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2">
                         <span className="text-muted-foreground">Receipt ID:</span>
-                        <div className="font-medium">{scanResult.receipt_id}</div>
+                        <div className="font-medium break-all text-xs sm:text-sm">{scanResult.receipt_id}</div>
                       </div>
                     )}
                   </div>
@@ -603,10 +605,10 @@ export default function ReceiptScanner() {
                 <Separator />
 
                 {/* Items List */}
-                <div className="space-y-4">
-                  <h3 className="font-medium">Extracted Items</h3>
+                <div className="space-y-3 sm:space-y-4">
+                  <h3 className="text-sm sm:text-base font-medium">Extracted Items</h3>
                   {scanResult.items?.map((item: any, index: number) => (
-                    <div key={index} className="border rounded-lg p-4">
+                    <div key={index} className="border rounded-lg p-3 sm:p-4">
                       {editingItem === index ? (
                         <EditItemForm
                           item={item}
@@ -615,17 +617,17 @@ export default function ReceiptScanner() {
                           onCancel={() => setEditingItem(null)}
                         />
                       ) : (
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="font-medium">{item.text}</div>
-                            <div className="text-sm text-muted-foreground">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm sm:text-base break-words">{item.text}</div>
+                            <div className="text-xs sm:text-sm text-muted-foreground break-words">
                               PKR {item.price?.toFixed(2)} • Category: {item.category_name || item.category_id || "Unknown"}
                             </div>
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1 flex-shrink-0">
                             <Button
                               variant="ghost"
-                              size="icon"
+                              size="sm"
                               onClick={() => setEditingItem(index)}
                               aria-label="Edit item"
                             >
@@ -633,7 +635,7 @@ export default function ReceiptScanner() {
                             </Button>
                             <Button
                               variant="ghost"
-                              size="icon"
+                              size="sm"
                               onClick={() => handleDeleteItem(index)}
                               aria-label="Delete item"
                             >
@@ -649,16 +651,16 @@ export default function ReceiptScanner() {
                 {/* Total */}
                 <Separator />
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center font-medium">
+                  <div className="flex justify-between items-center font-medium text-sm sm:text-base">
                     <span>Total</span>
                     <span>
                       PKR {scanResult.total?.toFixed(2) || '0.00'}
                     </span>
                   </div>
                   {scanResult.total_warning && (
-                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div className="p-2 sm:p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                       <div className="flex items-start gap-2">
-                        <div className="text-yellow-600 dark:text-yellow-400 text-sm">
+                        <div className="text-yellow-600 dark:text-yellow-400 text-xs sm:text-sm">
                           ⚠️ {scanResult.total_warning}
                         </div>
                       </div>
@@ -668,10 +670,10 @@ export default function ReceiptScanner() {
 
                 {/* Debug Section */}
                 <Separator />
-                <div className="space-y-3">
-                  <h3 className="font-medium text-sm">Debug - Raw API Response</h3>
-                  <div className="bg-muted/50 rounded-lg p-3 overflow-auto max-h-60">
-                    <pre className="text-xs font-mono">
+                <div className="space-y-2 sm:space-y-3">
+                  <h3 className="font-medium text-xs sm:text-sm">Debug - Raw API Response</h3>
+                  <div className="bg-muted/50 rounded-lg p-2 sm:p-3 overflow-auto max-h-40 sm:max-h-60">
+                    <pre className="text-xs font-mono whitespace-pre-wrap break-words">
                       {JSON.stringify(scanResult, null, 2)}
                     </pre>
                   </div>
@@ -683,6 +685,7 @@ export default function ReceiptScanner() {
                     onClick={() => {
                       if (window.history.length > 1) navigate(-1); else navigate('/analytics');
                     }}
+                    className="w-full sm:w-auto"
                   >
                     <Check className="h-4 w-4 mr-2" />
                     Done
