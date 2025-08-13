@@ -176,48 +176,68 @@ export default function ReceiptScanner() {
       </div>
 
       {/* Template Selection and Search */}
-      <div className="space-y-4 border-2 border-dashed border-red-500 p-4">{/* added visible border for debugging */}
-        <div className="space-y-2">
-          <Label>Quick Templates</Label>
-          <div className="flex gap-3 overflow-x-auto pb-2">{/* removed scrollbar-thin which might not be defined */}
-            {["Restaurant", "Grocery", "Gas Station", "Pharmacy", "Coffee Shop", "Retail", "Online Shopping", "Service", "Hotel", "Transport"].map((template) => (
-              <Button
-                key={template}
-                variant={templateName === template ? "default" : "outline"}
-                size="sm"
-                className="whitespace-nowrap flex-shrink-0"
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  if (templateName === template) {
-                    url.searchParams.delete('template');
-                  } else {
-                    url.searchParams.set('template', template);
-                  }
-                  window.history.pushState({}, '', url);
-                  window.location.reload();
-                }}
-              >
-                {template}
-              </Button>
-            ))}
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label>Search Templates</Label>
+      <div className="space-y-6">
+        {/* Search Section */}
+        <div className="relative max-w-md">
           <Input
-            placeholder="Search for receipt type or vendor..."
-            className="max-w-md"
+            placeholder="Search receipt templates..."
+            className="pl-4 pr-4 h-12 text-base"
             onChange={(e) => {
               const value = e.target.value;
               if (value) {
                 const url = new URL(window.location.href);
                 url.searchParams.set('template', value);
                 window.history.pushState({}, '', url);
-                // Don't reload on search, just update the URL
               }
             }}
           />
+        </div>
+
+        {/* Quick Templates Grid */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold">Quick Templates</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {[
+              { name: "Restaurant", icon: "🍽️" },
+              { name: "Grocery", icon: "🛒" },
+              { name: "Gas Station", icon: "⛽" },
+              { name: "Pharmacy", icon: "💊" },
+              { name: "Coffee Shop", icon: "☕" },
+              { name: "Retail", icon: "🛍️" },
+              { name: "Online Shopping", icon: "📦" },
+              { name: "Service", icon: "🔧" },
+              { name: "Hotel", icon: "🏨" },
+              { name: "Transport", icon: "🚗" }
+            ].map((template) => (
+              <div
+                key={template.name}
+                className={`group rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg ${
+                  templateName === template.name 
+                    ? "border-primary bg-primary/5 shadow-md" 
+                    : "border-border bg-card hover:bg-accent/50"
+                }`}
+                onClick={() => {
+                  const url = new URL(window.location.href);
+                  if (templateName === template.name) {
+                    url.searchParams.delete('template');
+                  } else {
+                    url.searchParams.set('template', template.name);
+                  }
+                  window.history.pushState({}, '', url);
+                  window.location.reload();
+                }}
+              >
+                <div className="p-4 text-center">
+                  <div className="text-2xl mb-2">{template.icon}</div>
+                  <div className={`text-sm font-medium ${
+                    templateName === template.name ? "text-primary" : "text-foreground"
+                  }`}>
+                    {template.name}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
