@@ -206,20 +206,29 @@ export default function ReceiptScanner() {
     const title = templateName ? `${templateName} | AI Receipt Analyzer` : "Receipt Scanner | AI Receipt Analyzer";
     document.title = title;
     loadBooks();
-    
+  }, [templateName]);
+
+  useEffect(() => {
     // Set up scroll listener for arrows
     const container = scrollContainerRef.current;
     if (container) {
       const updateScrollButtons = () => {
         setCanScrollLeft(container.scrollLeft > 0);
-        setCanScrollRight(container.scrollLeft < container.scrollWidth - container.clientWidth);
+        setCanScrollRight(container.scrollLeft < container.scrollWidth - container.clientWidth - 1);
       };
       
       updateScrollButtons();
       container.addEventListener('scroll', updateScrollButtons);
-      return () => container.removeEventListener('scroll', updateScrollButtons);
+      
+      // Initial check after content loads
+      const timeoutId = setTimeout(updateScrollButtons, 100);
+      
+      return () => {
+        container.removeEventListener('scroll', updateScrollButtons);
+        clearTimeout(timeoutId);
+      };
     }
-  }, [templateName, shown.length]);
+  }, [shown]);
 
 
 
@@ -409,7 +418,7 @@ export default function ReceiptScanner() {
                       variant={activeCat === c.key ? "secondary" : "outline"}
                       size="sm"
                       onClick={() => setActiveCat(c.key)}
-                      className="rounded-full flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
+                      className="rounded-full flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 min-w-fit h-8 sm:h-9"
                       aria-pressed={activeCat === c.key}
                     >
                       <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -422,32 +431,39 @@ export default function ReceiptScanner() {
           </nav>
 
           {/* Mobile-First Templates Grid - Single Row Scrollable with Navigation */}
-          <div className="relative">
+          <div className="relative px-8 sm:px-10">
             {/* Left Arrow */}
-            {canScrollLeft && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm shadow-md hover:bg-background"
-                onClick={scrollLeft}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="icon"
+              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+                canScrollLeft 
+                  ? 'opacity-100 hover:bg-background hover:scale-105' 
+                  : 'opacity-0 pointer-events-none'
+              }`}
+              onClick={scrollLeft}
+              disabled={!canScrollLeft}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
             
             {/* Right Arrow */}
-            {canScrollRight && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm shadow-md hover:bg-background"
-                onClick={scrollRight}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="icon"
+              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+                canScrollRight 
+                  ? 'opacity-100 hover:bg-background hover:scale-105' 
+                  : 'opacity-0 pointer-events-none'
+              }`}
+              onClick={scrollRight}
+              disabled={!canScrollRight}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
 
-            <div ref={scrollContainerRef} className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-3 px-3">
+            <div ref={scrollContainerRef} className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 scroll-smooth"
+                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {shown.slice(0, 12).map((t) => {
               const Icon = t.icon;
               return (
@@ -469,7 +485,7 @@ export default function ReceiptScanner() {
                     window.location.reload();
                   }}
                 >
-                  <div className="p-2 sm:p-3 text-center">
+                  <div className="p-2 sm:p-3 text-center h-full flex flex-col justify-center">
                     <div className="flex items-center justify-center mb-2">
                       <div className={`h-12 w-12 sm:h-14 sm:w-14 rounded-xl flex items-center justify-center transition-all duration-200 ${
                         templateName === t.label 
@@ -494,7 +510,7 @@ export default function ReceiptScanner() {
 
             {/* Add Custom Template Card - Single Row Design */}
             <article className="group rounded-xl border-2 border-dashed border-border bg-card flex-shrink-0 w-20 sm:w-24 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
-              <div className="p-2 sm:p-3 text-center">
+              <div className="p-2 sm:p-3 text-center h-full flex flex-col justify-center">
                 <div className="flex items-center justify-center mb-2">
                   <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
                     <Plus className="h-7 w-7 sm:h-8 sm:w-8" />
