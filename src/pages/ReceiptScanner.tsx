@@ -7,9 +7,162 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { uploadReceipt, getReceipt, patchReceipt, listInstances } from "@/lib/recai";
-import { Camera, Upload, Check, Edit, Trash2, Plus, Image } from "lucide-react";
+import { 
+  Camera, 
+  Upload, 
+  Check, 
+  Edit, 
+  Trash2, 
+  Plus, 
+  Image, 
+  ChevronLeft, 
+  ChevronRight,
+  Filter, 
+  Zap, 
+  Droplets, 
+  Flame, 
+  Car, 
+  Bus, 
+  Fuel, 
+  Smartphone, 
+  ShoppingCart, 
+  ShoppingBag, 
+  Film, 
+  Circle,
+  Coffee,
+  Pizza,
+  Utensils,
+  Wifi,
+  Home,
+  Building2,
+  CreditCard,
+  Receipt,
+  Wallet,
+  PiggyBank,
+  Gift,
+  Heart,
+  BookOpen,
+  Gamepad,
+  Music,
+  Plane,
+  Train,
+  Ship,
+  Bike,
+  Carrot,
+  Apple,
+  Milk,
+  Egg,
+  Fish,
+  Hospital,
+  Stethoscope,
+  Pill,
+  GraduationCap,
+  Book,
+  PenTool,
+  Palette,
+  Activity,
+  Trophy,
+  Calendar,
+  Clock,
+  Star,
+  Crown,
+  Diamond,
+  Sparkles,
+  Search
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams, useNavigate } from "react-router-dom";
+
+// Types
+interface TemplateItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  category: CategoryKey;
+  usageCount: number;
+  createdAt: string; // ISO date
+}
+
+const categories = [
+  { key: "all", label: "All", icon: Sparkles },
+  { key: "utilities", label: "Utilities", icon: Zap },
+  { key: "food", label: "Food & Drink", icon: Coffee },
+  { key: "transport", label: "Transport", icon: Car },
+  { key: "mobile", label: "Mobile", icon: Smartphone },
+  { key: "groceries", label: "Groceries", icon: ShoppingCart },
+  { key: "leisure", label: "Leisure", icon: Film },
+  { key: "health", label: "Health", icon: Stethoscope },
+  { key: "education", label: "Education", icon: GraduationCap },
+  { key: "shopping", label: "Shopping", icon: ShoppingBag },
+] as const;
+
+type CategoryKey = typeof categories[number]["key"];
+
+const seedTemplates: TemplateItem[] = [
+  // Utilities
+  { id: "ke", label: "K-Electric", icon: Zap, category: "utilities", usageCount: 42, createdAt: "2025-06-10" },
+  { id: "kwsb", label: "KWSB", icon: Droplets, category: "utilities", usageCount: 31, createdAt: "2025-06-08" },
+  { id: "sngpl", label: "SNGPL", icon: Flame, category: "utilities", usageCount: 18, createdAt: "2025-05-22" },
+  { id: "lesco", label: "LESCO", icon: Zap, category: "utilities", usageCount: 12, createdAt: "2025-04-30" },
+  { id: "wifi", label: "WiFi Bill", icon: Wifi, category: "utilities", usageCount: 15, createdAt: "2025-05-15" },
+  { id: "internet", label: "Internet", icon: Wifi, category: "utilities", usageCount: 8, createdAt: "2025-04-20" },
+  
+  // Food & Drink
+  { id: "mcd", label: "McDonald's", icon: Utensils, category: "food", usageCount: 27, createdAt: "2025-06-12" },
+  { id: "dhaba", label: "Local Dhaba", icon: Coffee, category: "food", usageCount: 21, createdAt: "2025-06-11" },
+  { id: "ph", label: "Pizza Hut", icon: Pizza, category: "food", usageCount: 14, createdAt: "2025-05-26" },
+  { id: "restaurant", label: "Restaurant", icon: Utensils, category: "food", usageCount: 19, createdAt: "2025-06-05" },
+  { id: "cafe", label: "Café", icon: Coffee, category: "food", usageCount: 16, createdAt: "2025-05-30" },
+  { id: "fastfood", label: "Fast Food", icon: Utensils, category: "food", usageCount: 23, createdAt: "2025-06-08" },
+  
+  // Transport
+  { id: "careem", label: "Careem", icon: Car, category: "transport", usageCount: 45, createdAt: "2025-06-09" },
+  { id: "bus", label: "Bus Fare", icon: Bus, category: "transport", usageCount: 9, createdAt: "2025-05-29" },
+  { id: "fuel", label: "Fuel", icon: Fuel, category: "transport", usageCount: 38, createdAt: "2025-04-18" },
+  { id: "uber", label: "Uber", icon: Car, category: "transport", usageCount: 32, createdAt: "2025-06-03" },
+  { id: "train", label: "Train", icon: Train, category: "transport", usageCount: 7, createdAt: "2025-05-25" },
+  { id: "parking", label: "Parking", icon: Car, category: "transport", usageCount: 12, createdAt: "2025-05-28" },
+  
+  // Mobile
+  { id: "jazz", label: "Jazz Recharge", icon: Smartphone, category: "mobile", usageCount: 33, createdAt: "2025-06-07" },
+  { id: "zong", label: "Zong Recharge", icon: Smartphone, category: "mobile", usageCount: 15, createdAt: "2025-06-05" },
+  { id: "telenor", label: "Telenor Recharge", icon: Smartphone, category: "mobile", usageCount: 17, createdAt: "2025-05-03" },
+  { id: "ufone", label: "Ufone Recharge", icon: Smartphone, category: "mobile", usageCount: 11, createdAt: "2025-05-20" },
+  
+  // Groceries
+  { id: "imtiaz", label: "Imtiaz", icon: ShoppingCart, category: "groceries", usageCount: 22, createdAt: "2025-06-10" },
+  { id: "carrefour", label: "Carrefour", icon: ShoppingBag, category: "groceries", usageCount: 16, createdAt: "2025-06-06" },
+  { id: "hyperstar", label: "Hyperstar", icon: ShoppingCart, category: "groceries", usageCount: 14, createdAt: "2025-05-29" },
+  { id: "metro", label: "Metro", icon: ShoppingBag, category: "groceries", usageCount: 8, createdAt: "2025-05-15" },
+  { id: "fruits", label: "Fruits", icon: Apple, category: "groceries", usageCount: 19, createdAt: "2025-06-08" },
+  { id: "vegetables", label: "Vegetables", icon: Carrot, category: "groceries", usageCount: 25, createdAt: "2025-06-12" },
+  
+  // Leisure
+  { id: "cinema", label: "Cinema", icon: Film, category: "leisure", usageCount: 7, createdAt: "2025-05-20" },
+  { id: "park", label: "Theme Park", icon: Circle, category: "leisure", usageCount: 3, createdAt: "2025-04-10" },
+  { id: "gym", label: "Gym", icon: Activity, category: "leisure", usageCount: 12, createdAt: "2025-05-25" },
+  { id: "games", label: "Gaming", icon: Gamepad, category: "leisure", usageCount: 5, createdAt: "2025-04-28" },
+  { id: "music", label: "Music", icon: Music, category: "leisure", usageCount: 9, createdAt: "2025-05-18" },
+  { id: "books", label: "Books", icon: BookOpen, category: "leisure", usageCount: 6, createdAt: "2025-05-12" },
+  
+  // Health
+  { id: "pharmacy", label: "Pharmacy", icon: Pill, category: "health", usageCount: 8, createdAt: "2025-06-02" },
+  { id: "hospital", label: "Hospital", icon: Hospital, category: "health", usageCount: 3, createdAt: "2025-05-10" },
+  { id: "doctor", label: "Doctor", icon: Stethoscope, category: "health", usageCount: 5, createdAt: "2025-04-25" },
+  { id: "dental", label: "Dental", icon: Stethoscope, category: "health", usageCount: 2, createdAt: "2025-04-15" },
+  
+  // Education
+  { id: "tuition", label: "Tuition", icon: GraduationCap, category: "education", usageCount: 15, createdAt: "2025-06-01" },
+  { id: "books_edu", label: "Books", icon: Book, category: "education", usageCount: 11, createdAt: "2025-05-22" },
+  { id: "stationery", label: "Stationery", icon: PenTool, category: "education", usageCount: 7, createdAt: "2025-05-08" },
+  { id: "course", label: "Online Course", icon: GraduationCap, category: "education", usageCount: 4, createdAt: "2025-04-30" },
+  
+  // Shopping
+  { id: "clothing", label: "Clothing", icon: ShoppingBag, category: "shopping", usageCount: 18, createdAt: "2025-06-04" },
+  { id: "electronics", label: "Electronics", icon: Smartphone, category: "shopping", usageCount: 6, createdAt: "2025-05-16" },
+  { id: "cosmetics", label: "Cosmetics", icon: Sparkles, category: "shopping", usageCount: 13, createdAt: "2025-05-28" },
+  { id: "gifts", label: "Gifts", icon: Gift, category: "shopping", usageCount: 9, createdAt: "2025-05-14" },
+];
 
 export default function ReceiptScanner() {
   const [books, setBooks] = useState<any[]>([]);
@@ -19,10 +172,32 @@ export default function ReceiptScanner() {
   const [scanResult, setScanResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [editingItem, setEditingItem] = useState<number | null>(null);
+  const [activeCat, setActiveCat] = useState<CategoryKey>("all");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<"most" | "recent">("most");
+  const [visible, setVisible] = useState(12);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const templateName = searchParams.get('template');
+
+  const filtered = seedTemplates.filter((t) => {
+    if (activeCat !== "all" && t.category !== activeCat) return false;
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      if (!t.label.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }).sort((a, b) => {
+    if (sort === "most") {
+      return b.usageCount - a.usageCount;
+    } else {
+      return +new Date(b.createdAt) - +new Date(a.createdAt);
+    }
+  });
+
+  const shown = filtered.slice(0, visible);
+  const hasMore = visible < filtered.length;
 
   useEffect(() => {
     const title = templateName ? `${templateName} | AI Receipt Analyzer` : "Receipt Scanner | AI Receipt Analyzer";
@@ -177,67 +352,157 @@ export default function ReceiptScanner() {
 
       {/* Template Selection and Search */}
       <div className="space-y-6">
-        {/* Search Section */}
-        <div className="relative max-w-md">
-          <Input
-            placeholder="Search receipt templates..."
-            className="pl-4 pr-4 h-12 text-base"
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value) {
-                const url = new URL(window.location.href);
-                url.searchParams.set('template', value);
-                window.history.pushState({}, '', url);
-              }
-            }}
-          />
-        </div>
-
-        {/* Quick Templates Grid */}
+        {/* Category Tabs */}
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold">Quick Templates</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {[
-              { name: "Restaurant", icon: "🍽️" },
-              { name: "Grocery", icon: "🛒" },
-              { name: "Gas Station", icon: "⛽" },
-              { name: "Pharmacy", icon: "💊" },
-              { name: "Coffee Shop", icon: "☕" },
-              { name: "Retail", icon: "🛍️" },
-              { name: "Online Shopping", icon: "📦" },
-              { name: "Service", icon: "🔧" },
-              { name: "Hotel", icon: "🏨" },
-              { name: "Transport", icon: "🚗" }
-            ].map((template) => (
-              <div
-                key={template.name}
-                className={`group rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg ${
-                  templateName === template.name 
-                    ? "border-primary bg-primary/5 shadow-md" 
-                    : "border-border bg-card hover:bg-accent/50"
-                }`}
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  if (templateName === template.name) {
-                    url.searchParams.delete('template');
-                  } else {
-                    url.searchParams.set('template', template.name);
-                  }
-                  window.history.pushState({}, '', url);
-                  window.location.reload();
-                }}
-              >
-                <div className="p-4 text-center">
-                  <div className="text-2xl mb-2">{template.icon}</div>
-                  <div className={`text-sm font-medium ${
-                    templateName === template.name ? "text-primary" : "text-foreground"
-                  }`}>
-                    {template.name}
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Quick Templates</h3>
+            
+            {/* Search Section - Integrated into header */}
+            <div className="relative max-w-xs">
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search templates..."
+                className="pl-8 pr-4 h-8 text-sm"
+              />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
           </div>
+          
+          {/* Category Tabs - Responsive grid instead of horizontal scroll */}
+          <nav aria-label="Template categories" className="mb-4 sm:mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                {categories.map((c) => {
+                  const Icon = c.icon;
+                  return (
+                    <Button
+                      key={c.key}
+                      variant={activeCat === c.key ? "secondary" : "outline"}
+                      size="sm"
+                      onClick={() => setActiveCat(c.key)}
+                      className="rounded-lg flex items-center justify-center gap-1.5 py-2 px-3 text-xs"
+                      aria-pressed={activeCat === c.key}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span className="truncate">{c.label}</span>
+                    </Button>
+                  );
+                })}
+            </div>
+          </nav>
+
+          {/* Templates Carousel - Single Row */}
+          <div className="relative">
+            {/* Left Arrow */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const container = document.getElementById('templates-carousel');
+                if (container) {
+                  container.scrollLeft -= 200;
+                }
+              }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm border-border shadow-sm hover:bg-background"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            {/* Right Arrow */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const container = document.getElementById('templates-carousel');
+                if (container) {
+                  container.scrollLeft += 200;
+                }
+              }}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm border-border shadow-sm hover:bg-background"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+
+            {/* Templates Row */}
+            <div 
+              id="templates-carousel"
+              className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-8"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {shown.map((t) => {
+                const Icon = t.icon;
+                return (
+                  <article 
+                    key={t.id} 
+                    className={`group rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 ${
+                      templateName === t.label 
+                        ? "border-primary bg-primary/5 shadow-md" 
+                        : "border-border bg-card hover:bg-accent/50"
+                    }`}
+                    onClick={() => {
+                      const url = new URL(window.location.href);
+                      if (templateName === t.label) {
+                        url.searchParams.delete('template');
+                      } else {
+                        url.searchParams.set('template', t.label);
+                      }
+                      window.history.pushState({}, '', url);
+                      window.location.reload();
+                    }}
+                  >
+                    <div className="p-3 text-center w-24">
+                      <div className="flex items-center justify-center mb-3">
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <h3 className={`text-xs font-medium text-center truncate ${
+                        templateName === t.label ? "text-primary" : "text-foreground"
+                      }`} title={t.label}>
+                        {t.label}
+                      </h3>
+                      <p className="text-xs text-muted-foreground text-center mt-1">
+                        {t.usageCount} uses
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+
+              {/* Add Custom Template Card */}
+              <article className="group rounded-xl border-2 border-dashed border-border bg-card p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer flex-shrink-0 w-24">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200 mb-3">
+                  <Plus className="h-6 w-6" />
+                </div>
+                <h3 className="text-xs font-medium">Add Custom</h3>
+                <p className="text-xs text-muted-foreground mt-1">Create</p>
+              </article>
+            </div>
+          </div>
+
+          {/* Load more */}
+          {hasMore && (
+            <div className="flex justify-center mt-6">
+              <Button 
+                onClick={() => setVisible((v) => Math.min(v + 12, filtered.length))} 
+                variant="outline"
+                className="px-6"
+              >
+                Load more templates
+              </Button>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!shown.length && (
+            <div className="text-center py-16 text-muted-foreground">
+              <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                <Search className="h-8 w-8" />
+              </div>
+              <h3 className="text-lg font-medium mb-2">No templates found</h3>
+              <p className="text-sm">Try adjusting your search or filters</p>
+            </div>
+          )}
         </div>
       </div>
 
