@@ -352,17 +352,11 @@ export default function ReceiptScanner() {
                 <Separator />
                 <div className="space-y-2">
                   <div className="flex justify-between items-center font-medium">
-                    <span>Items Total</span>
+                    <span>Total</span>
                     <span>
-                      PKR {scanResult.items?.reduce((sum: number, item: any) => sum + (item.price || 0), 0).toFixed(2)}
+                      PKR {scanResult.total?.toFixed(2) || '0.00'}
                     </span>
                   </div>
-                  {scanResult.total && (
-                    <div className="flex justify-between items-center font-medium">
-                      <span>Receipt Total</span>
-                      <span>PKR {scanResult.total.toFixed(2)}</span>
-                    </div>
-                  )}
                   {scanResult.total_warning && (
                     <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                       <div className="flex items-start gap-2">
