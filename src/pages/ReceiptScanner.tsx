@@ -179,7 +179,7 @@ export default function ReceiptScanner() {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label>Quick Templates</Label>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+          <div className="flex gap-3 overflow-x-auto pb-2">{/* removed scrollbar-thin which might not be defined */}
             {["Restaurant", "Grocery", "Gas Station", "Pharmacy", "Coffee Shop", "Retail", "Online Shopping", "Service", "Hotel", "Transport"].map((template) => (
               <Button
                 key={template}
