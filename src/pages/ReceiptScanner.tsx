@@ -393,14 +393,14 @@ export default function ReceiptScanner() {
             </div>
           </nav>
 
-          {/* Mobile-First Templates Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
+          {/* Mobile-First Templates Grid - Single Row Scrollable */}
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-3 px-3">
             {shown.slice(0, 12).map((t) => {
               const Icon = t.icon;
               return (
                 <article 
                   key={t.id} 
-                  className={`group rounded-xl sm:rounded-2xl border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg ${
+                  className={`group rounded-xl border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-20 sm:w-24 ${
                     templateName === t.label 
                       ? "border-primary bg-primary/5 shadow-md" 
                       : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
@@ -416,36 +416,40 @@ export default function ReceiptScanner() {
                     window.location.reload();
                   }}
                 >
-                  <div className="p-2 sm:p-3 md:p-4 text-center">
-                    <div className="flex items-center justify-center mb-2 sm:mb-3">
-                      <div className={`h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                  <div className="p-2 sm:p-3 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <div className={`h-12 w-12 sm:h-14 sm:w-14 rounded-xl flex items-center justify-center transition-all duration-200 ${
                         templateName === t.label 
                           ? "bg-primary text-primary-foreground shadow-lg" 
                           : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
                       }`}>
-                        <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8" />
+                        <Icon className="h-7 w-7 sm:h-8 sm:w-8" />
                       </div>
                     </div>
-                    <h3 className={`text-xs sm:text-sm font-semibold text-center truncate ${
+                    <h3 className={`text-xs font-medium text-center truncate leading-tight ${
                       templateName === t.label ? "text-primary" : "text-foreground"
                     }`} title={t.label}>
-                      {t.label}
+                      {t.label.length > 8 ? t.label.substring(0, 8) + '...' : t.label}
                     </h3>
-                    <p className="text-xs text-muted-foreground text-center mt-0.5 sm:mt-1">
-                      {t.usageCount} uses
+                    <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">
+                      {t.usageCount}
                     </p>
                   </div>
                 </article>
               );
             })}
 
-            {/* Add Custom Template Card - Mobile Design */}
-            <article className="group rounded-xl sm:rounded-2xl border-2 border-dashed border-border bg-card p-2 sm:p-3 md:p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200 mb-2 sm:mb-3">
-                <Plus className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8" />
+            {/* Add Custom Template Card - Single Row Design */}
+            <article className="group rounded-xl border-2 border-dashed border-border bg-card flex-shrink-0 w-20 sm:w-24 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
+              <div className="p-2 sm:p-3 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
+                    <Plus className="h-7 w-7 sm:h-8 sm:w-8" />
+                  </div>
+                </div>
+                <h3 className="text-xs font-medium text-center truncate leading-tight">Custom</h3>
+                <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">New</p>
               </div>
-              <h3 className="text-xs sm:text-sm font-semibold">Add Custom</h3>
-              <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">Create template</p>
             </article>
           </div>
 
