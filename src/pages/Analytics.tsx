@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { listInstances, getReports, getGraphs, getBudgets, exportCSV, upsertBudget, getInstance, addCategory, renameCategory, removeCategory, recaiFetch } from "@/lib/recai";
 import { TrendingUp, TrendingDown, DollarSign, Download, Calendar, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
@@ -39,6 +40,11 @@ export default function Analytics() {
   // Vendor analytics state
   const [vendorData, setVendorData] = useState<any>(null);
   const [vendorChartType, setVendorChartType] = useState<"spending" | "frequency" | "trends">("spending");
+  // Vendor items modal state
+  const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
+  const [vendorItems, setVendorItems] = useState<any>(null);
+  const [vendorItemsLoading, setVendorItemsLoading] = useState(false);
+  const [vendorItemsSort, setVendorItemsSort] = useState<"date" | "price" | "category">("date");
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -156,6 +162,27 @@ export default function Analytics() {
         trends: { data: [] }
       });
     }
+  };
+
+  const loadVendorItems = async (vendorName: string) => {
+    if (!selectedBook || !vendorName) return;
+    
+    setVendorItemsLoading(true);
+    try {
+      const encodedVendor = encodeURIComponent(vendorName);
+      const itemsResponse = await recaiFetch(`/v1/instances/${selectedBook}/analytics/vendors/${encodedVendor}/items?sort_by=${vendorItemsSort}&timeframe=all`);
+      setVendorItems(itemsResponse);
+    } catch (e) {
+      console.error("Failed to load vendor items:", e);
+      setVendorItems(null);
+    } finally {
+      setVendorItemsLoading(false);
+    }
+  };
+
+  const handleVendorClick = (vendorName: string) => {
+    setSelectedVendor(vendorName);
+    loadVendorItems(vendorName);
   };
   const handleSaveBudget = async () => {
     if (!selectedBook || !newBudgetCategoryId || !newBudgetLimit) {
@@ -548,6 +575,12 @@ export default function Analytics() {
                             outerRadius={80}
                             fill="#8884d8"
                             dataKey="value"
+                            onClick={(data) => {
+                              if (data && data.label) {
+                                handleVendorClick(data.label);
+                              }
+                            }}
+                            style={{ cursor: 'pointer' }}
                           >
                             {vendorData.spending.pie_chart.data.map((entry: any, index: number) => (
                               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -593,7 +626,11 @@ export default function Analytics() {
                   {vendorData?.spending?.detailed_data?.length > 0 ? (
                     <div className="space-y-3">
                       {vendorData.spending.detailed_data.map((vendor: any, index: number) => (
-                        <div key={index} className="space-y-2 p-3 rounded-lg bg-accent/10">
+                        <div 
+                          key={index} 
+                          className="space-y-2 p-3 rounded-lg bg-accent/10 hover:bg-accent/20 cursor-pointer transition-colors"
+                          onClick={() => handleVendorClick(vendor.vendor)}
+                        >
                           <div className="flex justify-between items-start">
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-sm truncate">{vendor.vendor}</div>
@@ -900,6 +937,132 @@ export default function Analytics() {
           </TabsContent>
         </Tabs>
       )}
+
+      {/* Vendor Items Modal */}
+      <Dialog open={!!selectedVendor} onOpenChange={() => setSelectedVendor(null)}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Items from {selectedVendor}</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Sort Options */}
+            <div className="flex items-center gap-4">
+              <Label htmlFor="sort">Sort by:</Label>
+              <Select value={vendorItemsSort} onValueChange={(val) => {
+                setVendorItemsSort(val as any);
+                if (selectedVendor) loadVendorItems(selectedVendor);
+              }}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date">Date</SelectItem>
+                  <SelectItem value="price">Price</SelectItem>
+                  <SelectItem value="category">Category</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Loading State */}
+            {vendorItemsLoading && (
+              <div className="text-center py-8">
+                <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                <p className="text-muted-foreground">Loading vendor items...</p>
+              </div>
+            )}
+
+            {/* Vendor Items Content */}
+            {!vendorItemsLoading && vendorItems && (
+              <div className="space-y-6">
+                {/* Summary Cards */}
+                {vendorItems.summary && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="p-4">
+                      <div className="text-2xl font-bold">
+                        PKR {vendorItems.summary.total_spent?.toFixed(2) || "0.00"}
+                      </div>
+                      <p className="text-sm text-muted-foreground">Total Spent</p>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="text-2xl font-bold">
+                        {vendorItems.summary.total_items || 0}
+                      </div>
+                      <p className="text-sm text-muted-foreground">Items Purchased</p>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="text-2xl font-bold">
+                        PKR {vendorItems.summary.average_price?.toFixed(2) || "0.00"}
+                      </div>
+                      <p className="text-sm text-muted-foreground">Average Price</p>
+                    </Card>
+                  </div>
+                )}
+
+                {/* Items List */}
+                {vendorItems.items && vendorItems.items.length > 0 ? (
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold">Items Purchased</h3>
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {vendorItems.items.map((item: any, index: number) => (
+                        <div key={index} className="flex justify-between items-center p-3 border rounded-lg bg-accent/5 hover:bg-accent/10">
+                          <div className="flex-1">
+                            <div className="font-medium">{item.name || item.item || "Unknown Item"}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {item.category || "Uncategorized"} • {item.date || "Unknown date"}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium">PKR {item.amount?.toFixed(2) || "0.00"}</div>
+                            {item.receipt_id && (
+                              <div className="text-xs text-muted-foreground">
+                                Receipt: {item.receipt_id.substring(0, 8)}...
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No detailed items found for this vendor</p>
+                  </div>
+                )}
+
+                {/* Category Breakdown */}
+                {vendorItems.category_breakdown && vendorItems.category_breakdown.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold">Category Breakdown</h3>
+                    <div className="space-y-2">
+                      {vendorItems.category_breakdown.map((category: any, index: number) => (
+                        <div key={index} className="flex justify-between items-center p-2 border rounded">
+                          <span className="font-medium">{category.category}</span>
+                          <span className="text-muted-foreground">PKR {category.total?.toFixed(2) || "0.00"}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Error State */}
+            {!vendorItemsLoading && !vendorItems && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Failed to load vendor items</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => selectedVendor && loadVendorItems(selectedVendor)}
+                  className="mt-2"
+                >
+                  Retry
+                </Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
