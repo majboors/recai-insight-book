@@ -368,6 +368,17 @@ export default function ReceiptScanner() {
                   )}
                 </div>
 
+                {/* Debug Section */}
+                <Separator />
+                <div className="space-y-3">
+                  <h3 className="font-medium text-sm">Debug - Raw API Response</h3>
+                  <div className="bg-muted/50 rounded-lg p-3 overflow-auto max-h-60">
+                    <pre className="text-xs font-mono">
+                      {JSON.stringify(scanResult, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+
                 <Separator />
                 <div className="flex justify-end">
                   <Button
