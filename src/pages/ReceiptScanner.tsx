@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -176,6 +176,9 @@ export default function ReceiptScanner() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<"most" | "recent">("most");
   const [visible, setVisible] = useState(12);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -203,7 +206,20 @@ export default function ReceiptScanner() {
     const title = templateName ? `${templateName} | AI Receipt Analyzer` : "Receipt Scanner | AI Receipt Analyzer";
     document.title = title;
     loadBooks();
-  }, [templateName]);
+    
+    // Set up scroll listener for arrows
+    const container = scrollContainerRef.current;
+    if (container) {
+      const updateScrollButtons = () => {
+        setCanScrollLeft(container.scrollLeft > 0);
+        setCanScrollRight(container.scrollLeft < container.scrollWidth - container.clientWidth);
+      };
+      
+      updateScrollButtons();
+      container.addEventListener('scroll', updateScrollButtons);
+      return () => container.removeEventListener('scroll', updateScrollButtons);
+    }
+  }, [templateName, shown.length]);
 
 
 
@@ -305,6 +321,18 @@ export default function ReceiptScanner() {
     toast({ title: "Item removed", description: "The item was removed from this scan." });
   };
 
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
   const resetScanner = () => {
     setUploadedFile(null);
     setPreviewUrl(null);
@@ -393,8 +421,33 @@ export default function ReceiptScanner() {
             </div>
           </nav>
 
-          {/* Mobile-First Templates Grid - Single Row Scrollable */}
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-3 px-3">
+          {/* Mobile-First Templates Grid - Single Row Scrollable with Navigation */}
+          <div className="relative">
+            {/* Left Arrow */}
+            {canScrollLeft && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm shadow-md hover:bg-background"
+                onClick={scrollLeft}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+            
+            {/* Right Arrow */}
+            {canScrollRight && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm shadow-md hover:bg-background"
+                onClick={scrollRight}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            )}
+
+            <div ref={scrollContainerRef} className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-3 px-3">
             {shown.slice(0, 12).map((t) => {
               const Icon = t.icon;
               return (
@@ -451,6 +504,7 @@ export default function ReceiptScanner() {
                 <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">New</p>
               </div>
             </article>
+            </div>
           </div>
 
           {/* Load more - Only show if there are more templates */}
