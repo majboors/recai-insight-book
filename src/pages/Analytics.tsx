@@ -602,9 +602,9 @@ export default function Analytics() {
                               </div>
                             </div>
                             <div className="text-right ml-2">
-                              <div className="font-medium text-sm">PKR {vendor.total_spent.toFixed(2)}</div>
+                              <div className="font-medium text-sm">PKR {(vendor.total_spent || 0).toFixed(2)}</div>
                               <div className="text-xs text-muted-foreground">
-                                Avg: PKR {vendor.avg_transaction.toFixed(2)}
+                                Avg: PKR {(vendor.avg_transaction || (vendor.total_spent || 0) / Math.max(vendor.transaction_count || 1, 1)).toFixed(2)}
                               </div>
                             </div>
                           </div>
