@@ -36,6 +36,9 @@ export default function Analytics() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [renamingCatId, setRenamingCatId] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState("");
+  // Vendor analytics state
+  const [vendorData, setVendorData] = useState<any>(null);
+  const [vendorChartType, setVendorChartType] = useState<"spending" | "frequency" | "trends">("spending");
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -71,6 +74,12 @@ export default function Analytics() {
       }
     })();
   }, [selectedBook, chartType]);
+
+  // Load vendor data whenever book or vendor chart type changes
+  useEffect(() => {
+    if (!selectedBook) return;
+    loadVendorData();
+  }, [selectedBook, vendorChartType]);
 
   const loadBooks = async () => {
     try {
@@ -123,6 +132,61 @@ export default function Analytics() {
       setCategories(Array.isArray(cats) ? cats : []);
     } catch (e) {
       console.error("Failed to refresh categories", e);
+    }
+  };
+
+  const loadVendorData = async () => {
+    if (!selectedBook) return;
+    try {
+      // Mock vendor data - in real implementation, this would be from reports or a specific vendor endpoint
+      const mockVendorData = {
+        spending: {
+          pie_chart: {
+            data: [
+              { label: "Fropresso - Gulberg", value: 637.99 },
+              { label: "Walmart", value: 245.50 },
+              { label: "Target", value: 189.75 },
+              { label: "McDonald's", value: 89.25 },
+              { label: "Starbucks", value: 67.80 }
+            ]
+          },
+          bar_chart: {
+            data: [
+              { label: "Fropresso - Gulberg", value: 637.99 },
+              { label: "Walmart", value: 245.50 },
+              { label: "Target", value: 189.75 },
+              { label: "McDonald's", value: 89.25 },
+              { label: "Starbucks", value: 67.80 }
+            ]
+          },
+          detailed_data: [
+            { vendor: "Fropresso - Gulberg", total_spent: 637.99, transaction_count: 1, avg_transaction: 637.99 },
+            { vendor: "Walmart", total_spent: 245.50, transaction_count: 3, avg_transaction: 81.83 },
+            { vendor: "Target", total_spent: 189.75, transaction_count: 2, avg_transaction: 94.88 },
+            { vendor: "McDonald's", total_spent: 89.25, transaction_count: 4, avg_transaction: 22.31 },
+            { vendor: "Starbucks", total_spent: 67.80, transaction_count: 3, avg_transaction: 22.60 }
+          ]
+        },
+        frequency: {
+          data: [
+            { label: "McDonald's", value: 4 },
+            { label: "Walmart", value: 3 },
+            { label: "Starbucks", value: 3 },
+            { label: "Target", value: 2 },
+            { label: "Fropresso - Gulberg", value: 1 }
+          ]
+        },
+        trends: {
+          data: [
+            { label: "Jan", fropresso: 637.99, walmart: 120.00, target: 89.75 },
+            { label: "Feb", fropresso: 0, walmart: 125.50, target: 100.00 },
+            { label: "Mar", fropresso: 0, walmart: 0, target: 0 }
+          ]
+        }
+      };
+      setVendorData(mockVendorData);
+    } catch (e) {
+      console.error("Failed to load vendor data:", e);
     }
   };
   const handleSaveBudget = async () => {
@@ -278,9 +342,10 @@ export default function Analytics() {
         </Card>
       ) : (
         <Tabs defaultValue={searchParams.get("tab") || "overview"} className="space-y-6">
-          <TabsList aria-label="Analytics tabs" className="grid h-auto gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-6">
+          <TabsList aria-label="Analytics tabs" className="grid h-auto gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-7">
             <TabsTrigger value="overview" className="text-xs sm:text-sm w-full">Overview</TabsTrigger>
             <TabsTrigger value="charts" className="text-xs sm:text-sm w-full">Charts</TabsTrigger>
+            <TabsTrigger value="vendors" className="text-xs sm:text-sm w-full">Vendors</TabsTrigger>
             <TabsTrigger value="budgets" className="text-xs sm:text-sm w-full">Budgets</TabsTrigger>
             <TabsTrigger value="categories" className="text-xs sm:text-sm w-full">Categories</TabsTrigger>
             <TabsTrigger value="transactions" className="text-xs sm:text-sm w-full">Transactions</TabsTrigger>
@@ -472,6 +537,181 @@ export default function Analytics() {
                   ) : (
                     <p className="text-zen text-center py-8">No categories found</p>
                   )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="vendors" className="space-y-6">
+            <div className="grid-zen grid-cols-1 lg:grid-cols-2">
+              <Card className="card-minimal">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                  <div>
+                    <CardTitle className="heading-zen">
+                      {vendorChartType === "spending" ? "Spending by Vendor" : vendorChartType === "frequency" ? "Transaction Frequency" : "Spending Trends"}
+                    </CardTitle>
+                    <CardDescription className="text-zen">
+                      {vendorChartType === "spending" ? "Distribution of expenses across vendors" : vendorChartType === "frequency" ? "Number of transactions per vendor" : "Spending trends over time"}
+                    </CardDescription>
+                  </div>
+                  <Select value={vendorChartType} onValueChange={(val) => setVendorChartType(val as any)}>
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Chart type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="spending">Spending</SelectItem>
+                      <SelectItem value="frequency">Frequency</SelectItem>
+                      <SelectItem value="trends">Trends</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </CardHeader>
+                <CardContent>
+                  {vendorData?.[vendorChartType]?.data?.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={250}>
+                      {vendorChartType === "spending" ? (
+                        <RechartsPieChart>
+                          <Pie
+                            data={vendorData.spending.pie_chart.data}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            nameKey="label"
+                            label={({ label, percent }) => `${label} ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            {vendorData.spending.pie_chart.data.map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(value) => ["PKR " + value, "Amount"]} />
+                        </RechartsPieChart>
+                      ) : vendorChartType === "frequency" ? (
+                        <BarChart data={vendorData.frequency.data}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="label" />
+                          <YAxis />
+                          <Tooltip formatter={(value) => [value, "Transactions"]} />
+                          <Bar dataKey="value" fill="#00C49F" />
+                        </BarChart>
+                      ) : (
+                        <LineChart data={vendorData.trends.data}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="label" />
+                          <YAxis />
+                          <Tooltip formatter={(value) => ["PKR " + value, "Amount"]} />
+                          <Line type="monotone" dataKey="fropresso" stroke="#0088FE" strokeWidth={2} name="Fropresso" />
+                          <Line type="monotone" dataKey="walmart" stroke="#00C49F" strokeWidth={2} name="Walmart" />
+                          <Line type="monotone" dataKey="target" stroke="#FFBB28" strokeWidth={2} name="Target" />
+                        </LineChart>
+                      )}
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="text-center py-12 text-zen">
+                      No vendor data available
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Vendor Details */}
+              <Card className="card-minimal">
+                <CardHeader>
+                  <CardTitle className="heading-zen">Vendor Details</CardTitle>
+                  <CardDescription className="text-zen">Detailed breakdown by vendor</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {vendorData?.spending?.detailed_data?.length > 0 ? (
+                    <div className="space-y-3">
+                      {vendorData.spending.detailed_data.map((vendor: any, index: number) => (
+                        <div key={index} className="space-y-2 p-3 rounded-lg bg-accent/10">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm truncate">{vendor.vendor}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {vendor.transaction_count} transaction{vendor.transaction_count !== 1 ? 's' : ''}
+                              </div>
+                            </div>
+                            <div className="text-right ml-2">
+                              <div className="font-medium text-sm">PKR {vendor.total_spent.toFixed(2)}</div>
+                              <div className="text-xs text-muted-foreground">
+                                Avg: PKR {vendor.avg_transaction.toFixed(2)}
+                              </div>
+                            </div>
+                          </div>
+                          <Progress 
+                            value={vendorData.spending.detailed_data ? 
+                              (vendor.total_spent / Math.max(...vendorData.spending.detailed_data.map((v: any) => v.total_spent))) * 100 : 0} 
+                            className="h-2"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-zen text-center py-8">No vendor data found</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Vendor Summary Cards */}
+            <div className="grid-zen grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+              <Card className="card-minimal">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-zen">Total Vendors</CardTitle>
+                  <PieChart className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl sm:text-2xl font-bold heading-zen">
+                    {vendorData?.spending?.detailed_data?.length || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Unique vendors</p>
+                </CardContent>
+              </Card>
+
+              <Card className="card-minimal">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-zen">Top Vendor</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm sm:text-base font-bold heading-zen truncate">
+                    {vendorData?.spending?.detailed_data?.[0]?.vendor || "None"}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    PKR {vendorData?.spending?.detailed_data?.[0]?.total_spent?.toFixed(2) || "0.00"}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="card-minimal">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-zen">Most Frequent</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm sm:text-base font-bold heading-zen truncate">
+                    {vendorData?.frequency?.data?.[0]?.label || "None"}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {vendorData?.frequency?.data?.[0]?.value || 0} visits
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="card-minimal">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-zen">Avg per Vendor</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl sm:text-2xl font-bold heading-zen">
+                    PKR {vendorData?.spending?.detailed_data?.length > 0 ? 
+                      (vendorData.spending.detailed_data.reduce((sum: number, v: any) => sum + v.total_spent, 0) / vendorData.spending.detailed_data.length).toFixed(2) : 
+                      "0.00"}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Per vendor</p>
                 </CardContent>
               </Card>
             </div>
