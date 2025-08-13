@@ -176,7 +176,7 @@ export default function ReceiptScanner() {
       </div>
 
       {/* Template Selection and Search */}
-      <div className="space-y-4">
+      <div className="space-y-4 border-2 border-dashed border-red-500 p-4">{/* added visible border for debugging */}
         <div className="space-y-2">
           <Label>Quick Templates</Label>
           <div className="flex gap-3 overflow-x-auto pb-2">{/* removed scrollbar-thin which might not be defined */}
