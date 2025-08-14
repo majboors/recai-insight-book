@@ -195,35 +195,35 @@ export default function AIChat() {
             {/* Chat Window */}
             <Card className="card-minimal flex flex-col" style={{ height: '500px' }}>
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <CardTitle className="heading-zen flex items-center gap-2">
-                      <MessageCircle className="h-5 w-5" />
-                      Chat with AI
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-2 lg:gap-4">
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="heading-zen flex items-center gap-2 text-base lg:text-lg">
+                      <MessageCircle className="h-4 w-4 lg:h-5 lg:w-5 flex-shrink-0" />
+                      <span className="truncate">Chat with AI</span>
                     </CardTitle>
-                    <CardDescription className="text-zen">Ask questions about your spending patterns</CardDescription>
+                    <CardDescription className="text-zen text-xs lg:text-sm">Ask about your spending patterns</CardDescription>
                   </div>
                   {chatDataStatus && (
-                    <div className="min-w-[220px] flex flex-col items-end gap-1">
+                    <div className="flex flex-col gap-1 text-xs lg:min-w-[220px]">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`${chatDataStatus.usingLiveData ? "bg-success" : "bg-destructive"} h-2.5 w-2.5 rounded-full`}
+                          className={`${chatDataStatus.usingLiveData ? "bg-success" : "bg-destructive"} h-2 w-2 rounded-full flex-shrink-0`}
                           aria-hidden="true"
                         />
-                        <span className="text-xs">
-                          {chatDataStatus.usingLiveData ? "AI has access to your spending data" : "AI in general advice mode"}
+                        <span className="text-[10px] lg:text-xs leading-tight">
+                          {chatDataStatus.usingLiveData ? "Live data access" : "General advice mode"}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Badge
                               variant={chatDataStatus.usingLiveData ? "secondary" : "destructive"}
-                              className="text-[10px]"
+                              className="text-[9px] lg:text-[10px] self-start"
                             >
                               {chatDataStatus.usingLiveData
-                                ? `Based on ${chatDataStatus.totalTransactions ?? 0} transactions`
-                                : "Add transactions for personalized insights"}
+                                ? `${chatDataStatus.totalTransactions ?? 0} transactions`
+                                : "Add transactions"}
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -236,7 +236,7 @@ export default function AIChat() {
                         </Tooltip>
                         {!chatDataStatus.usingLiveData && (
                           <Link to="/scanner">
-                            <Button variant="secondary" size="sm">Scan receipts</Button>
+                            <Button variant="secondary" size="sm" className="text-[10px] h-6 px-2">Scan receipts</Button>
                           </Link>
                         )}
                       </div>
