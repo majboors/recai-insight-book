@@ -350,66 +350,67 @@ export default function ReceiptScanner() {
   };
 
   return (
-    <div className="w-full max-w-none mx-auto px-3 py-4 space-y-4 overflow-x-hidden">
-      {/* Header */}
-      <div className="flex flex-col gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
-            {templateName && (
-              <Badge variant="secondary" className="text-xs">
-                Template
-              </Badge>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            {templateName 
-              ? `Scan and process ${templateName} receipts with AI-powered recognition`
-              : "Scan and process receipts with AI-powered recognition"
-            }
-          </p>
-        </div>
-        {scanResult && (
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={() => {
-                if (window.history.length > 1) navigate(-1); else navigate('/analytics');
-              }}
-              className="w-full text-sm h-9"
-            >
-              <Check className="h-4 w-4 mr-2" />
-              Done
-            </Button>
-            <Button onClick={resetScanner} variant="outline" className="w-full text-sm h-9">
-              <Plus className="h-4 w-4 mr-2" />
-              Scan Another
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Template Selection and Search */}
-      <div className="space-y-3">
-        {/* Mobile-First Templates Design */}
-        <div className="space-y-3">
-          <div className="flex flex-col gap-2">
-            <h3 className="text-base font-semibold">Quick Templates</h3>
-            
-            {/* Search Section - Integrated into header */}
-            <div className="relative w-full">
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search templates..."
-                className="pl-8 pr-3 h-9 text-sm"
-              />
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <div className="min-h-screen w-screen max-w-none overflow-x-hidden">
+      <div className="w-full px-2 py-3 space-y-3">
+        {/* Header */}
+        <div className="flex flex-col gap-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
+              {templateName && (
+                <Badge variant="secondary" className="text-xs">
+                  Template
+                </Badge>
+              )}
             </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              {templateName 
+                ? `Scan and process ${templateName} receipts with AI-powered recognition`
+                : "Scan and process receipts with AI-powered recognition"
+              }
+            </p>
           </div>
-          
-          {/* Mobile-First Category Tabs */}
-          <nav aria-label="Template categories" className="mb-3">
-            <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
+          {scanResult && (
+            <div className="flex flex-col gap-2">
+              <Button
+                onClick={() => {
+                  if (window.history.length > 1) navigate(-1); else navigate('/analytics');
+                }}
+                className="w-full text-sm h-9"
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Done
+              </Button>
+              <Button onClick={resetScanner} variant="outline" className="w-full text-sm h-9">
+                <Plus className="h-4 w-4 mr-2" />
+                Scan Another
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Template Selection and Search */}
+        <div className="space-y-2">
+          {/* Mobile-First Templates Design */}
+          <div className="space-y-2">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-base font-semibold">Quick Templates</h3>
+              
+              {/* Search Section - Integrated into header */}
+              <div className="relative w-full">
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search templates..."
+                  className="pl-8 pr-3 h-8 text-sm w-full"
+                />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+            
+            {/* Mobile-First Category Tabs */}
+            <nav aria-label="Template categories" className="mb-2">
+              <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1 w-full">
                 {categories.map((c) => {
                   const Icon = c.icon;
                   return (
@@ -418,7 +419,7 @@ export default function ReceiptScanner() {
                       variant={activeCat === c.key ? "secondary" : "outline"}
                       size="sm"
                       onClick={() => setActiveCat(c.key)}
-                      className="rounded-full flex items-center justify-center gap-1.5 py-1.5 px-3 text-xs whitespace-nowrap flex-shrink-0 min-w-fit h-7"
+                      className="rounded-full flex items-center justify-center gap-1 py-1 px-2 text-xs whitespace-nowrap flex-shrink-0 min-w-fit h-6"
                       aria-pressed={activeCat === c.key}
                     >
                       <Icon className="h-3 w-3" />
@@ -427,348 +428,349 @@ export default function ReceiptScanner() {
                     </Button>
                   );
                 })}
-            </div>
-          </nav>
+              </div>
+            </nav>
 
-          {/* Mobile-First Templates Grid - Single Row Scrollable with Navigation */}
-          <div className="relative px-5">
-            {/* Left Arrow */}
-            <Button
-              variant="outline"
-              size="icon"
-              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
-                canScrollLeft 
-                  ? 'opacity-100 hover:bg-background hover:scale-105' 
-                  : 'opacity-0 pointer-events-none'
-              }`}
-              onClick={scrollLeft}
-              disabled={!canScrollLeft}
-            >
-              <ChevronLeft className="h-3 w-3" />
-            </Button>
-            
-            {/* Right Arrow */}
-            <Button
-              variant="outline"
-              size="icon"
-              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
-                canScrollRight 
-                  ? 'opacity-100 hover:bg-background hover:scale-105' 
-                  : 'opacity-0 pointer-events-none'
-              }`}
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-            >
-              <ChevronRight className="h-3 w-3" />
-            </Button>
+            {/* Mobile-First Templates Grid - Single Row Scrollable with Navigation */}
+            <div className="relative px-4">
+              {/* Left Arrow */}
+              <Button
+                variant="outline"
+                size="icon"
+                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 h-5 w-5 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+                  canScrollLeft 
+                    ? 'opacity-100 hover:bg-background hover:scale-105' 
+                    : 'opacity-0 pointer-events-none'
+                }`}
+                onClick={scrollLeft}
+                disabled={!canScrollLeft}
+              >
+                <ChevronLeft className="h-3 w-3" />
+              </Button>
+              
+              {/* Right Arrow */}
+              <Button
+                variant="outline"
+                size="icon"
+                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 h-5 w-5 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+                  canScrollRight 
+                    ? 'opacity-100 hover:bg-background hover:scale-105' 
+                    : 'opacity-0 pointer-events-none'
+                }`}
+                onClick={scrollRight}
+                disabled={!canScrollRight}
+              >
+                <ChevronRight className="h-3 w-3" />
+              </Button>
 
-            <div ref={scrollContainerRef} className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 scroll-smooth"
-                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {shown.slice(0, 12).map((t) => {
-              const Icon = t.icon;
-              return (
-                <article 
-                  key={t.id} 
-                  className={`group rounded-lg border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-14 ${
-                    templateName === t.label 
-                      ? "border-primary bg-primary/5 shadow-md" 
-                      : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
-                  }`}
-                  onClick={() => {
-                    const url = new URL(window.location.href);
-                    if (templateName === t.label) {
-                      url.searchParams.delete('template');
-                    } else {
-                      url.searchParams.set('template', t.label);
-                    }
-                    window.history.pushState({}, '', url);
-                    window.location.reload();
-                  }}
-                >
-                  <div className="p-1.5 text-center h-full flex flex-col justify-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
+              <div ref={scrollContainerRef} className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1 scroll-smooth"
+                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {shown.slice(0, 12).map((t) => {
+                  const Icon = t.icon;
+                  return (
+                    <article 
+                      key={t.id} 
+                      className={`group rounded-lg border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-12 ${
                         templateName === t.label 
-                          ? "bg-primary text-primary-foreground shadow-lg" 
-                          : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
-                      }`}>
-                        <Icon className="h-4 w-4" />
+                          ? "border-primary bg-primary/5 shadow-md" 
+                          : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
+                      }`}
+                      onClick={() => {
+                        const url = new URL(window.location.href);
+                        if (templateName === t.label) {
+                          url.searchParams.delete('template');
+                        } else {
+                          url.searchParams.set('template', t.label);
+                        }
+                        window.history.pushState({}, '', url);
+                        window.location.reload();
+                      }}
+                    >
+                      <div className="p-1 text-center h-full flex flex-col justify-center">
+                        <div className="flex items-center justify-center mb-1">
+                          <div className={`h-6 w-6 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                            templateName === t.label 
+                              ? "bg-primary text-primary-foreground shadow-lg" 
+                              : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
+                          }`}>
+                            <Icon className="h-3 w-3" />
+                          </div>
+                        </div>
+                        <h3 className={`text-xs font-medium text-center truncate leading-tight ${
+                          templateName === t.label ? "text-primary" : "text-foreground"
+                        }`} title={t.label}>
+                          {t.label.length > 4 ? t.label.substring(0, 4) + '...' : t.label}
+                        </h3>
+                        <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">
+                          {t.usageCount}
+                        </p>
+                      </div>
+                    </article>
+                  );
+                })}
+
+                {/* Add Custom Template Card - Single Row Design */}
+                <article className="group rounded-lg border-2 border-dashed border-border bg-card flex-shrink-0 w-12 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
+                  <div className="p-1 text-center h-full flex flex-col justify-center">
+                    <div className="flex items-center justify-center mb-1">
+                      <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
+                        <Plus className="h-3 w-3" />
                       </div>
                     </div>
-                    <h3 className={`text-xs font-medium text-center truncate leading-tight ${
-                      templateName === t.label ? "text-primary" : "text-foreground"
-                    }`} title={t.label}>
-                      {t.label.length > 5 ? t.label.substring(0, 5) + '...' : t.label}
-                    </h3>
-                    <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">
-                      {t.usageCount}
-                    </p>
+                    <h3 className="text-xs font-medium text-center truncate leading-tight">New</h3>
+                    <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">+</p>
                   </div>
                 </article>
-              );
-            })}
-
-            {/* Add Custom Template Card - Single Row Design */}
-            <article className="group rounded-lg border-2 border-dashed border-border bg-card flex-shrink-0 w-14 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
-              <div className="p-1.5 text-center h-full flex flex-col justify-center">
-                <div className="flex items-center justify-center mb-1">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
-                    <Plus className="h-4 w-4" />
-                  </div>
-                </div>
-                <h3 className="text-xs font-medium text-center truncate leading-tight">New</h3>
-                <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">+</p>
               </div>
-            </article>
             </div>
+
+            {/* Load more - Only show if there are more templates */}
+            {filtered.length > 12 && (
+              <div className="flex justify-center mt-4">
+                <Button 
+                  onClick={() => setVisible((v) => Math.min(v + 12, filtered.length))} 
+                  variant="outline"
+                  className="px-6 py-2 rounded-full text-sm"
+                >
+                  Load More Templates
+                </Button>
+              </div>
+            )}
+
+            {/* Empty state */}
+            {!shown.length && (
+              <div className="text-center py-12 text-muted-foreground">
+                <div className="mx-auto w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-3">
+                  <Search className="h-8 w-8" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No templates found</h3>
+                <p className="text-sm">Try adjusting your search or filters</p>
+              </div>
+            )}
           </div>
-
-          {/* Load more - Only show if there are more templates */}
-          {filtered.length > 12 && (
-            <div className="flex justify-center mt-4">
-              <Button 
-                onClick={() => setVisible((v) => Math.min(v + 12, filtered.length))} 
-                variant="outline"
-                className="px-6 py-2 rounded-full text-sm"
-              >
-                Load More Templates
-              </Button>
-            </div>
-          )}
-
-          {/* Empty state */}
-          {!shown.length && (
-            <div className="text-center py-12 text-muted-foreground">
-              <div className="mx-auto w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-3">
-                <Search className="h-8 w-8" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">No templates found</h3>
-              <p className="text-sm">Try adjusting your search or filters</p>
-            </div>
-          )}
         </div>
-      </div>
 
-      <div className="grid gap-4 grid-cols-1">
-        {/* Upload Section */}
-        <Card className="w-full">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Upload Receipt</CardTitle>
-            <CardDescription className="text-sm">Select a book and upload your receipt image</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Book Selection */}
-            <div className="space-y-2">
-              <Label className="text-sm">Select Book</Label>
-              <Select value={selectedBook} onValueChange={setSelectedBook}>
-                <SelectTrigger className="h-10 w-full">
-                  <SelectValue placeholder="Choose a book" />
-                </SelectTrigger>
-                <SelectContent>
-                  {books.map((book) => (
-                    <SelectItem key={book.id} value={book.id}>
-                      {book.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="space-y-4">
+          {/* Upload Section */}
+          <Card className="w-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Upload Receipt</CardTitle>
+              <CardDescription className="text-sm">Select a book and upload your receipt image</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {/* Book Selection */}
+              <div className="space-y-2">
+                <Label className="text-sm">Select Book</Label>
+                <Select value={selectedBook} onValueChange={setSelectedBook}>
+                  <SelectTrigger className="h-9 w-full">
+                    <SelectValue placeholder="Choose a book" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {books.map((book) => (
+                      <SelectItem key={book.id} value={book.id}>
+                        {book.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* File Upload */}
-            <div className="space-y-3">
-              <Label className="text-sm">Receipt Image</Label>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center w-full">
-                {previewUrl ? (
-                  <div className="space-y-3">
-                    <img 
-                      src={previewUrl} 
-                      alt="Receipt preview" 
-                      className="max-w-full max-h-48 mx-auto rounded-md object-contain"
-                    />
-                    <Button variant="outline" size="sm" onClick={() => document.getElementById('receipt-upload')?.click()}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Change Image
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <Image className="h-10 w-10 mx-auto text-muted-foreground" />
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">
-                        Click to upload or drag and drop
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        PNG, JPG or JPEG (max 10MB)
-                      </p>
+              {/* File Upload */}
+              <div className="space-y-2">
+                <Label className="text-sm">Receipt Image</Label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 text-center w-full">
+                  {previewUrl ? (
+                    <div className="space-y-2">
+                      <img 
+                        src={previewUrl} 
+                        alt="Receipt preview" 
+                        className="max-w-full max-h-32 mx-auto rounded-md object-contain"
+                      />
+                      <Button variant="outline" size="sm" onClick={() => document.getElementById('receipt-upload')?.click()}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Change Image
+                      </Button>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => document.getElementById('receipt-upload')?.click()}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Choose File
-                    </Button>
-                  </div>
-                )}
-                <Input
-                  id="receipt-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </div>
-            </div>
-
-            {/* Scan Button */}
-            <Button 
-              onClick={handleScanReceipt} 
-              disabled={!uploadedFile || !selectedBook || loading}
-              className="w-full h-11"
-            >
-              {loading ? (
-                "Scanning..."
-              ) : (
-                <>
-                  <Camera className="h-4 w-4 mr-2" />
-                  Scan Receipt
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Results Section */}
-        <Card>
-          <CardHeader className="pb-4 sm:pb-6">
-            <CardTitle className="text-base sm:text-lg">Scan Results</CardTitle>
-            <CardDescription className="text-sm">
-              {scanResult ? "Review and correct the extracted data" : "Upload and scan a receipt to see results"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!scanResult ? (
-              <div className="text-center py-8 sm:py-12">
-                <Camera className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-muted-foreground mb-3 sm:mb-4" />
-                <p className="text-sm text-muted-foreground">No receipt scanned yet</p>
-              </div>
-            ) : (
-              <div className="space-y-4 sm:space-y-6">
-                {/* Receipt Info */}
-                <div className="space-y-2">
-                  <h3 className="text-sm sm:text-base font-medium">Receipt Details</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
-                    {scanResult.vendor && (
+                  ) : (
+                    <div className="space-y-2">
+                      <Image className="h-8 w-8 mx-auto text-muted-foreground" />
                       <div>
-                        <span className="text-muted-foreground">Vendor:</span>
-                        <div className="font-medium break-words">{scanResult.vendor}</div>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Click to upload or drag and drop
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          PNG, JPG or JPEG (max 10MB)
+                        </p>
                       </div>
-                    )}
-                    {scanResult.date && (
-                      <div>
-                        <span className="text-muted-foreground">Date:</span>
-                        <div className="font-medium">{scanResult.date}</div>
-                      </div>
-                    )}
-                    {scanResult.receipt_id && (
-                      <div className="sm:col-span-2">
-                        <span className="text-muted-foreground">Receipt ID:</span>
-                        <div className="font-medium break-all text-xs sm:text-sm">{scanResult.receipt_id}</div>
-                      </div>
-                    )}
-                  </div>
+                      <Button variant="outline" size="sm" onClick={() => document.getElementById('receipt-upload')?.click()}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Choose File
+                      </Button>
+                    </div>
+                  )}
+                  <Input
+                    id="receipt-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
                 </div>
+              </div>
 
-                <Separator />
+              {/* Scan Button */}
+              <Button 
+                onClick={handleScanReceipt} 
+                disabled={!uploadedFile || !selectedBook || loading}
+                className="w-full h-10"
+              >
+                {loading ? (
+                  "Scanning..."
+                ) : (
+                  <>
+                    <Camera className="h-4 w-4 mr-2" />
+                    Scan Receipt
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
 
-                {/* Items List */}
-                <div className="space-y-3 sm:space-y-4">
-                  <h3 className="text-sm sm:text-base font-medium">Extracted Items</h3>
-                  {scanResult.items?.map((item: any, index: number) => (
-                    <div key={index} className="border rounded-lg p-3 sm:p-4">
-                      {editingItem === index ? (
-                        <EditItemForm
-                          item={item}
-                          index={index}
-                          onSave={handleCorrectItem}
-                          onCancel={() => setEditingItem(null)}
-                        />
-                      ) : (
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium text-sm sm:text-base break-words">{item.text}</div>
-                            <div className="text-xs sm:text-sm text-muted-foreground break-words">
-                              PKR {item.price?.toFixed(2)} • Category: {item.category_name || item.category_id || "Unknown"}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setEditingItem(index)}
-                              aria-label="Edit item"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteItem(index)}
-                              aria-label="Delete item"
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
+          {/* Results Section */}
+          <Card className="w-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Scan Results</CardTitle>
+              <CardDescription className="text-sm">
+                {scanResult ? "Review and correct the extracted data" : "Upload and scan a receipt to see results"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!scanResult ? (
+                <div className="text-center py-8">
+                  <Camera className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-sm text-muted-foreground">No receipt scanned yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Receipt Info */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Receipt Details</h3>
+                    <div className="grid grid-cols-1 gap-3 text-sm">
+                      {scanResult.vendor && (
+                        <div>
+                          <span className="text-muted-foreground">Vendor:</span>
+                          <div className="font-medium break-words">{scanResult.vendor}</div>
+                        </div>
+                      )}
+                      {scanResult.date && (
+                        <div>
+                          <span className="text-muted-foreground">Date:</span>
+                          <div className="font-medium">{scanResult.date}</div>
+                        </div>
+                      )}
+                      {scanResult.receipt_id && (
+                        <div>
+                          <span className="text-muted-foreground">Receipt ID:</span>
+                          <div className="font-medium break-all text-xs">{scanResult.receipt_id}</div>
                         </div>
                       )}
                     </div>
-                  ))}
-                </div>
-
-                {/* Total */}
-                <Separator />
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center font-medium text-sm sm:text-base">
-                    <span>Total</span>
-                    <span>
-                      PKR {scanResult.total?.toFixed(2) || '0.00'}
-                    </span>
                   </div>
-                  {scanResult.total_warning && (
-                    <div className="p-2 sm:p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                      <div className="flex items-start gap-2">
-                        <div className="text-yellow-600 dark:text-yellow-400 text-xs sm:text-sm">
-                          ⚠️ {scanResult.total_warning}
+
+                  <Separator />
+
+                  {/* Items List */}
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium">Extracted Items</h3>
+                    {scanResult.items?.map((item: any, index: number) => (
+                      <div key={index} className="border rounded-lg p-3">
+                        {editingItem === index ? (
+                          <EditItemForm
+                            item={item}
+                            index={index}
+                            onSave={handleCorrectItem}
+                            onCancel={() => setEditingItem(null)}
+                          />
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm break-words">{item.text}</div>
+                              <div className="text-xs text-muted-foreground break-words">
+                                PKR {item.price?.toFixed(2)} • Category: {item.category_name || item.category_id || "Unknown"}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setEditingItem(index)}
+                                aria-label="Edit item"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteItem(index)}
+                                aria-label="Delete item"
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Total */}
+                  <Separator />
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center font-medium text-sm">
+                      <span>Total</span>
+                      <span>
+                        PKR {scanResult.total?.toFixed(2) || '0.00'}
+                      </span>
+                    </div>
+                    {scanResult.total_warning && (
+                      <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <div className="text-yellow-600 dark:text-yellow-400 text-xs">
+                            ⚠️ {scanResult.total_warning}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
 
-                {/* Debug Section */}
-                <Separator />
-                <div className="space-y-2 sm:space-y-3">
-                  <h3 className="font-medium text-xs sm:text-sm">Debug - Raw API Response</h3>
-                  <div className="bg-muted/50 rounded-lg p-2 sm:p-3 overflow-auto max-h-40 sm:max-h-60">
-                    <pre className="text-xs font-mono whitespace-pre-wrap break-words">
-                      {JSON.stringify(scanResult, null, 2)}
-                    </pre>
+                  {/* Debug Section */}
+                  <Separator />
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-xs">Debug - Raw API Response</h3>
+                    <div className="bg-muted/50 rounded-lg p-2 overflow-auto max-h-40">
+                      <pre className="text-xs font-mono whitespace-pre-wrap break-words">
+                        {JSON.stringify(scanResult, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <Separator />
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={() => {
+                        if (window.history.length > 1) navigate(-1); else navigate('/analytics');
+                      }}
+                      className="w-full"
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Done
+                    </Button>
                   </div>
                 </div>
-
-                <Separator />
-                <div className="flex justify-end">
-                  <Button
-                    onClick={() => {
-                      if (window.history.length > 1) navigate(-1); else navigate('/analytics');
-                    }}
-                    className="w-full sm:w-auto"
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    Done
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
