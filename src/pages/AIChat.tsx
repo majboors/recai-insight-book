@@ -252,23 +252,23 @@ export default function AIChat() {
                       {chatMessages.map((message, index) => (
                         <div
                           key={index}
-                          className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                          className={`flex gap-2 sm:gap-3 ${message.role === "user" ? "justify-end" : "justify-start"} w-full`}
                         >
-                          <div className={`flex gap-3 max-w-[85%] sm:max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          <div className={`flex gap-2 sm:gap-3 max-w-[95%] sm:max-w-[85%] lg:max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
+                            <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                               message.role === "user" 
                                 ? "bg-primary text-primary-foreground" 
                                 : "bg-accent"
                             }`}>
-                              {message.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                              {message.role === "user" ? <User className="h-3 w-3 sm:h-4 sm:w-4" /> : <Bot className="h-3 w-3 sm:h-4 sm:w-4" />}
                             </div>
-                            <div className={`rounded-lg p-3 ${
+                            <div className={`rounded-lg p-2 sm:p-3 min-w-0 flex-1 ${
                               message.role === "user" 
                                 ? "bg-primary text-primary-foreground" 
                                 : "bg-accent/50"
                             }`}>
-                              <div className="text-sm whitespace-pre-wrap break-words">{message.content}</div>
-                              <div className="text-xs opacity-70 mt-1">
+                              <div className="text-xs sm:text-sm whitespace-pre-wrap break-words word-break overflow-wrap-anywhere">{message.content}</div>
+                              <div className="text-[10px] sm:text-xs opacity-70 mt-1">
                                 {message.timestamp.toLocaleTimeString()}
                               </div>
                             </div>
