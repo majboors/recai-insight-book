@@ -468,9 +468,9 @@ export default function ReceiptScanner() {
                 {shown.slice(0, 12).map((t) => {
                   const Icon = t.icon;
                   return (
-                    <article 
+                     <article 
                       key={t.id} 
-                      className={`group rounded-lg border-2 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-12 hover:w-20 hover:z-10 relative ${
+                      className={`group rounded-lg border-2 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-12 sm:w-20 lg:w-24 hover:w-20 sm:hover:w-28 lg:hover:w-32 hover:z-10 relative ${
                         templateName === t.label 
                           ? "border-primary bg-primary/5 shadow-md" 
                           : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
