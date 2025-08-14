@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, BookOpen, Camera, BarChart3, Bell, LayoutGrid } from "lucide-react";
+import { Home, BookOpen, Camera, BarChart3, Receipt, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
@@ -11,7 +11,7 @@ export function MobileBottomNav() {
   ];
   const right = [
     { to: "/analytics", label: "Analytics", icon: BarChart3 },
-    { to: "/notifications", label: "Alerts", icon: Bell },
+    { to: "/books", label: "Transactions", icon: Receipt },
   ];
   const scan = { to: "/scanner", label: "Scan", icon: Camera };
 

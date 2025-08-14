@@ -6,6 +6,7 @@ import {
   Home, 
   MessageSquare, 
   Bell,
+  Receipt,
   Settings,
   LogOut,
   User
@@ -32,6 +33,7 @@ const items = [
   { title: "Scanner", url: "/scanner", icon: Camera },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "AI Chat", url: "/chat", icon: MessageSquare },
+  { title: "Transactions", url: "/books", icon: Receipt },
   { title: "Notifications", url: "/notifications", icon: Bell },
 ]
 
