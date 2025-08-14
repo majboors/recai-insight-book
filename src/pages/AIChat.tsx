@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,7 @@ export default function AIChat() {
   const [loading, setLoading] = useState(false);
   const [chatDataStatus, setChatDataStatus] = useState<{ usingLiveData: boolean; totalTransactions?: number; message?: string } | null>(null);
   const { toast } = useToast();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.title = "AI Chat | AI Receipt Analyzer";
@@ -41,6 +42,11 @@ export default function AIChat() {
       loadInsights();
     }
   }, [selectedBook]);
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, loading]);
 
   const loadBooks = async () => {
     try {
@@ -284,10 +290,11 @@ export default function AIChat() {
                             <div className="text-sm">Thinking...</div>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  )}
-                </ScrollArea>
+                       )}
+                       <div ref={messagesEndRef} />
+                     </div>
+                   )}
+                 </ScrollArea>
                 
                 {/* Message Input */}
                 <div className="flex gap-2 mt-4">
