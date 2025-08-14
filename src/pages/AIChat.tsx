@@ -262,12 +262,12 @@ export default function AIChat() {
                             }`}>
                               {message.role === "user" ? <User className="h-3 w-3 sm:h-4 sm:w-4" /> : <Bot className="h-3 w-3 sm:h-4 sm:w-4" />}
                             </div>
-                            <div className={`rounded-lg p-2 sm:p-3 min-w-0 flex-1 ${
+                            <div className={`rounded-lg p-2 sm:p-3 min-w-0 max-w-full ${
                               message.role === "user" 
                                 ? "bg-primary text-primary-foreground" 
                                 : "bg-accent/50"
                             }`}>
-                              <div className="text-xs sm:text-sm whitespace-pre-wrap break-words word-break overflow-wrap-anywhere">{message.content}</div>
+                              <div className="text-xs sm:text-sm whitespace-pre-wrap break-all hyphens-auto" style={{ wordWrap: 'break-word', overflowWrap: 'anywhere' }}>{message.content}</div>
                               <div className="text-[10px] sm:text-xs opacity-70 mt-1">
                                 {message.timestamp.toLocaleTimeString()}
                               </div>
