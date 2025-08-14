@@ -350,19 +350,19 @@ export default function ReceiptScanner() {
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 space-y-3 sm:space-y-6 max-w-6xl">
+    <div className="w-full max-w-none mx-auto px-3 py-4 space-y-4 overflow-x-hidden">
       {/* Header */}
-      <div className="flex flex-col gap-2 sm:gap-4">
+      <div className="flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
+            <h1 className="text-xl font-bold tracking-tight">{templateName || "Receipt Scanner"}</h1>
             {templateName && (
               <Badge variant="secondary" className="text-xs">
                 Template
               </Badge>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {templateName 
               ? `Scan and process ${templateName} receipts with AI-powered recognition`
               : "Scan and process receipts with AI-powered recognition"
@@ -370,17 +370,17 @@ export default function ReceiptScanner() {
           </p>
         </div>
         {scanResult && (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div className="flex flex-col gap-2">
             <Button
               onClick={() => {
                 if (window.history.length > 1) navigate(-1); else navigate('/analytics');
               }}
-              className="w-full sm:w-auto text-sm h-9"
+              className="w-full text-sm h-9"
             >
               <Check className="h-4 w-4 mr-2" />
               Done
             </Button>
-            <Button onClick={resetScanner} variant="outline" className="w-full sm:w-auto text-sm h-9">
+            <Button onClick={resetScanner} variant="outline" className="w-full text-sm h-9">
               <Plus className="h-4 w-4 mr-2" />
               Scan Another
             </Button>
@@ -389,27 +389,27 @@ export default function ReceiptScanner() {
       </div>
 
       {/* Template Selection and Search */}
-      <div className="space-y-2 sm:space-y-4">
+      <div className="space-y-3">
         {/* Mobile-First Templates Design */}
-        <div className="space-y-2 sm:space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="text-sm sm:text-lg font-semibold">Quick Templates</h3>
+        <div className="space-y-3">
+          <div className="flex flex-col gap-2">
+            <h3 className="text-base font-semibold">Quick Templates</h3>
             
             {/* Search Section - Integrated into header */}
-            <div className="relative w-full sm:max-w-xs">
+            <div className="relative w-full">
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search templates..."
-                className="pl-7 pr-3 h-8 text-xs sm:text-sm"
+                className="pl-8 pr-3 h-9 text-sm"
               />
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
           
           {/* Mobile-First Category Tabs */}
-          <nav aria-label="Template categories" className="mb-2 sm:mb-4">
-            <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
+          <nav aria-label="Template categories" className="mb-3">
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
                 {categories.map((c) => {
                   const Icon = c.icon;
                   return (
@@ -418,12 +418,12 @@ export default function ReceiptScanner() {
                       variant={activeCat === c.key ? "secondary" : "outline"}
                       size="sm"
                       onClick={() => setActiveCat(c.key)}
-                      className="rounded-full flex items-center justify-center gap-1 sm:gap-2 py-1 sm:py-1.5 px-2 sm:px-3 text-xs whitespace-nowrap flex-shrink-0 min-w-fit h-7 sm:h-8"
+                      className="rounded-full flex items-center justify-center gap-1.5 py-1.5 px-3 text-xs whitespace-nowrap flex-shrink-0 min-w-fit h-7"
                       aria-pressed={activeCat === c.key}
                     >
                       <Icon className="h-3 w-3" />
-                      <span className="hidden xs:inline">{c.label}</span>
-                      <span className="xs:hidden">{c.label.split(' ')[0]}</span>
+                      <span className="hidden sm:inline">{c.label}</span>
+                      <span className="sm:hidden">{c.label.split(' ')[0]}</span>
                     </Button>
                   );
                 })}
@@ -431,12 +431,12 @@ export default function ReceiptScanner() {
           </nav>
 
           {/* Mobile-First Templates Grid - Single Row Scrollable with Navigation */}
-          <div className="relative px-6 sm:px-8">
+          <div className="relative px-5">
             {/* Left Arrow */}
             <Button
               variant="outline"
               size="icon"
-              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
                 canScrollLeft 
                   ? 'opacity-100 hover:bg-background hover:scale-105' 
                   : 'opacity-0 pointer-events-none'
@@ -444,14 +444,14 @@ export default function ReceiptScanner() {
               onClick={scrollLeft}
               disabled={!canScrollLeft}
             >
-              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+              <ChevronLeft className="h-3 w-3" />
             </Button>
             
             {/* Right Arrow */}
             <Button
               variant="outline"
               size="icon"
-              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
+              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 rounded-full bg-background/95 backdrop-blur-sm shadow-lg border-2 transition-all duration-200 ${
                 canScrollRight 
                   ? 'opacity-100 hover:bg-background hover:scale-105' 
                   : 'opacity-0 pointer-events-none'
@@ -459,17 +459,17 @@ export default function ReceiptScanner() {
               onClick={scrollRight}
               disabled={!canScrollRight}
             >
-              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+              <ChevronRight className="h-3 w-3" />
             </Button>
 
-            <div ref={scrollContainerRef} className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-1 scroll-smooth"
+            <div ref={scrollContainerRef} className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 scroll-smooth"
                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {shown.slice(0, 12).map((t) => {
               const Icon = t.icon;
               return (
                 <article 
                   key={t.id} 
-                  className={`group rounded-lg border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-16 sm:w-20 ${
+                  className={`group rounded-lg border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-14 ${
                     templateName === t.label 
                       ? "border-primary bg-primary/5 shadow-md" 
                       : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
@@ -485,20 +485,20 @@ export default function ReceiptScanner() {
                     window.location.reload();
                   }}
                 >
-                  <div className="p-1.5 sm:p-2 text-center h-full flex flex-col justify-center">
-                    <div className="flex items-center justify-center mb-1.5">
-                      <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                  <div className="p-1.5 text-center h-full flex flex-col justify-center">
+                    <div className="flex items-center justify-center mb-1">
+                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
                         templateName === t.label 
                           ? "bg-primary text-primary-foreground shadow-lg" 
                           : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
                       }`}>
-                        <Icon className="h-6 w-6 sm:h-7 sm:w-7" />
+                        <Icon className="h-4 w-4" />
                       </div>
                     </div>
                     <h3 className={`text-xs font-medium text-center truncate leading-tight ${
                       templateName === t.label ? "text-primary" : "text-foreground"
                     }`} title={t.label}>
-                      {t.label.length > 6 ? t.label.substring(0, 6) + '...' : t.label}
+                      {t.label.length > 5 ? t.label.substring(0, 5) + '...' : t.label}
                     </h3>
                     <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">
                       {t.usageCount}
@@ -509,15 +509,15 @@ export default function ReceiptScanner() {
             })}
 
             {/* Add Custom Template Card - Single Row Design */}
-            <article className="group rounded-lg border-2 border-dashed border-border bg-card flex-shrink-0 w-16 sm:w-20 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
-              <div className="p-1.5 sm:p-2 text-center h-full flex flex-col justify-center">
-                <div className="flex items-center justify-center mb-1.5">
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
-                    <Plus className="h-6 w-6 sm:h-7 sm:w-7" />
+            <article className="group rounded-lg border-2 border-dashed border-border bg-card flex-shrink-0 w-14 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer">
+              <div className="p-1.5 text-center h-full flex flex-col justify-center">
+                <div className="flex items-center justify-center mb-1">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center text-primary group-hover:from-primary/20 group-hover:to-primary/30 transition-all duration-200">
+                    <Plus className="h-4 w-4" />
                   </div>
                 </div>
-                <h3 className="text-xs font-medium text-center truncate leading-tight">Custom</h3>
-                <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">New</p>
+                <h3 className="text-xs font-medium text-center truncate leading-tight">New</h3>
+                <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">+</p>
               </div>
             </article>
             </div>
@@ -525,11 +525,11 @@ export default function ReceiptScanner() {
 
           {/* Load more - Only show if there are more templates */}
           {filtered.length > 12 && (
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-4">
               <Button 
                 onClick={() => setVisible((v) => Math.min(v + 12, filtered.length))} 
                 variant="outline"
-                className="px-8 py-2 rounded-full"
+                className="px-6 py-2 rounded-full text-sm"
               >
                 Load More Templates
               </Button>
@@ -538,30 +538,30 @@ export default function ReceiptScanner() {
 
           {/* Empty state */}
           {!shown.length && (
-            <div className="text-center py-16 text-muted-foreground">
-              <div className="mx-auto w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mb-4">
-                <Search className="h-10 w-10" />
+            <div className="text-center py-12 text-muted-foreground">
+              <div className="mx-auto w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-3">
+                <Search className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">No templates found</h3>
+              <h3 className="text-lg font-semibold mb-2">No templates found</h3>
               <p className="text-sm">Try adjusting your search or filters</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 grid-cols-1">
         {/* Upload Section */}
-        <Card>
-          <CardHeader className="pb-4 sm:pb-6">
-            <CardTitle className="text-base sm:text-lg">Upload Receipt</CardTitle>
+        <Card className="w-full">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Upload Receipt</CardTitle>
             <CardDescription className="text-sm">Select a book and upload your receipt image</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6">
+          <CardContent className="space-y-4">
             {/* Book Selection */}
             <div className="space-y-2">
               <Label className="text-sm">Select Book</Label>
               <Select value={selectedBook} onValueChange={setSelectedBook}>
-                <SelectTrigger className="h-9 sm:h-10">
+                <SelectTrigger className="h-10 w-full">
                   <SelectValue placeholder="Choose a book" />
                 </SelectTrigger>
                 <SelectContent>
@@ -575,15 +575,15 @@ export default function ReceiptScanner() {
             </div>
 
             {/* File Upload */}
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3">
               <Label className="text-sm">Receipt Image</Label>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 sm:p-6 md:p-8 text-center">
+              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center w-full">
                 {previewUrl ? (
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-3">
                     <img 
                       src={previewUrl} 
                       alt="Receipt preview" 
-                      className="max-w-full max-h-48 sm:max-h-64 mx-auto rounded-md"
+                      className="max-w-full max-h-48 mx-auto rounded-md object-contain"
                     />
                     <Button variant="outline" size="sm" onClick={() => document.getElementById('receipt-upload')?.click()}>
                       <Upload className="h-4 w-4 mr-2" />
@@ -591,10 +591,10 @@ export default function ReceiptScanner() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3 sm:space-y-4">
-                    <Image className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-muted-foreground" />
+                  <div className="space-y-3">
+                    <Image className="h-10 w-10 mx-auto text-muted-foreground" />
                     <div>
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
+                      <p className="text-sm text-muted-foreground mb-1">
                         Click to upload or drag and drop
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -621,7 +621,7 @@ export default function ReceiptScanner() {
             <Button 
               onClick={handleScanReceipt} 
               disabled={!uploadedFile || !selectedBook || loading}
-              className="w-full h-10 sm:h-11"
+              className="w-full h-11"
             >
               {loading ? (
                 "Scanning..."
