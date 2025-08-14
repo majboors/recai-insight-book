@@ -470,7 +470,7 @@ export default function ReceiptScanner() {
                   return (
                     <article 
                       key={t.id} 
-                      className={`group rounded-lg border-2 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-12 ${
+                      className={`group rounded-lg border-2 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-lg flex-shrink-0 w-12 hover:w-20 hover:z-10 relative ${
                         templateName === t.label 
                           ? "border-primary bg-primary/5 shadow-md" 
                           : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
@@ -486,20 +486,25 @@ export default function ReceiptScanner() {
                         window.location.reload();
                       }}
                     >
-                      <div className="p-1 text-center h-full flex flex-col justify-center">
+                      <div className="p-1 text-center h-full flex flex-col justify-center overflow-hidden">
                         <div className="flex items-center justify-center mb-1">
-                          <div className={`h-6 w-6 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                          <div className={`h-6 w-6 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:h-7 group-hover:w-7 ${
                             templateName === t.label 
                               ? "bg-primary text-primary-foreground shadow-lg" 
                               : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary group-hover:from-primary/20 group-hover:to-primary/30"
                           }`}>
-                            <Icon className="h-3 w-3" />
+                            <Icon className="h-3 w-3 group-hover:h-4 group-hover:w-4 transition-all duration-300" />
                           </div>
                         </div>
-                        <h3 className={`text-xs font-medium text-center truncate leading-tight ${
+                        <h3 className={`text-xs font-medium text-center leading-tight transition-all duration-300 ${
                           templateName === t.label ? "text-primary" : "text-foreground"
                         }`} title={t.label}>
-                          {t.label.length > 4 ? t.label.substring(0, 4) + '...' : t.label}
+                          <span className="group-hover:hidden">
+                            {t.label.length > 4 ? t.label.substring(0, 4) + '...' : t.label}
+                          </span>
+                          <span className="hidden group-hover:block whitespace-nowrap text-xs">
+                            {t.label}
+                          </span>
                         </h3>
                         <p className="text-xs text-muted-foreground text-center mt-0.5 leading-tight">
                           {t.usageCount}
