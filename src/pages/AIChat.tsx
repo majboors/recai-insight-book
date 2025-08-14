@@ -193,7 +193,7 @@ export default function AIChat() {
           {/* Chat Section */}
           <div className="lg:col-span-2 space-y-6">
             {/* Chat Window */}
-            <Card className="card-minimal h-[500px] flex flex-col">
+            <Card className="card-minimal flex flex-col" style={{ height: '500px' }}>
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -244,8 +244,9 @@ export default function AIChat() {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                <ScrollArea className="flex-1 pr-4">
+              <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                <ScrollArea className="flex-1 pr-4 overflow-y-auto"
+                  style={{ maxHeight: 'calc(100% - 4rem)' }}>
                   {chatMessages.length === 0 ? (
                     <div className="text-center py-8">
                       <Bot className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
