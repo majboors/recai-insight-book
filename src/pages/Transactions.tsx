@@ -59,10 +59,11 @@ export default function Transactions() {
     date: format(new Date(), "yyyy-MM-dd")
   });
 
-  const { data: instanceData, isLoading: instanceLoading } = useQuery({
+  const { data: instanceData, isLoading: instanceLoading, error: instanceError } = useQuery({
     queryKey: ["instance", instanceId],
     queryFn: () => getInstance(instanceId),
     enabled: !!instanceId,
+    retry: 1, // Don't retry instance fetch if it fails
   });
 
   const { data: balance, isLoading: balanceLoading } = useQuery({
@@ -73,7 +74,7 @@ export default function Transactions() {
 
   const { data: transactions, isLoading: transactionsLoading } = useQuery({
     queryKey: ["ledger-transactions", instanceId],
-    queryFn: () => recaiRequest<{ transactions: LedgerEntry[] }>("GET", `/v1/instances/${instanceId}/ledger/transactions`),
+    queryFn: () => recaiRequest<{ entries: LedgerEntry[], total_count: number, limit: number, offset: number }>("GET", `/v1/instances/${instanceId}/ledger/transactions`),
     enabled: !!instanceId,
   });
 
@@ -122,7 +123,7 @@ export default function Transactions() {
 
   const categories = (instanceData as any)?.categories || [];
   
-  const filteredTransactions = transactions?.transactions?.filter((tx: LedgerEntry) => {
+  const filteredTransactions = transactions?.entries?.filter((tx: LedgerEntry) => {
     const matchesSearch = tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          tx.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === "all" || tx.type === selectedType;
@@ -479,6 +480,65 @@ export default function Transactions() {
               ))}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Debug Section - API Response Testing */}
+      <Card className="border-dashed">
+        <CardHeader>
+          <CardTitle className="text-lg">🔧 API Debug Info</CardTitle>
+          <CardDescription>
+            Testing API responses and explaining data flow integration
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm">Balance API Response:</h4>
+              <pre className="text-xs bg-muted p-2 rounded overflow-auto">
+                {JSON.stringify(balance, null, 2)}
+              </pre>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm">Transactions API Response:</h4>
+              <pre className="text-xs bg-muted p-2 rounded overflow-auto">
+                {JSON.stringify(transactions, null, 2)}
+              </pre>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <h4 className="font-semibold text-sm">Instance Data (Categories):</h4>
+            <pre className="text-xs bg-muted p-2 rounded overflow-auto">
+              {instanceError ? 
+                `Instance Error: ${instanceError.message}` : 
+                JSON.stringify(instanceData, null, 2)
+              }
+            </pre>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-semibold text-sm">📋 API Integration Flow:</h4>
+            <div className="text-sm space-y-1 bg-muted/50 p-3 rounded">
+              <p><strong>1. Receipt Scanning:</strong> POST /v1/receipts → Auto-adds to ledger as expenses</p>
+              <p><strong>2. Manual Income:</strong> POST /v1/instances/{id}/ledger/income → Updates balance</p>
+              <p><strong>3. Manual Expense:</strong> POST /v1/instances/{id}/ledger/expense → Updates balance</p>
+              <p><strong>4. Balance Check:</strong> GET /v1/instances/{id}/ledger/balance → Real-time calculation</p>
+              <p><strong>5. Transaction History:</strong> GET /v1/instances/{id}/ledger/transactions → Unified view</p>
+              <p><strong>6. Data Consistency:</strong> Receipt scanner + Manual entries = Same ledger</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-semibold text-sm">🔄 Data Synchronization:</h4>
+            <div className="text-sm space-y-1 bg-blue-50 dark:bg-blue-950/20 p-3 rounded">
+              <p><strong>Receipt Scanner:</strong> Scanned items appear in both transaction list AND ledger</p>
+              <p><strong>Manual Transactions:</strong> Added via transaction system also sync to ledger</p>
+              <p><strong>Ledger Entries:</strong> Manual income/expense entries (this page) update balance</p>
+              <p><strong>Categories:</strong> Shared across all systems for consistency</p>
+              <p><strong>Real-time:</strong> All changes update balance immediately</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
